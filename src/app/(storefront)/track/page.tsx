@@ -1,6 +1,13 @@
 import { TrackForm } from '@/components/TrackForm'
+import { pageMeta } from '@/lib/seo'
 
-export const metadata = { title: 'Track order' }
+export const metadata = pageMeta({
+  title: 'Track order',
+  description: 'Track your RumiNZuni cash-on-delivery order with your order number and checkout phone.',
+  path: '/track',
+  index: false,
+  follow: false,
+})
 
 export default function TrackPage() {
   return (

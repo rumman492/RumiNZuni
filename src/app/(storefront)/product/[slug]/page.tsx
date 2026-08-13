@@ -1,18 +1,39 @@
 import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import { AddToCart } from '@/components/AddToCart'
+import { Breadcrumbs } from '@/components/Breadcrumbs'
+import { JsonLd } from '@/components/JsonLd'
 import { ProductCard } from '@/components/ProductCard'
 import { mediaUrl } from '@/lib/media'
 import { formatProductSize } from '@/lib/pakistan'
 import { getProductBySlug, productCardData, type ProductDoc } from '@/lib/products'
+import { pageMeta, productJsonLd } from '@/lib/seo'
+import { absoluteMediaUrl } from '@/lib/site'
 
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params
   const product = await getProductBySlug(slug).catch(() => null)
-  if (!product) return { title: 'Product' }
+  if (!product) return { title: 'Product', robots: { index: false, follow: true } }
+  const firstImage = product.images?.[0]?.image
+  const image = typeof firstImage === 'object' ? absoluteMediaUrl(mediaUrl(firstImage)) : null
+  const prices = (product.variants || []).map((variant) => variant.price).filter((price) => Number.isFinite(price))
+  const inStock = (product.variants || []).some((variant) => variant.stock > 0)
   return {
-    title: product.seo?.title || product.title,
-    description: product.seo?.description || product.description || undefined,
+    ...pageMeta({
+      title: product.seo?.title || product.title,
+      description:
+        product.seo?.description ||
+        product.description ||
+        `Buy ${product.title} from RumiNZuni. Cash on delivery across Pakistan.`,
+      path: `/product/${product.slug}`,
+      image,
+    }),
+    other: {
+      'product:availability': inStock ? 'in stock' : 'out of stock',
+      'product:condition': 'new',
+      'product:price:amount': String(prices.length ? Math.min(...prices) : 0),
+      'product:price:currency': 'PKR',
+    },
   }
 }
 
@@ -37,9 +58,22 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
   )
   const sizeGuide = typeof product.sizeGuide === 'object' ? product.sizeGuide : null
   const related = relatedCards(product)
+  const category =
+    typeof product.category === 'object' && product.category?.slug && product.category.name
+      ? { name: product.category.name, slug: product.category.slug }
+      : null
 
   return (
     <div className="space-y-16">
+      <JsonLd data={productJsonLd(product)} />
+      <Breadcrumbs
+        items={[
+          { name: 'Home', href: '/' },
+          { name: 'Shop', href: '/shop' },
+          ...(category ? [{ name: category.name, href: `/shop/${category.slug}` }] : []),
+          { name: product.title, href: `/product/${product.slug}` },
+        ]}
+      />
       <div className="grid gap-10 lg:grid-cols-2">
         <div className="grid gap-4">
           {images.length > 0 ? (

@@ -1,7 +1,14 @@
 import { CheckoutForm } from '@/components/CheckoutForm'
 import { getSettings } from '@/lib/products'
+import { pageMeta } from '@/lib/seo'
 
-export const metadata = { title: 'Checkout' }
+export const metadata = pageMeta({
+  title: 'Checkout',
+  description: 'Place a RumiNZuni cash-on-delivery order. Pay the rider in PKR when your parcel arrives.',
+  path: '/checkout',
+  index: false,
+  follow: false,
+})
 
 export default async function CheckoutPage() {
   let defaultShipping = 250

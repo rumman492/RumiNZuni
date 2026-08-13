@@ -1,5 +1,6 @@
 import type { Payload } from 'payload'
 import { formatPkr, isValidPkPhone, normalizePkPhone } from '@/lib/pakistan'
+import { siteOrigin } from '@/lib/site'
 import { getNotificationConfig } from '@/lib/notifications/config'
 import { sendOutboundMessage } from '@/lib/notifications/providers'
 import {
@@ -57,7 +58,7 @@ type SettingsLike = {
 }
 
 function serverUrl() {
-  return (process.env.NEXT_PUBLIC_SERVER_URL || 'http://localhost:3000').replace(/\/$/, '')
+  return siteOrigin()
 }
 
 function optionalPhone(value?: string | null) {

@@ -1,9 +1,26 @@
+import type { Metadata } from 'next'
 import Link from 'next/link'
 import { getPayloadClient } from '@/lib/payload'
 import { buildOrderNotificationPayload, buildWhatsAppConfirmAction } from '@/lib/notifications'
 import { verifyOrderAccessToken } from '@/lib/order-access'
 import { formatPkr } from '@/lib/pakistan'
+import { pageMeta } from '@/lib/seo'
 import { ORDER_NUMBER_PATTERN } from '@/lib/security'
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ orderNumber: string }>
+}): Promise<Metadata> {
+  const { orderNumber } = await params
+  return pageMeta({
+    title: `Order ${orderNumber}`,
+    description: 'Your RumiNZuni cash-on-delivery order was placed.',
+    path: `/order/${orderNumber}`,
+    index: false,
+    follow: false,
+  })
+}
 
 function notFoundCard() {
   return (

@@ -1,6 +1,8 @@
 import Link from 'next/link'
+import { Breadcrumbs } from '@/components/Breadcrumbs'
 import { ProductCard } from '@/components/ProductCard'
 import { ShopFilters, ShopSort } from '@/components/ShopFilters'
+import type { BreadcrumbItem } from '@/lib/seo'
 import {
   CATALOG_PAGE_SIZE,
   catalogHref,
@@ -17,12 +19,14 @@ export async function ShopListing({
   basePath,
   query,
   locked,
+  breadcrumbs,
 }: {
   title: string
   description?: string
   basePath: string
   query: CatalogQuery
   locked?: CatalogLock
+  breadcrumbs?: BreadcrumbItem[]
 }) {
   let facets: Awaited<ReturnType<typeof getCatalogFacets>> = { categories: [], colors: [] }
   let result: Awaited<ReturnType<typeof searchCatalog>> = {
@@ -44,6 +48,7 @@ export async function ShopListing({
 
   return (
     <div>
+      {breadcrumbs && breadcrumbs.length > 0 ? <Breadcrumbs items={breadcrumbs} /> : null}
       <p className="text-sm font-bold uppercase tracking-wide text-coral">Catalog</p>
       <h1 className="display mt-2 text-5xl">{title}</h1>
       {description ? <p className="mt-3 max-w-2xl text-ink-soft">{description}</p> : null}

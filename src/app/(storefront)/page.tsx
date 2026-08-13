@@ -1,3 +1,4 @@
+import type { Metadata } from 'next'
 import Link from 'next/link'
 import { Sparkles } from 'lucide-react'
 import { ProductCard } from '@/components/ProductCard'
@@ -12,6 +13,31 @@ import {
   type HomepageSettings,
 } from '@/lib/homepage'
 import { getSettings } from '@/lib/products'
+import { pageMeta } from '@/lib/seo'
+import { absoluteMediaUrl } from '@/lib/site'
+
+export async function generateMetadata(): Promise<Metadata> {
+  let storeName = 'RumiNZuni'
+  let homepage: HomepageSettings | null = null
+  try {
+    const settings = await getSettings()
+    storeName = settings.storeName || storeName
+    homepage = settings as HomepageSettings
+  } catch {
+    homepage = null
+  }
+  const hero = homepageHero(homepage)
+  const title = `${storeName} — ${hero.title}`
+  return {
+    ...pageMeta({
+      title,
+      description: hero.subtitle,
+      path: '/',
+      image: hero.image ? absoluteMediaUrl(hero.image) : null,
+    }),
+    title: { absolute: title },
+  }
+}
 
 export default async function HomePage() {
   let settings: HomepageSettings | null = null

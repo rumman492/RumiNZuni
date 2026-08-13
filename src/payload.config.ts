@@ -16,11 +16,12 @@ import { Pages } from './collections/Pages'
 import { SiteSettings } from './globals/SiteSettings'
 import { checkoutHandler, trackOrderHandler } from './endpoints/checkout'
 import { mediaStoragePlugins } from './lib/storage'
+import { siteOrigin } from './lib/site'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
 const databaseUrl = process.env.DATABASE_URL || 'postgresql://ruminzuni:ruminzuni@127.0.0.1:5432/ruminzuni'
-const serverURL = process.env.NEXT_PUBLIC_SERVER_URL || 'http://localhost:3000'
+const serverURL = siteOrigin()
 
 export default buildConfig({
   serverURL,

@@ -64,6 +64,17 @@ export default async function ShopSlugPage({ params, searchParams }: Props) {
     `Shop ${title} with cash on delivery across Pakistan.`
 
   return (
-    <ShopListing title={title} description={description} basePath={`/shop/${slug}`} query={query} locked={locked} />
+    <ShopListing
+      title={title}
+      description={description}
+      basePath={`/shop/${slug}`}
+      query={query}
+      locked={locked}
+      breadcrumbs={[
+        { name: 'Home', href: '/' },
+        { name: 'Shop', href: '/shop' },
+        { name: title, href: `/shop/${slug}` },
+      ]}
+    />
   )
 }

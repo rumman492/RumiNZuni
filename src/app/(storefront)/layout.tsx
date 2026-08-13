@@ -1,9 +1,13 @@
 import type { Metadata } from 'next'
 import { Fraunces, Nunito_Sans } from 'next/font/google'
 import { CartProvider } from '@/components/CartProvider'
-import { Header } from '@/components/Header'
 import { Footer } from '@/components/Footer'
-import { getPayloadClient } from '@/lib/payload'
+import { Header } from '@/components/Header'
+import { JsonLd } from '@/components/JsonLd'
+import { mediaUrl } from '@/lib/media'
+import { getSettings } from '@/lib/products'
+import { DEFAULT_DESCRIPTION, DEFAULT_TITLE, organizationJsonLd, websiteJsonLd } from '@/lib/seo'
+import { absoluteMediaUrl, siteOrigin } from '@/lib/site'
 import './globals.css'
 
 const fraunces = Fraunces({
@@ -18,13 +22,50 @@ const nunito = Nunito_Sans({
 
 export const dynamic = 'force-dynamic'
 
-export const metadata: Metadata = {
-  title: {
-    default: 'RumiNZuni — Kids wear, cash on delivery',
-    template: '%s · RumiNZuni',
-  },
-  description:
-    'RumiNZuni sells kids wear across Pakistan on cash on delivery. Soft everyday outfits for newborn to 12 years.',
+export async function generateMetadata(): Promise<Metadata> {
+  const origin = siteOrigin()
+  let title = DEFAULT_TITLE
+  let description = DEFAULT_DESCRIPTION
+  let image: string | undefined
+
+  try {
+    const settings = await getSettings()
+    const name = settings.storeName || 'RumiNZuni'
+    const tagline = settings.tagline || 'Kids wear, cash on delivery'
+    title = `${name} — ${tagline}`
+    description = `${name} sells kids wear across Pakistan on cash on delivery. ${tagline}.`
+    if (settings.logo && typeof settings.logo === 'object') {
+      image = absoluteMediaUrl(mediaUrl(settings.logo)) || undefined
+    }
+  } catch {
+    // defaults
+  }
+
+  return {
+    metadataBase: new URL(origin),
+    title: {
+      default: title,
+      template: '%s · RumiNZuni',
+    },
+    description,
+    applicationName: 'RumiNZuni',
+    robots: { index: true, follow: true },
+    openGraph: {
+      type: 'website',
+      locale: 'en_PK',
+      url: origin,
+      siteName: 'RumiNZuni',
+      title,
+      description,
+      images: image ? [{ url: image, alt: 'RumiNZuni' }] : undefined,
+    },
+    twitter: {
+      card: image ? 'summary_large_image' : 'summary',
+      title,
+      description,
+      images: image ? [image] : undefined,
+    },
+  }
 }
 
 export default async function StorefrontLayout({ children }: { children: React.ReactNode }) {
@@ -32,10 +73,10 @@ export default async function StorefrontLayout({ children }: { children: React.R
   let whatsapp: string | null = null
   let phone: string | null = null
   let email: string | null = null
+  let settings: Awaited<ReturnType<typeof getSettings>> | null = null
 
   try {
-    const payload = await getPayloadClient()
-    const settings = await payload.findGlobal({ slug: 'site-settings' })
+    settings = await getSettings()
     announcement = settings.announcement || null
     whatsapp = settings.whatsapp || null
     phone = settings.phone || null
@@ -45,8 +86,10 @@ export default async function StorefrontLayout({ children }: { children: React.R
   }
 
   return (
-    <html lang="en" className={`${fraunces.variable} ${nunito.variable}`}>
+    <html lang="en-PK" className={`${fraunces.variable} ${nunito.variable}`}>
       <body className="min-h-screen font-sans antialiased">
+        <JsonLd data={organizationJsonLd(settings)} />
+        <JsonLd data={websiteJsonLd(settings)} />
         <CartProvider>
           <Header announcement={announcement} />
           <main className="mx-auto max-w-6xl px-4 py-8">{children}</main>

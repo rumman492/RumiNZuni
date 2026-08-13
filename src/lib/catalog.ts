@@ -3,6 +3,8 @@ import type { Where } from 'payload'
 import { formatProductSize } from '@/lib/pakistan'
 import { getPayloadClient } from '@/lib/payload'
 import { productCardData, type ProductDoc } from '@/lib/products'
+import { pageMeta } from '@/lib/seo'
+import { absoluteUrl } from '@/lib/site'
 import {
   AGE_OPTIONS,
   GENDER_OPTIONS,
@@ -50,16 +52,22 @@ export function catalogMetadata(
     opts.description ||
     `${opts.heading} at RumiNZuni. Kids wear with cash on delivery across Pakistan.`
   const index = !hasFacetParams(query, opts.locked)
+  const sharePath = index ? opts.basePath : catalogHref(opts.basePath, { ...query, page: 1 })
 
   return {
-    title,
-    description,
-    alternates: { canonical: opts.basePath },
-    robots: index ? { index: true, follow: true } : { index: false, follow: true },
-    openGraph: {
+    ...pageMeta({
       title,
       description,
-      url: catalogHref(opts.basePath, { ...query, page: 1 }),
+      path: sharePath,
+      index,
+      follow: true,
+    }),
+    alternates: {
+      canonical: absoluteUrl(opts.basePath),
+      languages: {
+        'en-PK': absoluteUrl(opts.basePath),
+        'x-default': absoluteUrl(opts.basePath),
+      },
     },
   }
 }

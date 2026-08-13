@@ -22,6 +22,10 @@ export default async function ShopPage({ searchParams }: Props) {
       description="Everyday outfits with cash on delivery. Filter by size, colour, and age — you can confirm on WhatsApp after ordering."
       basePath="/shop"
       query={query}
+      breadcrumbs={[
+        { name: 'Home', href: '/' },
+        { name: 'Shop', href: '/shop' },
+      ]}
     />
   )
 }

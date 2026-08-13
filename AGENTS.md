@@ -20,6 +20,7 @@ Kids wear store for **Pakistan**, **cash on delivery only**. Shoppers pay the ri
 - Courier/shipment on orders: `src/lib/shipping.ts` (manual now; registerCourierAdapter() for future APIs)
 - Media storage: local disk by default; S3-compatible object storage via `MEDIA_STORAGE=s3` (`src/lib/storage.ts`). Keep `/api/media/file/:filename` URLs.
 - Cart is client-side (`localStorage`), guest checkout
+- SEO: `src/lib/site.ts` (canonical origin), `src/lib/seo.ts`, `src/app/sitemap.ts`, `src/app/robots.ts`
 
 ## Commands
 
@@ -44,6 +45,7 @@ Live site uses **PostgreSQL** + Docker on a VPS (`ruminzuni.com`). Follow `DEPLO
 - Product variants have size, color, SKU, price, stock.
 - Optional catalog fields: tags (`tags`), size guides (`size-guides`), material, care, SEO title/description, sortPriority (higher first), related products. Leave them empty on older products.
 - Shop search/filters use URL query params (`q`, `category`, `gender`, `age`, `size`, `color`, `min`, `max`, `inStock`, `sort`, `page`) so results are shareable. Pretty paths like `/shop/boys` stay indexed; extra facets are `noindex,follow`.
+- Canonical domain is `NEXT_PUBLIC_SERVER_URL` (`https://ruminzuni.com` in production). Sitemap `/sitemap.xml`, robots `/robots.txt`. Cart, checkout, track, order, admin, and API are noindex.
 - Checkout must trust **server** prices and stock, never the client.
 - Public APIs (`/api/checkout`, `/api/track-order`) validate input, rate-limit by IP, check same-origin, and return generic errors — never database/stack traces. Confirmation pages require a signed `t` token.
 - Payment method is always `cod`. Order flow: Pending → Confirmed → Packed → Shipped → Out for delivery → Delivered.

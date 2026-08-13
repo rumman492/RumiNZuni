@@ -1,3 +1,5 @@
+import { siteOrigin } from '@/lib/site'
+
 const CHECKOUT_MAX_BYTES = 24 * 1024
 const buckets = new Map<string, { count: number; resetAt: number }>()
 
@@ -26,8 +28,7 @@ export function clientIp(req: HeaderSource) {
 }
 
 export function allowedOrigins() {
-  const primary = (process.env.NEXT_PUBLIC_SERVER_URL || 'http://localhost:3000').replace(/\/$/, '')
-  const origins = new Set([primary])
+  const origins = new Set([siteOrigin()])
   if (process.env.NODE_ENV !== 'production') {
     origins.add('http://localhost:3000')
     origins.add('http://127.0.0.1:3000')

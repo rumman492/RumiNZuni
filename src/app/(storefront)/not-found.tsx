@@ -1,4 +1,13 @@
 import Link from 'next/link'
+import { pageMeta } from '@/lib/seo'
+
+export const metadata = pageMeta({
+  title: 'Page not found',
+  description: 'That page is not on RumiNZuni. Continue shopping kids wear with cash on delivery.',
+  path: '/',
+  index: false,
+  follow: true,
+})
 
 export default function NotFound() {
   return (
