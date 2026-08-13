@@ -1,8 +1,15 @@
 import fs from 'fs'
 import path from 'path'
 import type { Payload } from 'payload'
+import type { Product } from '@/payload-types'
+
+type ProductCreateData = Omit<Product, 'id' | 'createdAt' | 'updatedAt'>
 
 const seedMediaDir = path.resolve(process.cwd(), 'seed/media')
+
+function numericId(id: string | number) {
+  return typeof id === 'number' ? id : Number(id)
+}
 
 async function upsertMedia(payload: Payload, filename: string, alt: string) {
   const found = await payload.find({
@@ -10,7 +17,7 @@ async function upsertMedia(payload: Payload, filename: string, alt: string) {
     where: { filename: { equals: filename } },
     limit: 1,
   })
-  if (found.docs[0]) return found.docs[0].id
+  if (found.docs[0]) return numericId(found.docs[0].id)
 
   const filePath = path.join(seedMediaDir, filename)
   if (!fs.existsSync(filePath)) {
@@ -24,7 +31,7 @@ async function upsertMedia(payload: Payload, filename: string, alt: string) {
     overrideAccess: true,
   })
   payload.logger.info(`Uploaded ${filename}`)
-  return doc.id
+  return numericId(doc.id)
 }
 
 function hasImages(product: { images?: Array<{ image?: unknown }> | null }) {
@@ -56,7 +63,7 @@ export async function seedCatalog(payload: Payload) {
     { name: 'Unisex', slug: 'unisex', description: 'Soft basics for everyone' },
   ]
 
-  const categories: Record<string, string | number> = {}
+  const categories: Record<string, number> = {}
   for (const item of categoryData) {
     const found = await payload.find({
       collection: 'categories',
@@ -71,7 +78,7 @@ export async function seedCatalog(payload: Payload) {
         data: item,
         overrideAccess: true,
       }))
-    categories[item.slug] = doc.id
+    categories[item.slug] = numericId(doc.id)
   }
 
   const courierData = [
@@ -105,7 +112,7 @@ export async function seedCatalog(payload: Payload) {
     { name: 'Eid', slug: 'eid' },
     { name: 'Newborn', slug: 'newborn' },
   ]
-  const tags: Record<string, string | number> = {}
+  const tags: Record<string, number> = {}
   for (const tag of tagData) {
     const found = await payload.find({
       collection: 'tags',
@@ -120,7 +127,7 @@ export async function seedCatalog(payload: Payload) {
         data: { ...tag, active: true },
         overrideAccess: true,
       }))
-    tags[tag.slug] = doc.id
+    tags[tag.slug] = numericId(doc.id)
     if (found.totalDocs === 0) payload.logger.info(`Created tag ${tag.name}`)
   }
 
@@ -163,7 +170,7 @@ export async function seedCatalog(payload: Payload) {
       careInstructions: 'Machine wash cold. Do not bleach. Dry in shade.',
       sortPriority: 20,
       tags: [tags.cotton, tags.newborn],
-      sizeGuide: newbornGuide.id,
+      sizeGuide: numericId(newbornGuide.id),
       imageFile: 'cotton-romper-set.jpg',
       imageAlt: 'Cream and sage cotton romper set for newborns',
       seo: {
@@ -302,8 +309,8 @@ export async function seedCatalog(payload: Payload) {
     },
   ]
 
-  const productIds: Array<string | number> = []
-  const featuredIds: Array<string | number> = []
+  const productIds: number[] = []
+  const featuredIds: number[] = []
 
   for (const product of products) {
     const { imageFile, imageAlt, ...data } = product
@@ -324,19 +331,19 @@ export async function seedCatalog(payload: Payload) {
           ...data,
           images,
           _status: 'published',
-        },
+        } as ProductCreateData,
         draft: false,
         overrideAccess: true,
       })
-      productIds.push(created.id)
-      if (product.featured) featuredIds.push(created.id)
+      productIds.push(numericId(created.id))
+      if (product.featured) featuredIds.push(numericId(created.id))
       payload.logger.info(`Created product ${product.title}`)
       continue
     }
 
     const existing = found.docs[0]
-    productIds.push(existing.id)
-    if (product.featured) featuredIds.push(existing.id)
+    productIds.push(numericId(existing.id))
+    if (product.featured) featuredIds.push(numericId(existing.id))
 
     if (!hasImages(existing) || existing._status !== 'published') {
       await payload.update({
