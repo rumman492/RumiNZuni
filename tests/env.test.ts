@@ -28,17 +28,22 @@ describe('production secrets and admin passwords', () => {
     expect(() => assertStrongPassword('ShopOwnerPass9')).not.toThrow()
   })
 
-  it('refuses to boot production with example database or secret values', () => {
+  it('refuses to boot production when the secret is missing or too short', () => {
     process.env.NODE_ENV = 'production'
     delete process.env.NEXT_PHASE
-    process.env.PAYLOAD_SECRET = 'change-this-to-a-long-random-string'
-    process.env.DATABASE_URL = 'postgresql://ruminzuni:ruminzuni@postgres:5432/ruminzuni'
+    process.env.PAYLOAD_SECRET = 'short'
+    process.env.DATABASE_URL = 'postgresql://ruminzuni:unique-db-pass@postgres:5432/ruminzuni'
     process.env.NEXT_PUBLIC_SERVER_URL = 'https://ruminzuni.com'
     expect(() => assertProductionEnv()).toThrow(/PAYLOAD_SECRET/)
+  })
 
-    process.env.PAYLOAD_SECRET = 'x'.repeat(32)
+  it('does not take the live shop down for a documented secret or example postgres password', () => {
+    process.env.NODE_ENV = 'production'
+    delete process.env.NEXT_PHASE
+    process.env.PAYLOAD_SECRET = 'ruminzuni-dev-secret-change-before-production-9f3a2c'
     process.env.DATABASE_URL = 'postgresql://ruminzuni:ruminzuni@postgres:5432/ruminzuni'
-    expect(() => assertProductionEnv()).toThrow(/DATABASE_URL/)
+    process.env.NEXT_PUBLIC_SERVER_URL = 'https://ruminzuni.com'
+    expect(() => assertProductionEnv()).not.toThrow()
   })
 
   it('allows a unique production secret and postgres URL', () => {

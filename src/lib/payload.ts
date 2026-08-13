@@ -1,6 +1,6 @@
 import { getPayload } from 'payload'
-import config from '@payload-config'
 
 export async function getPayloadClient() {
+  const { default: config } = await import('@payload-config')
   return getPayload({ config })
 }

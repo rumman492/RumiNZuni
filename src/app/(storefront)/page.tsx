@@ -54,12 +54,27 @@ export default async function HomePage() {
     cards = []
   }
 
-  const hero = homepageHero(settings)
-  const banner = homepageBanner(settings)
-  const collections = homepageCollections(settings)
-  const featured = homepageFeaturedCopy(settings)
-  const promos = homepagePromos(settings)
-  const story = homepageStory(settings)
+  let hero = homepageHero(null)
+  let banner = homepageBanner(null)
+  let collections = homepageCollections(null)
+  let featured = homepageFeaturedCopy(null)
+  let promos = homepagePromos(null)
+  let story = homepageStory(null)
+  try {
+    hero = homepageHero(settings)
+    banner = homepageBanner(settings)
+    collections = homepageCollections(settings)
+    featured = homepageFeaturedCopy(settings)
+    promos = homepagePromos(settings)
+    story = homepageStory(settings)
+  } catch {
+    hero = homepageHero(null)
+    banner = null
+    collections = homepageCollections(null)
+    featured = homepageFeaturedCopy(null)
+    promos = homepagePromos(null)
+    story = null
+  }
 
   return (
     <div className="space-y-16">

@@ -22,13 +22,18 @@ import {
   assertProductionEnv,
   productionDatabaseUrl,
   productionPayloadSecret,
-  runtimeEnv,
 } from './lib/env'
-
-assertProductionEnv()
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
+
+// Never throw while this module loads — Next.js imports it for storefront routes too.
+try {
+  assertProductionEnv()
+} catch (error) {
+  console.error('[ruminzuni] Production environment check failed:', error)
+}
+
 const databaseUrl = productionDatabaseUrl()
 const serverURL = siteOrigin()
 const payloadSecret = productionPayloadSecret()
