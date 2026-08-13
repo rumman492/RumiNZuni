@@ -1,3 +1,4 @@
+import type { Where } from 'payload'
 import { mediaUrl } from '@/lib/media'
 import { getPayloadClient } from '@/lib/payload'
 
@@ -43,7 +44,7 @@ export async function getPublishedProducts(filters?: {
   ageGroup?: string
 }) {
   const payload = await getPayloadClient()
-  const and: Array<Record<string, unknown>> = [{ _status: { equals: 'published' } }]
+  const and: Where[] = [{ _status: { equals: 'published' } }]
 
   if (filters?.featured) and.push({ featured: { equals: true } })
   if (filters?.gender) and.push({ gender: { equals: filters.gender } })

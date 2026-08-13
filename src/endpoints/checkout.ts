@@ -1,4 +1,5 @@
 import type { PayloadHandler } from 'payload'
+import type { Product } from '@/payload-types'
 import {
   formatPkr,
   isValidPkPhone,
@@ -59,7 +60,7 @@ export const checkoutHandler: PayloadHandler = async (req) => {
   })
 
   const orderItems: Array<{
-    product: string | number
+    product: number
     title: string
     sku: string
     size: string
@@ -106,7 +107,7 @@ export const checkoutHandler: PayloadHandler = async (req) => {
     }
 
     orderItems.push({
-      product: product.id,
+      product: Number(product.id),
       title: product.title,
       sku: variant.sku,
       size: variant.size,
@@ -158,14 +159,7 @@ export const checkoutHandler: PayloadHandler = async (req) => {
       overrideAccess: true,
       depth: 0,
     })
-    const variants = (product.variants || []) as Array<{
-      sku: string
-      size: string
-      color: string
-      price: number
-      compareAtPrice?: number | null
-      stock: number
-    }>
+    const variants = (product.variants || []) as Product['variants']
     await req.payload.update({
       collection: 'products',
       id: product.id,
