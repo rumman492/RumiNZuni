@@ -11,7 +11,7 @@ COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 ENV NEXT_TELEMETRY_DISABLED=1
 ENV PAYLOAD_SECRET=build-only-secret
-ENV DATABASE_URL=file:./.build.db
+ENV DATABASE_URL=postgresql://ruminzuni:build@127.0.0.1:5432/ruminzuni
 ENV NEXT_PUBLIC_SERVER_URL=https://ruminzuni.com
 RUN npm run build
 
