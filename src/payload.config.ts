@@ -18,6 +18,7 @@ import { checkoutHandler, trackOrderHandler } from './endpoints/checkout'
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
 const databaseUrl = process.env.DATABASE_URL || 'file:./ruminzuni.db'
+const serverURL = process.env.NEXT_PUBLIC_SERVER_URL || 'http://localhost:3000'
 
 const db = databaseUrl.startsWith('file:')
   ? sqliteAdapter({
@@ -25,9 +26,13 @@ const db = databaseUrl.startsWith('file:')
     })
   : postgresAdapter({
       pool: { connectionString: databaseUrl },
+      push: process.env.PAYLOAD_DB_PUSH !== 'false',
     })
 
 export default buildConfig({
+  serverURL,
+  cors: [serverURL],
+  csrf: [serverURL],
   admin: {
     user: Users.slug,
     importMap: {

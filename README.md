@@ -36,21 +36,11 @@ Open:
   - Email: `admin@ruminzuni.com`
   - Password: `ChangeMeNow1` (change this after first login)
 
-## PostgreSQL (production)
+## Go live
 
-Start Docker Postgres:
+Local laptop = **SQLite**. Live site = **PostgreSQL** on a VPS (not Vercel).
 
-```bash
-docker compose up -d
-```
-
-Then set:
-
-```
-DATABASE_URL=postgresql://postgres:postgres@127.0.0.1:5432/ruminzuni
-```
-
-A free hosted database (Neon, Supabase) also works. Put that connection string in `DATABASE_URL`.
+Full steps for `ruminzuni.com`: see [DEPLOY.md](./DEPLOY.md).
 
 ## How COD works
 

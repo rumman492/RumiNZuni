@@ -1,0 +1,13 @@
+node_modules
+.next
+.git
+.env
+.env.*
+!.env.example
+*.db
+*.db-journal
+media
+README.md
+DEPLOY.md
+AGENTS.md
+dev.ps1

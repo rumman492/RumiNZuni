@@ -1,0 +1,4 @@
+ruminzuni.com, www.ruminzuni.com {
+	encode gzip
+	reverse_proxy app:3000
+}

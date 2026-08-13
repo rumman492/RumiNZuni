@@ -32,6 +32,8 @@ npm run seed
 
 Copy `.env.example` to `.env`. Never commit `.env`.
 
+Live site uses **PostgreSQL** + Docker on a VPS (`ruminzuni.com`). Follow `DEPLOY.md`. Do not deploy SQLite. Do not use Vercel for this app.
+
 ## Product and order rules
 
 - Currency is **PKR**. Format with `formatPkr()` from `src/lib/pakistan.ts`.
