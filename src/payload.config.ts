@@ -23,6 +23,7 @@ import {
   productionDatabaseUrl,
   productionPayloadSecret,
 } from './lib/env'
+import { seedCatalogIfEmpty } from './lib/seedCatalog'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -77,6 +78,16 @@ export default buildConfig({
   }),
   sharp,
   plugins: [...mediaStoragePlugins()],
+  onInit: async (payload) => {
+    if (process.env.SEED_CATALOG !== 'true') return
+    try {
+      await seedCatalogIfEmpty(payload)
+    } catch (error) {
+      payload.logger.error(
+        error instanceof Error ? error.message : 'Sample catalog seed failed. The shop will stay empty until you add products in /admin.',
+      )
+    }
+  },
   endpoints: [
     {
       path: '/checkout',

@@ -33,6 +33,7 @@ COPY --from=builder --chown=nextjs:nodejs /app/node_modules/graphql ./node_modul
 COPY --from=builder --chown=nextjs:nodejs /app/node_modules/pino ./node_modules/pino
 COPY --from=builder --chown=nextjs:nodejs /app/node_modules/pino-pretty ./node_modules/pino-pretty
 COPY --from=builder --chown=nextjs:nodejs /app/node_modules/sharp ./node_modules/sharp
+COPY --from=builder --chown=nextjs:nodejs /app/seed ./seed
 
 USER nextjs
 EXPOSE 3000

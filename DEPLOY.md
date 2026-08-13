@@ -89,11 +89,7 @@ Open:
 
 First visit runs Postgres migrations and creates the database schema. Then create the first admin user on https://ruminzuni.com/admin (Payload first-user setup).
 
-To load sample products in every category (two each, with photos; does not create an admin):
-
-```bash
-docker compose --profile seed run --rm seed
-```
+The first boot with an empty catalog loads eight sample products with photos. It does not create an admin. After you add real products, set `SEED_CATALOG=false` in `.env` if you do not want samples to return when the catalog is empty.
 
 After the first successful boot you can set `PAYLOAD_DB_PUSH=false` in `.env` (dev schema push is already off in production).
 

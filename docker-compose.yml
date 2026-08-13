@@ -29,6 +29,7 @@ services:
       PAYLOAD_SECRET: ${PAYLOAD_SECRET}
       NEXT_PUBLIC_SERVER_URL: https://ruminzuni.com
       PAYLOAD_DB_PUSH: ${PAYLOAD_DB_PUSH:-true}
+      SEED_CATALOG: ${SEED_CATALOG:-true}
     volumes:
       - ./media:/app/media
 
