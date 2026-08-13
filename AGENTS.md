@@ -42,6 +42,7 @@ Live site uses **PostgreSQL** + Docker on a VPS (`ruminzuni.com`). Follow `DEPLO
 - Phone must be Pakistani mobile (`03XXXXXXXXX`). Cities come from `PAKISTAN_CITIES`.
 - Product variants have size, color, SKU, price, stock.
 - Optional catalog fields: tags (`tags`), size guides (`size-guides`), material, care, SEO title/description, sortPriority (higher first), related products. Leave them empty on older products.
+- Shop search/filters use URL query params (`q`, `category`, `gender`, `age`, `size`, `color`, `min`, `max`, `inStock`, `sort`, `page`) so results are shareable. Pretty paths like `/shop/boys` stay indexed; extra facets are `noindex,follow`.
 - Checkout must trust **server** prices and stock, never the client.
 - Payment method is always `cod`. Order flow: Pending → Confirmed → Packed → Shipped → Out for delivery → Delivered.
 - Exceptions: Cancelled, Refused at door, Failed delivery, Returned. Status history is recorded automatically.

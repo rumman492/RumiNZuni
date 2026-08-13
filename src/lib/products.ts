@@ -8,6 +8,7 @@ export type ProductDoc = {
   id: string | number
   title: string
   slug: string
+  createdAt?: string | null
   description?: string | null
   gender?: string | null
   ageGroup?: string | null
@@ -46,18 +47,23 @@ export type ProductDoc = {
   category?: { slug?: string; name?: string } | string | number | null
 }
 
-export function productCardData(product: ProductDoc) {
+export function productCardData(
+  product: ProductDoc,
+  variant?: NonNullable<ProductDoc['variants']>[number],
+) {
   const firstImage = product.images?.[0]?.image
   const image = typeof firstImage === 'object' ? mediaUrl(firstImage) : null
-  const firstVariant = product.variants?.[0]
+  const chosen = variant || product.variants?.[0]
+  const soldOut = (product.variants || []).every((item) => item.stock < 1)
   return {
     id: product.id,
     title: product.title,
     slug: product.slug,
     image,
-    price: firstVariant?.price || 0,
-    compareAtPrice: firstVariant?.compareAtPrice || null,
+    price: chosen?.price || 0,
+    compareAtPrice: chosen?.compareAtPrice || null,
     gender: product.gender || null,
+    soldOut,
   }
 }
 

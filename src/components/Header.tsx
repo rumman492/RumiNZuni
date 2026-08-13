@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { ShoppingBag } from 'lucide-react'
+import { Search, ShoppingBag } from 'lucide-react'
 import { useCart } from '@/components/CartProvider'
 
 const nav = [
@@ -34,6 +34,16 @@ export function Header({ announcement }: { announcement?: string | null }) {
               </Link>
             ))}
           </nav>
+          <form action="/shop" method="get" className="relative hidden min-w-0 flex-1 max-w-xs lg:block">
+            <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-ink-soft" />
+            <input
+              type="search"
+              name="q"
+              placeholder="Search kids wear"
+              className="w-full rounded-full border border-ink/10 bg-white py-2 pl-9 pr-3 text-sm outline-none focus:border-coral"
+              autoComplete="off"
+            />
+          </form>
           <Link
             href="/cart"
             className="relative inline-flex items-center gap-2 rounded-full border border-ink/10 bg-white px-3 py-2 text-sm font-semibold"
@@ -54,6 +64,19 @@ export function Header({ announcement }: { announcement?: string | null }) {
             </Link>
           ))}
         </nav>
+        <form action="/shop" method="get" className="px-4 pb-3 lg:hidden">
+          <label className="sr-only" htmlFor="header-search">
+            Search kids wear
+          </label>
+          <input
+            id="header-search"
+            type="search"
+            name="q"
+            placeholder="Search kids wear"
+            className="w-full rounded-full border border-ink/10 bg-white px-4 py-2 text-sm outline-none focus:border-coral"
+            autoComplete="off"
+          />
+        </form>
       </div>
     </header>
   )

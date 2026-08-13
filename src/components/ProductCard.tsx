@@ -8,9 +8,10 @@ type ProductCardProps = {
   price: number
   compareAtPrice?: number | null
   gender?: string | null
+  soldOut?: boolean
 }
 
-export function ProductCard({ title, slug, image, price, compareAtPrice, gender }: ProductCardProps) {
+export function ProductCard({ title, slug, image, price, compareAtPrice, gender, soldOut }: ProductCardProps) {
   const onSale = Boolean(compareAtPrice && compareAtPrice > price)
 
   return (
@@ -26,7 +27,11 @@ export function ProductCard({ title, slug, image, price, compareAtPrice, gender 
         ) : (
           <div className="grid aspect-[4/5] place-items-center text-sm text-ink-soft">Photo coming soon</div>
         )}
-        {onSale ? (
+        {soldOut ? (
+          <span className="absolute left-3 top-3 rounded-full bg-ink px-3 py-1 text-xs font-bold text-white">
+            Sold out
+          </span>
+        ) : onSale ? (
           <span className="absolute left-3 top-3 rounded-full bg-coral px-3 py-1 text-xs font-bold text-white">
             Sale
           </span>

@@ -1,39 +1,69 @@
+import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
-import { ProductCard } from '@/components/ProductCard'
-import { getPublishedProducts, productCardData } from '@/lib/products'
+import { ShopListing } from '@/components/ShopListing'
+import {
+  SHOP_PRESETS,
+  catalogMetadata,
+  getCategoryBySlug,
+  parseCatalogSearchParams,
+  type CatalogLock,
+  type CatalogSearchParams,
+} from '@/lib/catalog'
 
-const presets: Record<string, { title: string; gender?: string; ageGroup?: string }> = {
-  boys: { title: 'Boys', gender: 'boys' },
-  girls: { title: 'Girls', gender: 'girls' },
-  newborn: { title: 'Newborn', ageGroup: 'newborn' },
-  unisex: { title: 'Unisex', gender: 'unisex' },
+type Props = {
+  params: Promise<{ slug: string }>
+  searchParams: Promise<CatalogSearchParams>
 }
 
-export default async function ShopSlugPage({ params }: { params: Promise<{ slug: string }> }) {
+export async function generateMetadata({ params, searchParams }: Props): Promise<Metadata> {
   const { slug } = await params
-  const preset = presets[slug]
-  let products: Awaited<ReturnType<typeof getPublishedProducts>> = []
+  const query = parseCatalogSearchParams(await searchParams)
+  const preset = SHOP_PRESETS[slug]
+  const category = preset ? null : await getCategoryBySlug(slug).catch(() => null)
+  if (!preset && !category) return { title: 'Shop' }
 
-  try {
-    products = preset
-      ? await getPublishedProducts({ gender: preset.gender, ageGroup: preset.ageGroup })
-      : await getPublishedProducts({ categorySlug: slug })
-  } catch {
-    products = []
+  const locked: CatalogLock = preset
+    ? { gender: preset.gender, age: preset.age }
+    : { category: slug }
+  const heading = preset?.title || category?.name || slug
+
+  return catalogMetadata(
+    { ...query, ...locked },
+    {
+      basePath: `/shop/${slug}`,
+      heading,
+      description: preset?.description || category?.description || `Shop ${heading} at RumiNZuni. Cash on delivery across Pakistan.`,
+      locked,
+    },
+  )
+}
+
+export default async function ShopSlugPage({ params, searchParams }: Props) {
+  const { slug } = await params
+  const parsed = parseCatalogSearchParams(await searchParams)
+  const preset = SHOP_PRESETS[slug]
+  const category = preset ? null : await getCategoryBySlug(slug).catch(() => null)
+
+  if (!preset && !category) notFound()
+
+  const locked: CatalogLock = preset
+    ? { gender: preset.gender, age: preset.age }
+    : { category: slug }
+
+  const query = {
+    ...parsed,
+    gender: locked.gender || parsed.gender,
+    age: locked.age || parsed.age,
+    category: locked.category || parsed.category,
   }
 
-  if (!preset && products.length === 0) notFound()
+  const title = preset?.title || category?.name || slug
+  const description =
+    preset?.description ||
+    category?.description ||
+    `Shop ${title} with cash on delivery across Pakistan.`
 
   return (
-    <div>
-      <p className="text-sm font-bold uppercase tracking-wide text-coral">Shop</p>
-      <h1 className="display mt-2 text-5xl">{preset?.title || slug}</h1>
-      <div className="mt-10 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
-        {products.map((product) => (
-          <ProductCard key={product.slug} {...productCardData(product)} />
-        ))}
-      </div>
-      {products.length === 0 ? <p className="mt-8 text-ink-soft">Nothing in this collection yet.</p> : null}
-    </div>
+    <ShopListing title={title} description={description} basePath={`/shop/${slug}`} query={query} locked={locked} />
   )
 }

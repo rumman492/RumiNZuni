@@ -165,10 +165,10 @@ export async function homepageFeaturedCards(settings: HomepageSettings | null) {
     (item): item is ProductDoc => typeof item === 'object' && item !== null && 'slug' in item,
   )
   if (picked.length > 0) {
-    return picked.slice(0, 8).map(productCardData)
+    return picked.slice(0, 8).map((product) => productCardData(product))
   }
 
   let featured = await getPublishedProducts({ featured: true })
   if (featured.length === 0) featured = await getPublishedProducts()
-  return featured.slice(0, 8).map(productCardData)
+  return featured.slice(0, 8).map((product) => productCardData(product))
 }

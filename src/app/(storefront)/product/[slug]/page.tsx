@@ -19,7 +19,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
 function relatedCards(product: ProductDoc) {
   return (product.relatedProducts || [])
     .filter((item): item is ProductDoc => typeof item === 'object' && item !== null && 'slug' in item)
-    .map(productCardData)
+    .map((item) => productCardData(item))
 }
 
 export default async function ProductPage({ params }: { params: Promise<{ slug: string }> }) {

@@ -1,31 +1,27 @@
-import { ProductCard } from '@/components/ProductCard'
-import { getPublishedProducts, productCardData } from '@/lib/products'
+import type { Metadata } from 'next'
+import { ShopListing } from '@/components/ShopListing'
+import { catalogMetadata, parseCatalogSearchParams, type CatalogSearchParams } from '@/lib/catalog'
 
-export const metadata = { title: 'Shop' }
+type Props = { searchParams: Promise<CatalogSearchParams> }
 
-export default async function ShopPage() {
-  let products: Awaited<ReturnType<typeof getPublishedProducts>> = []
-  try {
-    products = await getPublishedProducts()
-  } catch {
-    products = []
-  }
+export async function generateMetadata({ searchParams }: Props): Promise<Metadata> {
+  const query = parseCatalogSearchParams(await searchParams)
+  return catalogMetadata(query, {
+    basePath: '/shop',
+    heading: 'Shop kids wear',
+    description:
+      'Shop kids wear at RumiNZuni. Filter by category, gender, age, size, colour, and price. Cash on delivery across Pakistan.',
+  })
+}
 
+export default async function ShopPage({ searchParams }: Props) {
+  const query = parseCatalogSearchParams(await searchParams)
   return (
-    <div>
-      <p className="text-sm font-bold uppercase tracking-wide text-coral">Catalog</p>
-      <h1 className="display mt-2 text-5xl">Shop kids wear</h1>
-      <p className="mt-3 max-w-2xl text-ink-soft">
-        Everyday outfits with cash on delivery. Choose size by age — you can confirm on WhatsApp after ordering.
-      </p>
-      <div className="mt-10 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
-        {products.map((product) => (
-          <ProductCard key={product.slug} {...productCardData(product)} />
-        ))}
-      </div>
-      {products.length === 0 ? (
-        <p className="mt-8 rounded-3xl bg-white p-8 text-ink-soft">No products yet. Add them from /admin.</p>
-      ) : null}
-    </div>
+    <ShopListing
+      title="Shop kids wear"
+      description="Everyday outfits with cash on delivery. Filter by size, colour, and age — you can confirm on WhatsApp after ordering."
+      basePath="/shop"
+      query={query}
+    />
   )
 }
