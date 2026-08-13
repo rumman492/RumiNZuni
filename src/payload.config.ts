@@ -13,6 +13,7 @@ import { Couriers } from './collections/Couriers'
 import { Pages } from './collections/Pages'
 import { SiteSettings } from './globals/SiteSettings'
 import { checkoutHandler, trackOrderHandler } from './endpoints/checkout'
+import { mediaStoragePlugins } from './lib/storage'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -46,6 +47,7 @@ export default buildConfig({
     push: process.env.PAYLOAD_DB_PUSH !== 'false',
   }),
   sharp,
+  plugins: [...mediaStoragePlugins()],
   endpoints: [
     {
       path: '/checkout',

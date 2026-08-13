@@ -17,6 +17,7 @@ Kids wear store for **Pakistan**, **cash on delivery only**. Shoppers pay the ri
 - COD checkout (server-verified prices/stock): `src/endpoints/checkout.ts`
 - Order notifications: `src/lib/notifications/` (WhatsApp confirm action + env-configured email/SMS providers)
 - Courier/shipment on orders: `src/lib/shipping.ts` (manual now; registerCourierAdapter() for future APIs)
+- Media storage: local disk by default; S3-compatible object storage via `MEDIA_STORAGE=s3` (`src/lib/storage.ts`). Keep `/api/media/file/:filename` URLs.
 - Cart is client-side (`localStorage`), guest checkout
 
 ## Commands

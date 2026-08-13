@@ -56,6 +56,17 @@ PAYLOAD_DB_PUSH=true
 # NOTIFY_WHATSAPP_PROVIDER=none
 # NOTIFY_EMAIL_PROVIDER=none
 # NOTIFY_SMS_PROVIDER=none
+
+# Media: leave local (Docker ./media volume) or set S3-compatible object storage.
+# MEDIA_STORAGE=local
+# MEDIA_STORAGE=s3
+# S3_BUCKET=
+# S3_REGION=auto
+# S3_ACCESS_KEY_ID=
+# S3_SECRET_ACCESS_KEY=
+# S3_ENDPOINT=
+# S3_FORCE_PATH_STYLE=true
+# S3_PREFIX=media
 ```
 
 At your domain registrar, set:

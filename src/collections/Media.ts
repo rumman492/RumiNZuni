@@ -20,6 +20,8 @@ export const Media: CollectionConfig = {
     },
   ],
   upload: {
+    // Local disk for development (and production until MEDIA_STORAGE=s3).
+    // The S3 plugin disables this directory when object storage is enabled.
     staticDir: path.resolve(dirname, '../../media'),
     mimeTypes: ['image/*'],
   },
