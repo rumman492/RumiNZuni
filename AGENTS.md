@@ -15,6 +15,7 @@ Kids wear store for **Pakistan**, **cash on delivery only**. Shoppers pay the ri
 - Collections: `src/collections/` (Users, Media, Categories, Products, Orders, Pages)
 - Store settings global: `src/globals/SiteSettings.ts`
 - COD checkout (server-verified prices/stock): `src/endpoints/checkout.ts`
+- Order notifications: `src/lib/notifications/` (WhatsApp confirm action + env-configured email/SMS providers)
 - Cart is client-side (`localStorage`), guest checkout
 
 ## Commands

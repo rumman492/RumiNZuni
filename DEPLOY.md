@@ -49,6 +49,13 @@ POSTGRES_PASSWORD=change-me-strong
 PAYLOAD_SECRET=change-me-even-longer
 NEXT_PUBLIC_SERVER_URL=https://ruminzuni.com
 PAYLOAD_DB_PUSH=true
+
+# Optional outbound notifications. Leave off until credentials are ready.
+# Customer WhatsApp confirmation uses Admin → Store settings (no API key).
+# NOTIFY_OUTBOUND_ENABLED=false
+# NOTIFY_WHATSAPP_PROVIDER=none
+# NOTIFY_EMAIL_PROVIDER=none
+# NOTIFY_SMS_PROVIDER=none
 ```
 
 At your domain registrar, set:

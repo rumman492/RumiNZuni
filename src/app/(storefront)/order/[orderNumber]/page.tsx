@@ -1,6 +1,7 @@
 import Link from 'next/link'
 import { getPayloadClient } from '@/lib/payload'
-import { formatPkr, toWhatsAppNumber } from '@/lib/pakistan'
+import { buildOrderNotificationPayload, buildWhatsAppConfirmAction } from '@/lib/notifications'
+import { formatPkr } from '@/lib/pakistan'
 
 export default async function OrderConfirmationPage({
   params,
@@ -31,30 +32,61 @@ export default async function OrderConfirmationPage({
     )
   }
 
-  const wa = toWhatsAppNumber(String(settings.whatsapp || '03001234567'))
-  const message = encodeURIComponent(
-    `Assalamualaikum, I just placed COD order ${order.orderNumber} for ${formatPkr(Number(order.total))}.`,
-  )
+  const notification = buildOrderNotificationPayload(order, settings)
+  const whatsapp = order.whatsappConfirmUrl
+    ? {
+        available: true as const,
+        url: order.whatsappConfirmUrl,
+        label: 'Confirm this order on WhatsApp',
+      }
+    : buildWhatsAppConfirmAction(notification)
 
   return (
-    <div className="mx-auto max-w-2xl rounded-[2rem] bg-white p-8 text-center shadow-sm">
-      <p className="text-sm font-bold uppercase tracking-wide text-sage">Order placed</p>
-      <h1 className="display mt-3 text-4xl">Thank you, {order.customerName}</h1>
-      <p className="mt-4 text-ink-soft">
+    <div className="mx-auto max-w-2xl rounded-[2rem] bg-white p-8 shadow-sm">
+      <p className="text-center text-sm font-bold uppercase tracking-wide text-sage">Order placed</p>
+      <h1 className="display mt-3 text-center text-4xl">Thank you, {order.customerName}</h1>
+      <p className="mt-4 text-center text-ink-soft">
         Your cash on delivery order <span className="font-bold text-ink">{order.orderNumber}</span> is pending
         confirmation. Pay {formatPkr(Number(order.total))} to the rider in {order.city}.
       </p>
+
+      <ul className="mt-8 space-y-2 rounded-2xl bg-sand/60 p-5 text-sm">
+        {(order.items || []).map((item) => (
+          <li key={`${item.sku}-${item.id || item.title}`} className="flex justify-between gap-3">
+            <span>
+              {item.title} · {item.size} · {item.color} × {item.qty}
+            </span>
+            <span>{formatPkr(Number(item.price) * Number(item.qty))}</span>
+          </li>
+        ))}
+        <li className="flex justify-between border-t border-ink/10 pt-2 font-bold">
+          <span>Total · COD</span>
+          <span>{formatPkr(Number(order.total))}</span>
+        </li>
+      </ul>
+
       <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:justify-center">
-        <a
-          href={`https://wa.me/${wa}?text=${message}`}
-          className="rounded-full bg-sage px-6 py-3 text-sm font-bold text-white"
-        >
-          WhatsApp us this order
-        </a>
-        <Link href="/track" className="rounded-full border border-ink/10 px-6 py-3 text-sm font-bold">
+        {whatsapp.available ? (
+          <a
+            href={whatsapp.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="rounded-full bg-sage px-6 py-3 text-center text-sm font-bold text-white"
+          >
+            {whatsapp.label}
+          </a>
+        ) : null}
+        <Link href="/track" className="rounded-full border border-ink/10 px-6 py-3 text-center text-sm font-bold">
           Track later
         </Link>
       </div>
+      {whatsapp.available ? (
+        <p className="mt-4 text-center text-sm text-ink-soft">
+          Opens WhatsApp with your order number so we can confirm size, address, and dispatch.
+        </p>
+      ) : (
+        <p className="mt-4 text-center text-sm text-ink-soft">We will confirm this order by phone before dispatch.</p>
+      )}
     </div>
   )
 }

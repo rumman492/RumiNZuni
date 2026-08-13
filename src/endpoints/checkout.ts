@@ -10,6 +10,7 @@ import {
   reserveVariantStock,
   StockReservationError,
 } from '@/lib/inventory'
+import { notifyOrderPlaced } from '@/lib/notifications'
 import {
   formatPkr,
   isValidPkPhone,
@@ -191,12 +192,23 @@ export const checkoutHandler: PayloadHandler = async (req) => {
       await commitTransaction(req)
     }
 
+    const notification = await notifyOrderPlaced({
+      payload: req.payload,
+      order,
+      settings,
+      logger: req.payload.logger,
+    }).catch((error) => {
+      req.payload.logger.error({ err: error, msg: 'Order placed but notifications did not complete.' })
+      return null
+    })
+
     return Response.json({
       ok: true,
       orderNumber: order.orderNumber,
       total: order.total,
       formattedTotal: formatPkr(Number(order.total)),
       message: 'Order placed. Pay cash when your parcel arrives.',
+      whatsapp: notification?.whatsapp || { available: false, url: null },
     })
   } catch (error) {
     await killTransaction(req)

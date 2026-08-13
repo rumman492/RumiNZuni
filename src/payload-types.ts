@@ -317,6 +317,25 @@ export interface Order {
    * Internal notes — not shown to the customer
    */
   adminNotes?: string | null;
+  /**
+   * Customer WhatsApp click-to-chat confirmation link
+   */
+  whatsappConfirmUrl?: string | null;
+  /**
+   * Outbound notification attempts after the order was placed
+   */
+  notifications?:
+    | {
+        channel?: ('whatsapp' | 'email' | 'sms') | null;
+        audience?: ('customer' | 'staff') | null;
+        status?: ('ready' | 'skipped' | 'sent' | 'failed') | null;
+        provider?: string | null;
+        to?: string | null;
+        error?: string | null;
+        at?: string | null;
+        id?: string | null;
+      }[]
+    | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -541,6 +560,19 @@ export interface OrdersSelect<T extends boolean = true> {
   codFee?: T;
   total?: T;
   adminNotes?: T;
+  whatsappConfirmUrl?: T;
+  notifications?:
+    | T
+    | {
+        channel?: T;
+        audience?: T;
+        status?: T;
+        provider?: T;
+        to?: T;
+        error?: T;
+        at?: T;
+        id?: T;
+      };
   updatedAt?: T;
   createdAt?: T;
 }

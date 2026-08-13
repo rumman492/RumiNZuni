@@ -126,6 +126,65 @@ export const Orders: CollectionConfig = {
       type: 'textarea',
       admin: { description: 'Internal notes — not shown to the customer' },
     },
+    {
+      name: 'whatsappConfirmUrl',
+      type: 'text',
+      admin: {
+        readOnly: true,
+        description: 'Customer WhatsApp click-to-chat confirmation link',
+      },
+    },
+    {
+      name: 'notifications',
+      type: 'array',
+      admin: {
+        readOnly: true,
+        description: 'Outbound notification attempts after the order was placed',
+      },
+      fields: [
+        {
+          type: 'row',
+          fields: [
+            {
+              name: 'channel',
+              type: 'select',
+              options: [
+                { label: 'WhatsApp', value: 'whatsapp' },
+                { label: 'Email', value: 'email' },
+                { label: 'SMS', value: 'sms' },
+              ],
+            },
+            {
+              name: 'audience',
+              type: 'select',
+              options: [
+                { label: 'Customer', value: 'customer' },
+                { label: 'Staff', value: 'staff' },
+              ],
+            },
+            {
+              name: 'status',
+              type: 'select',
+              options: [
+                { label: 'Ready (customer action)', value: 'ready' },
+                { label: 'Skipped', value: 'skipped' },
+                { label: 'Sent', value: 'sent' },
+                { label: 'Failed', value: 'failed' },
+              ],
+            },
+          ],
+        },
+        {
+          type: 'row',
+          fields: [
+            { name: 'provider', type: 'text' },
+            { name: 'to', type: 'text' },
+          ],
+        },
+        { name: 'error', type: 'textarea' },
+        { name: 'at', type: 'date', admin: { date: { displayFormat: 'yyyy-MM-dd HH:mm' } } },
+      ],
+    },
   ],
   timestamps: true,
 }

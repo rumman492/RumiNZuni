@@ -20,6 +20,8 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
+    env_file:
+      - .env
     environment:
       DATABASE_URL: postgresql://ruminzuni:${POSTGRES_PASSWORD}@postgres:5432/ruminzuni
       PAYLOAD_SECRET: ${PAYLOAD_SECRET}
