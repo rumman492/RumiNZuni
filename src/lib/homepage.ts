@@ -49,10 +49,10 @@ export type HomepageSettings = {
 }
 
 export const DEFAULT_HOME_COLLECTIONS = [
-  { title: 'Boys', copy: 'Polos, sets, and play tees', href: '/shop/boys' },
-  { title: 'Girls', copy: 'Frocks, two-piece sets, everyday knits', href: '/shop/girls' },
-  { title: 'Newborn', copy: 'Rompers, sleepsuits, first outfits', href: '/shop/newborn' },
-  { title: 'Unisex', copy: 'Soft basics for everyone', href: '/shop/unisex' },
+  { title: 'Boys', copy: 'Polos, sets, and play tees for running around', href: '/shop/boys' },
+  { title: 'Girls', copy: 'Frocks, two-piece sets, twirl-ready knits', href: '/shop/girls' },
+  { title: 'Newborn', copy: 'Rompers, sleepsuits, first cuddly outfits', href: '/shop/newborn' },
+  { title: 'Unisex', copy: 'Soft colourful basics for everyone', href: '/shop/unisex' },
 ]
 
 export const DEFAULT_HOME_PROMOS = [
@@ -91,7 +91,7 @@ function collectionHref(item: { href?: string | null; category?: CategoryRef }) 
 export function homepageHero(settings: HomepageSettings | null) {
   const image = typeof settings?.heroImage === 'object' ? mediaUrl(settings.heroImage) : null
   return {
-    eyebrow: settings?.heroEyebrow || 'Pakistan · Cash on delivery',
+    eyebrow: settings?.heroEyebrow || 'Pakistan · Playtime · COD',
     title: settings?.heroTitle || 'Little outfits, made for everyday play',
     subtitle:
       settings?.heroSubtitle ||
@@ -151,7 +151,7 @@ export function homepageStory(settings: HomepageSettings | null) {
 
 export function homepageFeaturedCopy(settings: HomepageSettings | null) {
   return {
-    eyebrow: settings?.featuredEyebrow || 'Featured',
+    eyebrow: settings?.featuredEyebrow || 'Play favourites',
     heading: settings?.featuredHeading || 'Little bestsellers',
     cta: settings?.featuredCta || 'View all',
     ctaLink: storefrontHref(settings?.featuredCtaLink, '/shop'),

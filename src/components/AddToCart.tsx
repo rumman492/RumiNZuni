@@ -53,7 +53,7 @@ export function AddToCart({
                 const next = variants.find((item) => item.color === value)
                 if (next) setSku(next.sku)
               }}
-              className={`rounded-full border px-4 py-2 text-sm ${color === value ? 'border-ink bg-ink text-cream' : 'border-sand bg-white'}`}
+              className={`rounded-full border px-4 py-2 text-sm ${color === value ? 'border-coral bg-coral text-white' : 'border-sand bg-white'}`}
             >
               {value}
             </button>
@@ -73,7 +73,7 @@ export function AddToCart({
                 disabled={disabled}
                 onClick={() => setSku(item.sku)}
                 className={`rounded-full border px-4 py-2 text-sm disabled:cursor-not-allowed disabled:opacity-40 ${
-                  sku === item.sku ? 'border-ink bg-ink text-cream' : 'border-sand bg-white'
+                  sku === item.sku ? 'border-sage bg-sage text-white' : 'border-sand bg-white'
                 }`}
               >
                 {label}
@@ -104,7 +104,7 @@ export function AddToCart({
               qty: 1,
             })
           }
-          className="rounded-full bg-ink px-6 py-3 text-sm font-bold text-cream disabled:opacity-40"
+          className="play-pop rounded-full bg-ink px-6 py-3 text-sm font-bold text-cream disabled:opacity-40"
         >
           Add to cart
         </button>
@@ -126,7 +126,7 @@ export function AddToCart({
             })
             router.push('/checkout')
           }}
-          className="rounded-full bg-coral px-6 py-3 text-sm font-bold text-white disabled:opacity-40"
+          className="play-pop rounded-full bg-coral px-6 py-3 text-sm font-bold text-white disabled:opacity-40"
         >
           Buy with COD
         </button>

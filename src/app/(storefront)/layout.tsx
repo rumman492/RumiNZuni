@@ -92,7 +92,7 @@ export default async function StorefrontLayout({ children }: { children: React.R
         <JsonLd data={websiteJsonLd(settings)} />
         <CartProvider>
           <Header announcement={announcement} />
-          <main className="mx-auto max-w-6xl px-4 py-8">{children}</main>
+          <main className="mx-auto max-w-6xl px-4 py-8 md:py-10">{children}</main>
           <Footer whatsapp={whatsapp} phone={phone} email={email} />
         </CartProvider>
       </body>

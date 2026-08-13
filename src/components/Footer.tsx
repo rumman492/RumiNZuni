@@ -12,7 +12,7 @@ export function Footer({
   email?: string | null
 }) {
   return (
-    <footer className="mt-20 border-t border-sand bg-sand/50">
+    <footer className="mt-20 border-t-8 border-coral bg-sand/70">
       <div className="mx-auto grid max-w-6xl gap-10 px-4 py-12 md:grid-cols-4">
         <div className="md:col-span-2">
           <p className="display text-2xl">
@@ -30,6 +30,7 @@ export function Footer({
             <Link href="/shop/boys">Boys</Link>
             <Link href="/shop/girls">Girls</Link>
             <Link href="/shop/newborn">Newborn</Link>
+            <Link href="/shop/unisex">Unisex</Link>
           </div>
         </div>
         <div>

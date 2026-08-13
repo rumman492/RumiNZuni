@@ -49,8 +49,10 @@ export async function ShopListing({
   return (
     <div>
       {breadcrumbs && breadcrumbs.length > 0 ? <Breadcrumbs items={breadcrumbs} /> : null}
-      <p className="text-sm font-bold uppercase tracking-wide text-coral">Catalog</p>
-      <h1 className="display mt-2 text-5xl">{title}</h1>
+      <p className="inline-flex rounded-full bg-lemon px-3 py-1 text-sm font-bold uppercase tracking-wide text-ink">
+        Kids wear
+      </p>
+      <h1 className="display mt-3 text-5xl">{title}</h1>
       {description ? <p className="mt-3 max-w-2xl text-ink-soft">{description}</p> : null}
 
       <div className="mt-10 grid gap-10 lg:grid-cols-[17rem_1fr]">
@@ -85,7 +87,7 @@ export async function ShopListing({
               </Link>
             </div>
           ) : (
-            <div className="grid gap-8 sm:grid-cols-2 xl:grid-cols-3">
+            <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
               {result.cards.map((product) => (
                 <ProductCard key={product.slug} {...product} />
               ))}

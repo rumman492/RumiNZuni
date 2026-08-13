@@ -3,14 +3,18 @@
 @theme {
   --font-display: "Fraunces", serif;
   --font-sans: "Nunito Sans", sans-serif;
-  --color-cream: #fbf6ef;
-  --color-sand: #f3e6d4;
+  --color-cream: #fff7ee;
+  --color-sand: #ffe8c8;
   --color-ink: #2b211c;
   --color-ink-soft: #5c4c43;
-  --color-coral: #d4654a;
-  --color-coral-dark: #b84d35;
-  --color-sage: #6f9b86;
-  --color-gold: #c9955a;
+  --color-coral: #ef5d4a;
+  --color-coral-dark: #d44532;
+  --color-sage: #3f9d7a;
+  --color-gold: #f0b429;
+  --color-sky: #7ec8f2;
+  --color-blush: #ff8fb3;
+  --color-lemon: #ffe066;
+  --color-mint: #7ed9b8;
 }
 
 html {
@@ -18,11 +22,92 @@ html {
 }
 
 body {
-  background: var(--color-cream);
+  background-color: var(--color-cream);
+  background-image:
+    radial-gradient(circle at 12% 8%, rgb(255 143 179 / 0.22), transparent 28%),
+    radial-gradient(circle at 88% 0%, rgb(126 200 242 / 0.28), transparent 32%),
+    radial-gradient(circle at 92% 88%, rgb(255 224 102 / 0.28), transparent 30%),
+    radial-gradient(circle at 8% 78%, rgb(126 217 184 / 0.22), transparent 26%);
   color: var(--color-ink);
   font-family: var(--font-sans);
 }
 
 .display {
   font-family: var(--font-display);
+}
+
+.play-pop {
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    background-color 0.2s ease;
+}
+
+.play-pop:hover {
+  transform: translateY(-3px) rotate(-0.6deg);
+  box-shadow: 0 14px 28px rgb(43 33 28 / 0.12);
+}
+
+.play-float {
+  animation: play-float 4.5s ease-in-out infinite;
+}
+
+.play-blob {
+  animation: play-blob 8s ease-in-out infinite;
+}
+
+.play-marquee {
+  overflow: hidden;
+  mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent);
+}
+
+.play-marquee-track {
+  display: flex;
+  width: max-content;
+  animation: play-marquee 28s linear infinite;
+}
+
+@keyframes play-float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+@keyframes play-blob {
+  0%,
+  100% {
+    transform: scale(1) translate(0, 0);
+  }
+  50% {
+    transform: scale(1.12) translate(6px, -8px);
+  }
+}
+
+@keyframes play-marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  .play-float,
+  .play-blob,
+  .play-marquee-track {
+    animation: none;
+  }
+
+  .play-pop:hover {
+    transform: none;
+  }
 }
