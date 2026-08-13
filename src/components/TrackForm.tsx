@@ -22,6 +22,15 @@ type TrackResult = {
   createdAt: string
   items: Array<{ title: string; size: string; color: string; qty: number; price: number }>
   statusHistory?: HistoryEntry[]
+  shipment?: {
+    courierName?: string | null
+    trackingNumber?: string | null
+    trackingUrl?: string | null
+    shippingStatusLabel?: string | null
+    shipmentDate?: string | null
+    deliveryDate?: string | null
+    codAmount?: number | null
+  } | null
 }
 
 function formatWhen(value?: string | null) {
@@ -89,6 +98,21 @@ export function TrackForm() {
           <p className="mt-2 text-sm text-ink-soft">
             {order.city} · {order.paymentLabel} · {order.formattedTotal}
           </p>
+          {order.shipment?.trackingNumber || order.shipment?.courierName ? (
+            <p className="mt-3 text-sm text-ink-soft">
+              {order.shipment.courierName ? `${order.shipment.courierName} · ` : ''}
+              {order.shipment.shippingStatusLabel || 'Shipment'}
+              {order.shipment.trackingNumber ? ` · ${order.shipment.trackingNumber}` : ''}
+              {order.shipment.trackingUrl ? (
+                <>
+                  {' · '}
+                  <a href={order.shipment.trackingUrl} className="font-bold text-coral" target="_blank" rel="noopener noreferrer">
+                    Track with courier
+                  </a>
+                </>
+              ) : null}
+            </p>
+          ) : null}
           {order.statusHistory && order.statusHistory.length > 0 ? (
             <ol className="mt-6 space-y-3 border-l border-sand pl-4">
               {order.statusHistory.map((entry, index) => (

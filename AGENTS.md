@@ -12,10 +12,11 @@ Kids wear store for **Pakistan**, **cash on delivery only**. Shoppers pay the ri
 
 - Storefront: `src/app/(storefront)/`
 - Admin + Payload API: `src/app/(payload)/`
-- Collections: `src/collections/` (Users, Media, Categories, Products, Orders, Pages)
+- Collections: `src/collections/` (Users, Media, Categories, Products, Orders, Couriers, Pages)
 - Store settings global: `src/globals/SiteSettings.ts`
 - COD checkout (server-verified prices/stock): `src/endpoints/checkout.ts`
 - Order notifications: `src/lib/notifications/` (WhatsApp confirm action + env-configured email/SMS providers)
+- Courier/shipment on orders: `src/lib/shipping.ts` (manual now; registerCourierAdapter() for future APIs)
 - Cart is client-side (`localStorage`), guest checkout
 
 ## Commands

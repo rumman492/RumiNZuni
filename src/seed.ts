@@ -47,6 +47,29 @@ async function seed() {
     categories[item.slug] = doc.id
   }
 
+  const courierData = [
+    { name: 'Shop rider', slug: 'rider', provider: 'rider' as const, active: true },
+    { name: 'TCS', slug: 'tcs', provider: 'tcs' as const, active: true },
+    { name: 'Leopards', slug: 'leopard', provider: 'leopard' as const, active: true },
+    { name: 'Trax', slug: 'trax', provider: 'trax' as const, active: true },
+    { name: 'PostEx', slug: 'postex', provider: 'postex' as const, active: true },
+  ]
+
+  for (const courier of courierData) {
+    const found = await payload.find({
+      collection: 'couriers',
+      where: { slug: { equals: courier.slug } },
+      limit: 1,
+    })
+    if (found.totalDocs === 0) {
+      await payload.create({
+        collection: 'couriers',
+        data: courier,
+      })
+      payload.logger.info(`Created courier ${courier.name}`)
+    }
+  }
+
   await payload.updateGlobal({
     slug: 'site-settings',
     data: {

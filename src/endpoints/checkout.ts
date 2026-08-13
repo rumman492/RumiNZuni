@@ -12,6 +12,7 @@ import {
 } from '@/lib/inventory'
 import { notifyOrderPlaced } from '@/lib/notifications'
 import { formatOrderStatus, formatPaymentStatus, orderStatusMessage } from '@/lib/orders'
+import { formatShippingStatus } from '@/lib/shipping'
 import {
   formatPkr,
   isValidPkPhone,
@@ -186,6 +187,11 @@ export const checkoutHandler: PayloadHandler = async (req) => {
         shipping,
         codFee,
         total,
+        shipment: {
+          provider: 'manual',
+          shippingStatus: 'not_booked',
+          codAmount: total,
+        },
       },
     })
 
@@ -261,5 +267,17 @@ export const trackOrderHandler: PayloadHandler = async (req) => {
       at: entry.at,
       note: entry.note,
     })),
+    shipment: order.shipment
+      ? {
+          courierName: order.shipment.courierName,
+          trackingNumber: order.shipment.trackingNumber,
+          trackingUrl: order.shipment.trackingUrl,
+          shippingStatus: order.shipment.shippingStatus,
+          shippingStatusLabel: formatShippingStatus(order.shipment.shippingStatus),
+          shipmentDate: order.shipment.shipmentDate,
+          deliveryDate: order.shipment.deliveryDate,
+          codAmount: order.shipment.codAmount,
+        }
+      : null,
   })
 }

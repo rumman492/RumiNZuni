@@ -9,6 +9,7 @@ import { Media } from './collections/Media'
 import { Categories } from './collections/Categories'
 import { Products } from './collections/Products'
 import { Orders } from './collections/Orders'
+import { Couriers } from './collections/Couriers'
 import { Pages } from './collections/Pages'
 import { SiteSettings } from './globals/SiteSettings'
 import { checkoutHandler, trackOrderHandler } from './endpoints/checkout'
@@ -31,7 +32,7 @@ export default buildConfig({
       titleSuffix: ' — RumiNZuni',
     },
   },
-  collections: [Users, Media, Categories, Products, Orders, Pages],
+  collections: [Users, Media, Categories, Products, Orders, Couriers, Pages],
   globals: [SiteSettings],
   editor: lexicalEditor(),
   secret: process.env.PAYLOAD_SECRET || '',

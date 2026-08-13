@@ -1,8 +1,10 @@
 import type { CollectionConfig } from 'payload'
 import { isAdmin } from '@/access/isAdmin'
 import { recordOrderStatusHistory } from '@/collections/hooks/recordOrderStatusHistory'
+import { syncOrderShipment } from '@/collections/hooks/syncOrderShipment'
 import { isExceptionStatus, ORDER_STATUSES, PAYMENT_STATUSES } from '@/lib/orders'
 import { PAKISTAN_CITIES } from '@/lib/pakistan'
+import { SHIPPING_STATUSES } from '@/lib/shipping'
 
 export const Orders: CollectionConfig = {
   slug: 'orders',
@@ -14,7 +16,7 @@ export const Orders: CollectionConfig = {
     useAsTitle: 'orderNumber',
     group: 'Sales',
     defaultColumns: ['orderNumber', 'customerName', 'phone', 'city', 'status', 'paymentStatus', 'total', 'createdAt'],
-    listSearchableFields: ['orderNumber', 'customerName', 'phone'],
+    listSearchableFields: ['orderNumber', 'customerName', 'phone', 'shipment.trackingNumber'],
     description:
       'COD workflow: Pending → Confirmed → Packed → Shipped → Out for delivery → Delivered. Use Cancelled, Refused at door, Failed delivery, or Returned when the parcel does not complete. Mark cash collected when the rider is paid.',
   },
@@ -26,7 +28,7 @@ export const Orders: CollectionConfig = {
     delete: isAdmin,
   },
   hooks: {
-    beforeChange: [recordOrderStatusHistory],
+    beforeChange: [recordOrderStatusHistory, syncOrderShipment],
   },
   fields: [
     {
@@ -199,6 +201,119 @@ export const Orders: CollectionConfig = {
                 { name: 'shipping', type: 'number', required: true, min: 0, admin: { readOnly: true } },
                 { name: 'codFee', type: 'number', required: true, min: 0, defaultValue: 0, admin: { readOnly: true } },
                 { name: 'total', type: 'number', required: true, min: 0, admin: { readOnly: true } },
+              ],
+            },
+          ],
+        },
+        {
+          label: 'Courier',
+          admin: {
+            description:
+              'Courier booking and tracking. Future courier APIs should read and write this Shipment group — do not rename these fields.',
+          },
+          fields: [
+            {
+              type: 'group',
+              name: 'shipment',
+              label: false,
+              fields: [
+                {
+                  type: 'row',
+                  fields: [
+                    {
+                      name: 'courier',
+                      type: 'relationship',
+                      relationTo: 'couriers',
+                      filterOptions: { active: { equals: true } },
+                      admin: { description: 'Configurable in Admin → Couriers' },
+                    },
+                    {
+                      name: 'courierName',
+                      type: 'text',
+                      admin: { description: 'Filled from the courier record; you can override' },
+                    },
+                    {
+                      name: 'provider',
+                      type: 'text',
+                      defaultValue: 'manual',
+                      admin: {
+                        readOnly: true,
+                        description: 'Adapter id (manual until a courier API is connected)',
+                      },
+                    },
+                  ],
+                },
+                {
+                  type: 'row',
+                  fields: [
+                    {
+                      name: 'trackingNumber',
+                      type: 'text',
+                      index: true,
+                    },
+                    {
+                      name: 'trackingUrl',
+                      type: 'text',
+                      admin: { description: 'Built from the courier tracking URL template when possible' },
+                    },
+                    {
+                      name: 'externalId',
+                      type: 'text',
+                      admin: { description: 'Courier consignment id for a future API sync' },
+                    },
+                  ],
+                },
+                {
+                  type: 'row',
+                  fields: [
+                    {
+                      name: 'shippingStatus',
+                      type: 'select',
+                      defaultValue: 'not_booked',
+                      options: [...SHIPPING_STATUSES],
+                      admin: { description: 'Courier-facing status. Separate from the order fulfillment status.' },
+                    },
+                    {
+                      name: 'shipmentDate',
+                      type: 'date',
+                      admin: { date: { displayFormat: 'yyyy-MM-dd HH:mm', pickerAppearance: 'dayAndTime' } },
+                    },
+                    {
+                      name: 'deliveryDate',
+                      type: 'date',
+                      admin: { date: { displayFormat: 'yyyy-MM-dd HH:mm', pickerAppearance: 'dayAndTime' } },
+                    },
+                  ],
+                },
+                {
+                  name: 'codAmount',
+                  type: 'number',
+                  min: 0,
+                  admin: { description: 'Cash the rider should collect, in PKR. Defaults to the order total.' },
+                },
+                {
+                  name: 'notes',
+                  type: 'textarea',
+                  admin: { description: 'Pickup instructions, bag count, or courier portal notes' },
+                },
+                {
+                  type: 'row',
+                  fields: [
+                    {
+                      name: 'lastSyncedAt',
+                      type: 'date',
+                      admin: {
+                        readOnly: true,
+                        date: { displayFormat: 'yyyy-MM-dd HH:mm', pickerAppearance: 'dayAndTime' },
+                      },
+                    },
+                    {
+                      name: 'lastSyncError',
+                      type: 'text',
+                      admin: { readOnly: true },
+                    },
+                  ],
+                },
               ],
             },
           ],

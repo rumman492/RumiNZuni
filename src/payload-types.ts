@@ -72,6 +72,7 @@ export interface Config {
     categories: Category;
     products: Product;
     orders: Order;
+    couriers: Courier;
     pages: Page;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
@@ -84,6 +85,7 @@ export interface Config {
     categories: CategoriesSelect<false> | CategoriesSelect<true>;
     products: ProductsSelect<false> | ProductsSelect<true>;
     orders: OrdersSelect<false> | OrdersSelect<true>;
+    couriers: CouriersSelect<false> | CouriersSelect<true>;
     pages: PagesSelect<false> | PagesSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
@@ -366,6 +368,57 @@ export interface Order {
   shipping: number;
   codFee: number;
   total: number;
+  shipment?: {
+    /**
+     * Configurable in Admin → Couriers
+     */
+    courier?: (number | null) | Courier;
+    /**
+     * Filled from the courier record; you can override
+     */
+    courierName?: string | null;
+    /**
+     * Adapter id (manual until a courier API is connected)
+     */
+    provider?: string | null;
+    trackingNumber?: string | null;
+    /**
+     * Built from the courier tracking URL template when possible
+     */
+    trackingUrl?: string | null;
+    /**
+     * Courier consignment id for a future API sync
+     */
+    externalId?: string | null;
+    /**
+     * Courier-facing status. Separate from the order fulfillment status.
+     */
+    shippingStatus?:
+      | (
+          | 'not_booked'
+          | 'booked'
+          | 'picked_up'
+          | 'in_transit'
+          | 'out_for_delivery'
+          | 'delivered'
+          | 'failed'
+          | 'returned'
+          | 'cancelled'
+        )
+      | null;
+    shipmentDate?: string | null;
+    deliveryDate?: string | null;
+    /**
+     * Cash the rider should collect, in PKR. Defaults to the order total.
+     */
+    codAmount?: number | null;
+    /**
+     * Pickup instructions, bag count, or courier portal notes
+     */
+    notes?: string | null;
+    lastSyncedAt?: string | null;
+    lastSyncError?: string | null;
+  };
   /**
    * Customer WhatsApp click-to-chat confirmation link
    */
@@ -385,6 +438,38 @@ export interface Order {
         id?: string | null;
       }[]
     | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * Courier names used on orders. Provider stays Manual until a courier API adapter is connected in code — Orders do not need to change.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "couriers".
+ */
+export interface Courier {
+  id: number;
+  /**
+   * Shown on the order and to the customer (e.g. TCS, Leopards, Shop rider)
+   */
+  name: string;
+  /**
+   * Stable id, e.g. tcs or leopard
+   */
+  slug: string;
+  /**
+   * Which future API adapter to use. Keep Manual until credentials and an adapter exist.
+   */
+  provider: 'manual' | 'tcs' | 'leopard' | 'trax' | 'postex' | 'callcourier' | 'rider' | 'other';
+  /**
+   * Optional public tracking page. Use {trackingNumber} or {cn}, e.g. https://example.com/track/{trackingNumber}
+   */
+  trackingUrlTemplate?: string | null;
+  active?: boolean | null;
+  /**
+   * Internal — pickup account, city coverage, etc.
+   */
+  notes?: string | null;
   updatedAt: string;
   createdAt: string;
 }
@@ -440,6 +525,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'orders';
         value: number | Order;
+      } | null)
+    | ({
+        relationTo: 'couriers';
+        value: number | Courier;
       } | null)
     | ({
         relationTo: 'pages';
@@ -621,6 +710,23 @@ export interface OrdersSelect<T extends boolean = true> {
   shipping?: T;
   codFee?: T;
   total?: T;
+  shipment?:
+    | T
+    | {
+        courier?: T;
+        courierName?: T;
+        provider?: T;
+        trackingNumber?: T;
+        trackingUrl?: T;
+        externalId?: T;
+        shippingStatus?: T;
+        shipmentDate?: T;
+        deliveryDate?: T;
+        codAmount?: T;
+        notes?: T;
+        lastSyncedAt?: T;
+        lastSyncError?: T;
+      };
   whatsappConfirmUrl?: T;
   notifications?:
     | T
@@ -634,6 +740,20 @@ export interface OrdersSelect<T extends boolean = true> {
         at?: T;
         id?: T;
       };
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "couriers_select".
+ */
+export interface CouriersSelect<T extends boolean = true> {
+  name?: T;
+  slug?: T;
+  provider?: T;
+  trackingUrlTemplate?: T;
+  active?: T;
+  notes?: T;
   updatedAt?: T;
   createdAt?: T;
 }
