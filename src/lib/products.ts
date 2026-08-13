@@ -2,7 +2,9 @@ import type { Where } from 'payload'
 import { mediaUrl } from '@/lib/media'
 import { getPayloadClient } from '@/lib/payload'
 
-type ProductDoc = {
+type MediaRef = { url?: string | null; filename?: string | null } | number | null
+
+export type ProductDoc = {
   id: string | number
   title: string
   slug: string
@@ -10,7 +12,29 @@ type ProductDoc = {
   gender?: string | null
   ageGroup?: string | null
   featured?: boolean | null
-  images?: Array<{ image?: { url?: string | null; filename?: string | null } | number | null }> | null
+  material?: string | null
+  careInstructions?: string | null
+  sortPriority?: number | null
+  seo?: { title?: string | null; description?: string | null } | null
+  tags?: Array<{ name?: string | null; slug?: string | null } | string | number> | null
+  sizeGuide?:
+    | {
+        title?: string | null
+        description?: string | null
+        notes?: string | null
+        measurements?: Array<{
+          size?: string | null
+          age?: string | null
+          chest?: string | null
+          length?: string | null
+          waist?: string | null
+        }> | null
+      }
+    | string
+    | number
+    | null
+  relatedProducts?: ProductDoc[] | Array<string | number> | null
+  images?: Array<{ image?: MediaRef }> | null
   variants?: Array<{
     sku: string
     size: string
@@ -58,7 +82,7 @@ export async function getPublishedProducts(filters?: {
     where: { and },
     depth: 2,
     limit: 48,
-    sort: '-createdAt',
+    sort: ['-sortPriority', '-createdAt'],
   })
 
   return result.docs as unknown as ProductDoc[]
@@ -71,7 +95,7 @@ export async function getProductBySlug(slug: string) {
     where: {
       and: [{ slug: { equals: slug } }, { _status: { equals: 'published' } }],
     },
-    depth: 2,
+    depth: 3,
     limit: 1,
   })
   return (result.docs[0] as unknown as ProductDoc) || null

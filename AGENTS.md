@@ -12,7 +12,7 @@ Kids wear store for **Pakistan**, **cash on delivery only**. Shoppers pay the ri
 
 - Storefront: `src/app/(storefront)/`
 - Admin + Payload API: `src/app/(payload)/`
-- Collections: `src/collections/` (Users, Media, Categories, Products, Orders, Couriers, Pages)
+- Collections: `src/collections/` (Users, Media, Categories, Products, Tags, Size guides, Orders, Couriers, Pages)
 - Store settings global: `src/globals/SiteSettings.ts`
 - COD checkout (server-verified prices/stock): `src/endpoints/checkout.ts`
 - Order notifications: `src/lib/notifications/` (WhatsApp confirm action + env-configured email/SMS providers)
@@ -41,6 +41,7 @@ Live site uses **PostgreSQL** + Docker on a VPS (`ruminzuni.com`). Follow `DEPLO
 - Currency is **PKR**. Format with `formatPkr()` from `src/lib/pakistan.ts`.
 - Phone must be Pakistani mobile (`03XXXXXXXXX`). Cities come from `PAKISTAN_CITIES`.
 - Product variants have size, color, SKU, price, stock.
+- Optional catalog fields: tags (`tags`), size guides (`size-guides`), material, care, SEO title/description, sortPriority (higher first), related products. Leave them empty on older products.
 - Checkout must trust **server** prices and stock, never the client.
 - Payment method is always `cod`. Order flow: Pending → Confirmed → Packed → Shipped → Out for delivery → Delivered.
 - Exceptions: Cancelled, Refused at door, Failed delivery, Returned. Status history is recorded automatically.

@@ -71,6 +71,8 @@ export interface Config {
     media: Media;
     categories: Category;
     products: Product;
+    tags: Tag;
+    'size-guides': SizeGuide;
     orders: Order;
     couriers: Courier;
     pages: Page;
@@ -84,6 +86,8 @@ export interface Config {
     media: MediaSelect<false> | MediaSelect<true>;
     categories: CategoriesSelect<false> | CategoriesSelect<true>;
     products: ProductsSelect<false> | ProductsSelect<true>;
+    tags: TagsSelect<false> | TagsSelect<true>;
+    'size-guides': SizeGuidesSelect<false> | SizeGuidesSelect<true>;
     orders: OrdersSelect<false> | OrdersSelect<true>;
     couriers: CouriersSelect<false> | CouriersSelect<true>;
     pages: PagesSelect<false> | PagesSelect<true>;
@@ -189,6 +193,8 @@ export interface Category {
   createdAt: string;
 }
 /**
+ * Kids-wear catalog. Existing products stay valid — new merchandising fields are optional.
+ *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "products".
  */
@@ -221,7 +227,41 @@ export interface Product {
   category: number | Category;
   gender: 'boys' | 'girls' | 'unisex';
   ageGroup: 'newborn' | 'infant' | 'toddler' | 'kids';
+  /**
+   * e.g. 100% cotton jersey, lawn with lining
+   */
+  material?: string | null;
+  /**
+   * e.g. Machine wash cold. Do not bleach. Dry in shade.
+   */
+  careInstructions?: string | null;
+  /**
+   * Configurable in Admin → Tags
+   */
+  tags?: (number | Tag)[] | null;
+  /**
+   * Configurable in Admin → Size guides
+   */
+  sizeGuide?: (number | null) | SizeGuide;
   featured?: boolean | null;
+  /**
+   * Higher numbers appear first in the shop. 0 is fine for most products.
+   */
+  sortPriority?: number | null;
+  /**
+   * Shown at the bottom of the product page
+   */
+  relatedProducts?: (number | Product)[] | null;
+  seo?: {
+    /**
+     * Defaults to the product title
+     */
+    title?: string | null;
+    /**
+     * Defaults to the short product description
+     */
+    description?: string | null;
+  };
   variants: {
     sku: string;
     size:
@@ -255,6 +295,72 @@ export interface Product {
   updatedAt: string;
   createdAt: string;
   _status?: ('draft' | 'published') | null;
+}
+/**
+ * Reusable product tags such as Cotton, Eid, or Newborn essentials.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "tags".
+ */
+export interface Tag {
+  id: number;
+  name: string;
+  slug: string;
+  active?: boolean | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * Measurement charts you can attach to products. Newborn and kids usually need different guides.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "size-guides".
+ */
+export interface SizeGuide {
+  id: number;
+  title: string;
+  slug: string;
+  /**
+   * Short note shown above the chart, e.g. how to measure chest
+   */
+  description?: string | null;
+  measurements?:
+    | {
+        size:
+          | 'newborn'
+          | '0-3m'
+          | '3-6m'
+          | '6-9m'
+          | '9-12m'
+          | '12-18m'
+          | '18-24m'
+          | '2y'
+          | '3y'
+          | '4y'
+          | '5y'
+          | '6y'
+          | '7-8y'
+          | '9-10y'
+          | '11-12y';
+        /**
+         * e.g. 3–4 years
+         */
+        age?: string | null;
+        /**
+         * e.g. 56 cm
+         */
+        chest?: string | null;
+        length?: string | null;
+        waist?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Fit notes: relaxed, true to size, order up if between sizes
+   */
+  notes?: string | null;
+  updatedAt: string;
+  createdAt: string;
 }
 /**
  * COD workflow: Pending → Confirmed → Packed → Shipped → Out for delivery → Delivered. Use Cancelled, Refused at door, Failed delivery, or Returned when the parcel does not complete. Mark cash collected when the rider is paid.
@@ -523,6 +629,14 @@ export interface PayloadLockedDocument {
         value: number | Product;
       } | null)
     | ({
+        relationTo: 'tags';
+        value: number | Tag;
+      } | null)
+    | ({
+        relationTo: 'size-guides';
+        value: number | SizeGuide;
+      } | null)
+    | ({
         relationTo: 'orders';
         value: number | Order;
       } | null)
@@ -648,7 +762,19 @@ export interface ProductsSelect<T extends boolean = true> {
   category?: T;
   gender?: T;
   ageGroup?: T;
+  material?: T;
+  careInstructions?: T;
+  tags?: T;
+  sizeGuide?: T;
   featured?: T;
+  sortPriority?: T;
+  relatedProducts?: T;
+  seo?:
+    | T
+    | {
+        title?: T;
+        description?: T;
+      };
   variants?:
     | T
     | {
@@ -663,6 +789,39 @@ export interface ProductsSelect<T extends boolean = true> {
   updatedAt?: T;
   createdAt?: T;
   _status?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "tags_select".
+ */
+export interface TagsSelect<T extends boolean = true> {
+  name?: T;
+  slug?: T;
+  active?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "size-guides_select".
+ */
+export interface SizeGuidesSelect<T extends boolean = true> {
+  title?: T;
+  slug?: T;
+  description?: T;
+  measurements?:
+    | T
+    | {
+        size?: T;
+        age?: T;
+        chest?: T;
+        length?: T;
+        waist?: T;
+        id?: T;
+      };
+  notes?: T;
+  updatedAt?: T;
+  createdAt?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema

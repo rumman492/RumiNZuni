@@ -48,6 +48,10 @@ export const PRODUCT_SIZES = [
   { label: '11-12 years', value: '11-12y' },
 ] as const
 
+export function formatProductSize(value: string | null | undefined) {
+  return PRODUCT_SIZES.find((size) => size.value === value)?.label || value || ''
+}
+
 export const PK_PHONE_REGEX = /^(\+92|0)?3\d{9}$/
 
 export function normalizePkPhone(phone: string): string {

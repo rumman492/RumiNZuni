@@ -95,6 +95,50 @@ async function seed() {
     },
   })
 
+  const tagData = [
+    { name: 'Cotton', slug: 'cotton' },
+    { name: 'Everyday', slug: 'everyday' },
+    { name: 'Eid', slug: 'eid' },
+    { name: 'Newborn', slug: 'newborn' },
+  ]
+  const tags: Record<string, string | number> = {}
+  for (const tag of tagData) {
+    const found = await payload.find({
+      collection: 'tags',
+      where: { slug: { equals: tag.slug } },
+      limit: 1,
+    })
+    const doc =
+      found.docs[0] ||
+      (await payload.create({ collection: 'tags', data: { ...tag, active: true } }))
+    tags[tag.slug] = doc.id
+    if (found.totalDocs === 0) payload.logger.info(`Created tag ${tag.name}`)
+  }
+
+  const foundGuide = await payload.find({
+    collection: 'size-guides',
+    where: { slug: { equals: 'newborn-infant' } },
+    limit: 1,
+  })
+  const newbornGuide =
+    foundGuide.docs[0] ||
+    (await payload.create({
+      collection: 'size-guides',
+      data: {
+        title: 'Newborn & infant',
+        slug: 'newborn-infant',
+        description: 'Measure chest around the fullest part. If between sizes, choose the larger one.',
+        measurements: [
+          { size: 'newborn', age: 'Newborn', chest: '40 cm', length: '48 cm' },
+          { size: '0-3m', age: '0–3 months', chest: '42 cm', length: '52 cm' },
+          { size: '3-6m', age: '3–6 months', chest: '44 cm', length: '56 cm' },
+          { size: '6-9m', age: '6–9 months', chest: '46 cm', length: '60 cm' },
+        ],
+        notes: 'Cotton knits relax slightly after the first wash.',
+      },
+    }))
+  if (foundGuide.totalDocs === 0) payload.logger.info('Created size guide Newborn & infant')
+
   const products = [
     {
       title: 'Cotton romper set',
@@ -104,6 +148,15 @@ async function seed() {
       gender: 'unisex' as const,
       ageGroup: 'newborn' as const,
       featured: true,
+      material: '100% cotton jersey',
+      careInstructions: 'Machine wash cold. Do not bleach. Dry in shade.',
+      sortPriority: 20,
+      tags: [tags.cotton, tags.newborn],
+      sizeGuide: newbornGuide.id,
+      seo: {
+        title: 'Cotton romper set for newborns',
+        description: 'Soft cotton romper set for easy newborn changes. Cash on delivery across Pakistan.',
+      },
       variants: [
         { sku: 'RNZ-RMP-NB-CRM', size: 'newborn', color: 'Cream', price: 1890, compareAtPrice: 2190, stock: 12 },
         { sku: 'RNZ-RMP-03-CRM', size: '0-3m', color: 'Cream', price: 1890, stock: 10 },
@@ -118,6 +171,9 @@ async function seed() {
       gender: 'girls' as const,
       ageGroup: 'kids' as const,
       featured: true,
+      material: 'Printed lawn with cotton lining',
+      sortPriority: 18,
+      tags: [tags.eid, tags.everyday],
       variants: [
         { sku: 'RNZ-FRK-3Y-PNK', size: '3y', color: 'Blush', price: 2490, compareAtPrice: 2890, stock: 9 },
         { sku: 'RNZ-FRK-4Y-PNK', size: '4y', color: 'Blush', price: 2490, stock: 7 },
@@ -132,6 +188,9 @@ async function seed() {
       gender: 'boys' as const,
       ageGroup: 'kids' as const,
       featured: true,
+      material: 'Cotton pique',
+      sortPriority: 16,
+      tags: [tags.cotton, tags.everyday],
       variants: [
         { sku: 'RNZ-PLO-4Y-NVY', size: '4y', color: 'Navy', price: 1690, stock: 14 },
         { sku: 'RNZ-PLO-5Y-NVY', size: '5y', color: 'Navy', price: 1690, stock: 11 },
