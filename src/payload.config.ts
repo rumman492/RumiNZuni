@@ -17,6 +17,7 @@ import { SiteSettings } from './globals/SiteSettings'
 import { checkoutHandler, trackOrderHandler } from './endpoints/checkout'
 import { mediaStoragePlugins } from './lib/storage'
 import { siteOrigin } from './lib/site'
+import { migrations } from './migrations'
 
 function runtimeEnv(name: string) {
   return process.env[name]
@@ -61,7 +62,9 @@ export default buildConfig({
     pool: {
       connectionString: databaseUrl,
     },
-    push: runtimeEnv('PAYLOAD_DB_PUSH') !== 'false',
+    push: process.env.NODE_ENV !== 'production',
+    prodMigrations: migrations,
+    migrationDir: path.resolve(dirname, 'migrations'),
   }),
   sharp,
   plugins: [...mediaStoragePlugins()],

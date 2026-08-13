@@ -87,15 +87,9 @@ Open:
 - https://ruminzuni.com
 - https://ruminzuni.com/admin
 
-First visit creates the database schema. Create the first admin user on screen, or run seed inside the app container:
+First visit runs Postgres migrations and creates the database schema. Then create the first admin user on https://ruminzuni.com/admin (Payload first-user setup). Seed is local-only (`npm run seed`); the production image does not include it.
 
-```bash
-docker compose exec app node -e "console.log('app is up')"
-```
-
-Seed is easiest from a one-off if you still have `tsx` in the image; otherwise create the admin in `/admin` and add products there.
-
-After the first successful boot you can set `PAYLOAD_DB_PUSH=false` and recreate the app so schema is not auto-changed.
+After the first successful boot you can set `PAYLOAD_DB_PUSH=false` in `.env` (dev schema push is already off in production).
 
 ## Updates later
 

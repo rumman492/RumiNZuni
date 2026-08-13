@@ -7,6 +7,7 @@ Kids wear store for **Pakistan**, **cash on delivery only**. Shoppers pay the ri
 - Next.js 15 App Router + TypeScript + Tailwind CSS v4
 - Payload CMS 3 (admin at `/admin`)
 - Database: PostgreSQL only (`DATABASE_URL=postgresql://...`, see `docker-compose.yml`)
+- Production schema: `src/migrations/` via `prodMigrations` (Payload does not drizzle-push when `NODE_ENV=production`)
 
 ## Layout
 
