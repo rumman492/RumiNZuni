@@ -1,0 +1,28 @@
+@import "tailwindcss";
+
+@theme {
+  --font-display: "Fraunces", serif;
+  --font-sans: "Nunito Sans", sans-serif;
+  --color-cream: #fbf6ef;
+  --color-sand: #f3e6d4;
+  --color-ink: #2b211c;
+  --color-ink-soft: #5c4c43;
+  --color-coral: #d4654a;
+  --color-coral-dark: #b84d35;
+  --color-sage: #6f9b86;
+  --color-gold: #c9955a;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--color-cream);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+}
+
+.display {
+  font-family: var(--font-display);
+}

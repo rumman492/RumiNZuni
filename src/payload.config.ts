@@ -1,0 +1,61 @@
+import path from 'path'
+import { fileURLToPath } from 'url'
+import { postgresAdapter } from '@payloadcms/db-postgres'
+import { sqliteAdapter } from '@payloadcms/db-sqlite'
+import { lexicalEditor } from '@payloadcms/richtext-lexical'
+import { buildConfig } from 'payload'
+import sharp from 'sharp'
+
+import { Users } from './collections/Users'
+import { Media } from './collections/Media'
+import { Categories } from './collections/Categories'
+import { Products } from './collections/Products'
+import { Orders } from './collections/Orders'
+import { Pages } from './collections/Pages'
+import { SiteSettings } from './globals/SiteSettings'
+import { checkoutHandler, trackOrderHandler } from './endpoints/checkout'
+
+const filename = fileURLToPath(import.meta.url)
+const dirname = path.dirname(filename)
+const databaseUrl = process.env.DATABASE_URL || 'file:./ruminzuni.db'
+
+const db = databaseUrl.startsWith('file:')
+  ? sqliteAdapter({
+      client: { url: databaseUrl },
+    })
+  : postgresAdapter({
+      pool: { connectionString: databaseUrl },
+    })
+
+export default buildConfig({
+  admin: {
+    user: Users.slug,
+    importMap: {
+      baseDir: path.resolve(dirname),
+    },
+    meta: {
+      titleSuffix: ' — RumiNZuni',
+    },
+  },
+  collections: [Users, Media, Categories, Products, Orders, Pages],
+  globals: [SiteSettings],
+  editor: lexicalEditor(),
+  secret: process.env.PAYLOAD_SECRET || '',
+  typescript: {
+    outputFile: path.resolve(dirname, 'payload-types.ts'),
+  },
+  db,
+  sharp,
+  endpoints: [
+    {
+      path: '/checkout',
+      method: 'post',
+      handler: checkoutHandler,
+    },
+    {
+      path: '/track-order',
+      method: 'get',
+      handler: trackOrderHandler,
+    },
+  ],
+})
