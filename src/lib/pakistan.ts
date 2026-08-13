@@ -74,3 +74,18 @@ export function formatPkr(amount: number): string {
 export function isValidPkPhone(phone: string): boolean {
   return PK_PHONE_REGEX.test(phone.replace(/[\s-]/g, ''))
 }
+
+export function isPakistanCity(value: string): value is PakistanCity {
+  return (PAKISTAN_CITIES as readonly string[]).includes(value)
+}
+
+export function isValidEmail(value: string) {
+  return value.length <= 120 && /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i.test(value)
+}
+
+export function clampText(value: unknown, max: number) {
+  return String(value || '')
+    .replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F]/g, '')
+    .trim()
+    .slice(0, max)
+}

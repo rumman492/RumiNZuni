@@ -1,5 +1,6 @@
 import { sql } from '@payloadcms/db-postgres'
 import type { PayloadRequest } from 'payload'
+import { SKU_PATTERN } from '@/lib/security'
 
 export class CheckoutError extends Error {
   status: number
@@ -88,12 +89,21 @@ export function normalizeCheckoutLines(
     const sku = String(item.sku || '').trim()
     const qty = Number(item.qty)
 
-    if (!Number.isInteger(productId) || productId < 1 || !sku || !Number.isInteger(qty) || qty < 1 || qty > 20) {
+    if (
+      !Number.isInteger(productId) ||
+      productId < 1 ||
+      !SKU_PATTERN.test(sku) ||
+      !Number.isInteger(qty) ||
+      qty < 1 ||
+      qty > 20
+    ) {
       throw new CheckoutError('One of the cart items is invalid.')
     }
-
     const key = `${productId}:${sku}`
     const existing = merged.get(key)
+    if (!existing && merged.size >= 20) {
+      throw new CheckoutError('Your cart is too large. Please remove some items.')
+    }
     const nextQty = (existing?.qty || 0) + qty
     if (nextQty > 20) {
       throw new CheckoutError('One of the cart items is invalid.')

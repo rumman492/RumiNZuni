@@ -57,9 +57,9 @@ export function TrackForm() {
       const response = await fetch(
         `/api/track-order?orderNumber=${encodeURIComponent(orderNumber)}&phone=${encodeURIComponent(phone)}`,
       )
-      const data = await response.json()
+      const data = await response.json().catch(() => ({}))
       if (!response.ok) {
-        setError(data.error || 'Could not find that order.')
+        setError(typeof data.error === 'string' ? data.error : 'Could not find that order.')
       } else {
         setOrder(data)
       }

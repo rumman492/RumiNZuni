@@ -26,6 +26,12 @@ export default buildConfig({
   serverURL,
   cors: [serverURL],
   csrf: [serverURL],
+  telemetry: false,
+  graphQL: {
+    disablePlaygroundInProduction: true,
+    disableIntrospectionInProduction: true,
+    maxComplexity: 1000,
+  },
   admin: {
     user: Users.slug,
     importMap: {

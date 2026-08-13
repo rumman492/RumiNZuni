@@ -44,6 +44,7 @@ export function CheckoutForm({
           address: form.get('address'),
           landmark: form.get('landmark'),
           customerNotes: form.get('customerNotes'),
+          website: form.get('website'),
           items: items.map((item) => ({
             productId: item.productId,
             sku: item.sku,
@@ -51,14 +52,15 @@ export function CheckoutForm({
           })),
         }),
       })
-      const data = await response.json()
+      const data = await response.json().catch(() => ({}))
       if (!response.ok) {
-        setError(data.error || 'Could not place order.')
+        setError(typeof data.error === 'string' ? data.error : 'Could not place order.')
         setPending(false)
         return
       }
       clear()
-      router.push(`/order/${data.orderNumber}`)
+      const token = typeof data.accessToken === 'string' ? `?t=${encodeURIComponent(data.accessToken)}` : ''
+      router.push(`/order/${data.orderNumber}${token}`)
     } catch {
       setError('Something went wrong. Please try again.')
       setPending(false)
@@ -70,10 +72,16 @@ export function CheckoutForm({
   }
 
   return (
-    <form onSubmit={onSubmit} className="grid gap-10 lg:grid-cols-[1.2fr_0.8fr]">
+    <form onSubmit={onSubmit} className="relative grid gap-10 lg:grid-cols-[1.2fr_0.8fr]">
       <div className="space-y-4 rounded-3xl bg-white p-6 shadow-sm">
         <h2 className="display text-2xl">Delivery details</h2>
         <p className="text-sm text-ink-soft">We will call or WhatsApp to confirm before dispatch.</p>
+        <div className="absolute -left-[9999px] h-0 w-0 overflow-hidden" aria-hidden="true">
+          <label>
+            Website
+            <input name="website" type="text" tabIndex={-1} autoComplete="off" />
+          </label>
+        </div>
         <label className="block text-sm font-semibold">
           Full name
           <input name="customerName" required className="mt-1 w-full rounded-2xl border border-sand px-4 py-3" />

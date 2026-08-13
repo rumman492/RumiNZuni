@@ -45,6 +45,7 @@ Live site uses **PostgreSQL** + Docker on a VPS (`ruminzuni.com`). Follow `DEPLO
 - Optional catalog fields: tags (`tags`), size guides (`size-guides`), material, care, SEO title/description, sortPriority (higher first), related products. Leave them empty on older products.
 - Shop search/filters use URL query params (`q`, `category`, `gender`, `age`, `size`, `color`, `min`, `max`, `inStock`, `sort`, `page`) so results are shareable. Pretty paths like `/shop/boys` stay indexed; extra facets are `noindex,follow`.
 - Checkout must trust **server** prices and stock, never the client.
+- Public APIs (`/api/checkout`, `/api/track-order`) validate input, rate-limit by IP, check same-origin, and return generic errors — never database/stack traces. Confirmation pages require a signed `t` token.
 - Payment method is always `cod`. Order flow: Pending → Confirmed → Packed → Shipped → Out for delivery → Delivered.
 - Exceptions: Cancelled, Refused at door, Failed delivery, Returned. Status history is recorded automatically.
 - Mark cash collected with `paymentStatus: collected` (Delivered unpaid orders are marked collected automatically).

@@ -1,19 +1,42 @@
 import Link from 'next/link'
 import { getPayloadClient } from '@/lib/payload'
 import { buildOrderNotificationPayload, buildWhatsAppConfirmAction } from '@/lib/notifications'
+import { verifyOrderAccessToken } from '@/lib/order-access'
 import { formatPkr } from '@/lib/pakistan'
+import { ORDER_NUMBER_PATTERN } from '@/lib/security'
+
+function notFoundCard() {
+  return (
+    <div>
+      <h1 className="display text-4xl">Order not found</h1>
+      <Link href="/track" className="mt-4 inline-block font-bold text-coral">
+        Track an order
+      </Link>
+    </div>
+  )
+}
 
 export default async function OrderConfirmationPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ orderNumber: string }>
+  searchParams: Promise<{ t?: string | string[] }>
 }) {
   const { orderNumber } = await params
+  const token = (await searchParams).t
+  const accessToken = Array.isArray(token) ? token[0] : token
+
+  if (!ORDER_NUMBER_PATTERN.test(orderNumber) || !verifyOrderAccessToken(orderNumber, accessToken)) {
+    return notFoundCard()
+  }
+
   const payload = await getPayloadClient()
   const [result, settings] = await Promise.all([
     payload.find({
       collection: 'orders',
       overrideAccess: true,
+      depth: 0,
       where: { orderNumber: { equals: orderNumber } },
       limit: 1,
     }),
@@ -22,14 +45,7 @@ export default async function OrderConfirmationPage({
   const order = result.docs[0]
 
   if (!order) {
-    return (
-      <div>
-        <h1 className="display text-4xl">Order not found</h1>
-        <Link href="/track" className="mt-4 inline-block font-bold text-coral">
-          Track an order
-        </Link>
-      </div>
-    )
+    return notFoundCard()
   }
 
   const notification = buildOrderNotificationPayload(order, settings)
