@@ -88,10 +88,48 @@ async function seed() {
         { city: 'Islamabad', fee: 200 },
         { city: 'Rawalpindi', fee: 200 },
       ],
+      heroEyebrow: 'Pakistan · Cash on delivery',
       heroTitle: 'Little outfits, made for everyday play',
       heroSubtitle:
         'Breathable kids wear for Pakistani weather. Order on cash on delivery — pay when it arrives.',
       heroCta: 'Shop new arrivals',
+      heroCtaLink: '/shop',
+      heroSecondaryCta: 'How COD works',
+      heroSecondaryCtaLink: '/shipping',
+      heroOverlayTitle: 'Ages newborn – 12',
+      heroOverlaySubtitle: 'Boys · Girls · Unisex',
+      homeCollections: [
+        { title: 'Boys', copy: 'Polos, sets, and play tees', href: '/shop/boys', category: categories.boys },
+        { title: 'Girls', copy: 'Frocks, two-piece sets, everyday knits', href: '/shop/girls', category: categories.girls },
+        { title: 'Newborn', copy: 'Rompers, sleepsuits, first outfits', href: '/shop/newborn', category: categories.newborn },
+      ],
+      featuredEyebrow: 'Featured',
+      featuredHeading: 'Little bestsellers',
+      featuredCta: 'View all',
+      featuredCtaLink: '/shop',
+      homePromos: [
+        {
+          icon: 'cod',
+          title: 'Cash on delivery',
+          copy: 'Pay the rider in PKR when your parcel arrives. No card needed.',
+        },
+        {
+          icon: 'shipping',
+          title: 'Pakistan-wide',
+          copy: 'We ship to major cities. Free delivery over the store threshold.',
+        },
+        {
+          icon: 'returns',
+          title: 'Easy exchanges',
+          copy: 'Wrong size? Message us on WhatsApp within 3 days of delivery.',
+        },
+      ],
+      homeStoryEyebrow: 'Our story',
+      homeStoryTitle: 'Clothes for play, not fuss',
+      homeStoryBody:
+        'RumiNZuni is a Pakistan kids-wear shop. Soft cotton, easy everyday fits, and cash on delivery — pay the rider when the parcel arrives.',
+      homeStoryCta: 'WhatsApp us',
+      homeStoryCtaLink: '/contact',
     },
   })
 

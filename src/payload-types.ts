@@ -1023,10 +1023,77 @@ export interface SiteSetting {
         id?: string | null;
       }[]
     | null;
+  heroEyebrow?: string | null;
   heroTitle?: string | null;
   heroSubtitle?: string | null;
   heroImage?: (number | null) | Media;
   heroCta?: string | null;
+  /**
+   * Storefront path, e.g. /shop or /shop/girls
+   */
+  heroCtaLink?: string | null;
+  heroSecondaryCta?: string | null;
+  heroSecondaryCtaLink?: string | null;
+  /**
+   * Shown when there is no hero image
+   */
+  heroOverlayTitle?: string | null;
+  heroOverlaySubtitle?: string | null;
+  /**
+   * Leave empty to hide the banner
+   */
+  homeBannerTitle?: string | null;
+  homeBannerCopy?: string | null;
+  homeBannerCta?: string | null;
+  homeBannerCtaLink?: string | null;
+  /**
+   * Empty uses Boys / Girls / Newborn. Fill this to replace those cards.
+   */
+  homeCollections?:
+    | {
+        title: string;
+        copy?: string | null;
+        /**
+         * Optional. Links to /shop/{slug} unless you set a custom path.
+         */
+        category?: (number | null) | Category;
+        /**
+         * Optional custom path, e.g. /shop/boys
+         */
+        href?: string | null;
+        image?: (number | null) | Media;
+        id?: string | null;
+      }[]
+    | null;
+  featuredEyebrow?: string | null;
+  featuredHeading?: string | null;
+  featuredCta?: string | null;
+  featuredCtaLink?: string | null;
+  featuredEmptyMessage?: string | null;
+  /**
+   * Optional. Empty shows products marked Featured, then newest published items.
+   */
+  homeFeaturedProducts?: (number | Product)[] | null;
+  /**
+   * Empty keeps Cash on delivery / Pakistan-wide / Easy exchanges.
+   */
+  homePromos?:
+    | {
+        icon?: ('cod' | 'shipping' | 'returns' | 'sparkles') | null;
+        title: string;
+        copy: string;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Leave empty to hide this block
+   */
+  homeStoryTitle?: string | null;
+  homeStoryEyebrow?: string | null;
+  homeStoryBody?: string | null;
+  homeStoryImage?: (number | null) | Media;
+  homeStoryCta?: string | null;
+  homeStoryCtaLink?: string | null;
   updatedAt?: string | null;
   createdAt?: string | null;
 }
@@ -1054,10 +1121,50 @@ export interface SiteSettingsSelect<T extends boolean = true> {
         fee?: T;
         id?: T;
       };
+  heroEyebrow?: T;
   heroTitle?: T;
   heroSubtitle?: T;
   heroImage?: T;
   heroCta?: T;
+  heroCtaLink?: T;
+  heroSecondaryCta?: T;
+  heroSecondaryCtaLink?: T;
+  heroOverlayTitle?: T;
+  heroOverlaySubtitle?: T;
+  homeBannerTitle?: T;
+  homeBannerCopy?: T;
+  homeBannerCta?: T;
+  homeBannerCtaLink?: T;
+  homeCollections?:
+    | T
+    | {
+        title?: T;
+        copy?: T;
+        category?: T;
+        href?: T;
+        image?: T;
+        id?: T;
+      };
+  featuredEyebrow?: T;
+  featuredHeading?: T;
+  featuredCta?: T;
+  featuredCtaLink?: T;
+  featuredEmptyMessage?: T;
+  homeFeaturedProducts?: T;
+  homePromos?:
+    | T
+    | {
+        icon?: T;
+        title?: T;
+        copy?: T;
+        id?: T;
+      };
+  homeStoryTitle?: T;
+  homeStoryEyebrow?: T;
+  homeStoryBody?: T;
+  homeStoryImage?: T;
+  homeStoryCta?: T;
+  homeStoryCtaLink?: T;
   updatedAt?: T;
   createdAt?: T;
   globalType?: T;

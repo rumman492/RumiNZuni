@@ -103,5 +103,5 @@ export async function getProductBySlug(slug: string) {
 
 export async function getSettings() {
   const payload = await getPayloadClient()
-  return payload.findGlobal({ slug: 'site-settings', depth: 1 })
+  return payload.findGlobal({ slug: 'site-settings', depth: 3 })
 }
