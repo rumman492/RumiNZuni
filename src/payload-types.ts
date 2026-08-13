@@ -255,15 +255,68 @@ export interface Product {
   _status?: ('draft' | 'published') | null;
 }
 /**
+ * COD workflow: Pending → Confirmed → Packed → Shipped → Out for delivery → Delivered. Use Cancelled, Refused at door, Failed delivery, or Returned when the parcel does not complete. Mark cash collected when the rider is paid.
+ *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "orders".
  */
 export interface Order {
   id: number;
   orderNumber: string;
-  status: 'pending' | 'confirmed' | 'packed' | 'shipped' | 'delivered' | 'cancelled' | 'returned';
+  /**
+   * Happy path: Pending → Confirmed → Packed → Shipped → Out for delivery → Delivered. Exceptions: Cancelled, Refused at door, Failed delivery, Returned.
+   */
+  status:
+    | 'pending'
+    | 'confirmed'
+    | 'packed'
+    | 'shipped'
+    | 'out_for_delivery'
+    | 'delivered'
+    | 'cancelled'
+    | 'refused'
+    | 'failed_delivery'
+    | 'returned';
   paymentMethod: 'cod';
+  /**
+   * Set Collected when the rider receives cash. Delivered orders that are still unpaid are marked collected automatically.
+   */
   paymentStatus: 'unpaid' | 'collected' | 'refunded';
+  /**
+   * Required context for cancelled, refused, failed, or returned orders. Saved into status history.
+   */
+  statusReason?: string | null;
+  /**
+   * Timestamped log of status and payment changes. Staff cannot edit this list.
+   */
+  statusHistory?:
+    | {
+        status?:
+          | (
+              | 'pending'
+              | 'confirmed'
+              | 'packed'
+              | 'shipped'
+              | 'out_for_delivery'
+              | 'delivered'
+              | 'cancelled'
+              | 'refused'
+              | 'failed_delivery'
+              | 'returned'
+            )
+          | null;
+        paymentStatus?: ('unpaid' | 'collected' | 'refunded') | null;
+        at?: string | null;
+        source?: ('checkout' | 'admin' | 'system') | null;
+        actor?: string | null;
+        note?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * Internal notes — not shown to the customer
+   */
+  adminNotes?: string | null;
   customerName: string;
   phone: string;
   email?: string | null;
@@ -313,10 +366,6 @@ export interface Order {
   shipping: number;
   codFee: number;
   total: number;
-  /**
-   * Internal notes — not shown to the customer
-   */
-  adminNotes?: string | null;
   /**
    * Customer WhatsApp click-to-chat confirmation link
    */
@@ -535,6 +584,19 @@ export interface OrdersSelect<T extends boolean = true> {
   status?: T;
   paymentMethod?: T;
   paymentStatus?: T;
+  statusReason?: T;
+  statusHistory?:
+    | T
+    | {
+        status?: T;
+        paymentStatus?: T;
+        at?: T;
+        source?: T;
+        actor?: T;
+        note?: T;
+        id?: T;
+      };
+  adminNotes?: T;
   customerName?: T;
   phone?: T;
   email?: T;
@@ -559,7 +621,6 @@ export interface OrdersSelect<T extends boolean = true> {
   shipping?: T;
   codFee?: T;
   total?: T;
-  adminNotes?: T;
   whatsappConfirmUrl?: T;
   notifications?:
     | T

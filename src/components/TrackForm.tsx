@@ -3,14 +3,32 @@
 import { useState } from 'react'
 import { formatPkr } from '@/lib/pakistan'
 
+type HistoryEntry = {
+  status?: string | null
+  label?: string | null
+  at?: string | null
+  note?: string | null
+}
+
 type TrackResult = {
   orderNumber: string
   status: string
+  statusLabel: string
+  statusMessage: string
   paymentStatus: string
+  paymentLabel: string
   city: string
   formattedTotal: string
   createdAt: string
   items: Array<{ title: string; size: string; color: string; qty: number; price: number }>
+  statusHistory?: HistoryEntry[]
+}
+
+function formatWhen(value?: string | null) {
+  if (!value) return ''
+  const date = new Date(value)
+  if (Number.isNaN(date.getTime())) return ''
+  return date.toLocaleString('en-PK', { dateStyle: 'medium', timeStyle: 'short' })
 }
 
 export function TrackForm() {
@@ -66,11 +84,22 @@ export function TrackForm() {
       {order ? (
         <div className="rounded-3xl bg-white p-6 shadow-sm">
           <p className="text-sm uppercase tracking-wide text-ink-soft">{order.orderNumber}</p>
-          <h2 className="display mt-1 text-3xl capitalize">{order.status}</h2>
+          <h2 className="display mt-1 text-3xl">{order.statusLabel || order.status}</h2>
+          <p className="mt-2 text-sm text-ink-soft">{order.statusMessage}</p>
           <p className="mt-2 text-sm text-ink-soft">
-            {order.city} · {order.paymentStatus === 'collected' ? 'Payment collected' : 'Pay cash on delivery'} ·{' '}
-            {order.formattedTotal}
+            {order.city} · {order.paymentLabel} · {order.formattedTotal}
           </p>
+          {order.statusHistory && order.statusHistory.length > 0 ? (
+            <ol className="mt-6 space-y-3 border-l border-sand pl-4">
+              {order.statusHistory.map((entry, index) => (
+                <li key={`${entry.status}-${entry.at}-${index}`}>
+                  <p className="text-sm font-bold">{entry.label || entry.status}</p>
+                  <p className="text-xs text-ink-soft">{formatWhen(entry.at)}</p>
+                  {entry.note ? <p className="text-xs text-ink-soft">{entry.note}</p> : null}
+                </li>
+              ))}
+            </ol>
+          ) : null}
           <ul className="mt-6 space-y-2 text-sm">
             {order.items.map((item) => (
               <li key={`${item.title}-${item.size}-${item.color}`}>

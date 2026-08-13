@@ -11,6 +11,7 @@ import {
   StockReservationError,
 } from '@/lib/inventory'
 import { notifyOrderPlaced } from '@/lib/notifications'
+import { formatOrderStatus, formatPaymentStatus, orderStatusMessage } from '@/lib/orders'
 import {
   formatPkr,
   isValidPkPhone,
@@ -245,11 +246,20 @@ export const trackOrderHandler: PayloadHandler = async (req) => {
   return Response.json({
     orderNumber: order.orderNumber,
     status: order.status,
+    statusLabel: formatOrderStatus(order.status),
+    statusMessage: orderStatusMessage(order.status),
     paymentStatus: order.paymentStatus,
+    paymentLabel: formatPaymentStatus(order.paymentStatus),
     city: order.city,
     total: order.total,
     formattedTotal: formatPkr(Number(order.total)),
     createdAt: order.createdAt,
     items: order.items,
+    statusHistory: (order.statusHistory || []).map((entry) => ({
+      status: entry.status,
+      label: formatOrderStatus(entry.status),
+      at: entry.at,
+      note: entry.note,
+    })),
   })
 }

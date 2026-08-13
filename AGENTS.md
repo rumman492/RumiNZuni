@@ -40,8 +40,9 @@ Live site uses **PostgreSQL** + Docker on a VPS (`ruminzuni.com`). Follow `DEPLO
 - Phone must be Pakistani mobile (`03XXXXXXXXX`). Cities come from `PAKISTAN_CITIES`.
 - Product variants have size, color, SKU, price, stock.
 - Checkout must trust **server** prices and stock, never the client.
-- Payment method is always `cod`. Order flow: Pending → Confirmed → Packed → Shipped → Delivered.
-- Mark cash collected with `paymentStatus: collected`.
+- Payment method is always `cod`. Order flow: Pending → Confirmed → Packed → Shipped → Out for delivery → Delivered.
+- Exceptions: Cancelled, Refused at door, Failed delivery, Returned. Status history is recorded automatically.
+- Mark cash collected with `paymentStatus: collected` (Delivered unpaid orders are marked collected automatically).
 - WhatsApp number lives in Store settings; use it for order confirmation links.
 
 ## How to work in this repo
