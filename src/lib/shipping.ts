@@ -84,6 +84,28 @@ export function buildTrackingUrl(template: string | null | undefined, trackingNu
   return pattern.replaceAll('{trackingNumber}', encodeURIComponent(cn)).replaceAll('{cn}', encodeURIComponent(cn))
 }
 
+export function quoteCodTotals(input: {
+  subtotal: number
+  city: string
+  defaultShippingFee?: number | null
+  freeShippingThreshold?: number | null
+  cityShipping?: Array<{ city: string; fee: number }> | null
+  codFee?: number | null
+}) {
+  const subtotal = Number(input.subtotal) || 0
+  const defaultShipping = Number(input.defaultShippingFee || 250)
+  const threshold = Number(input.freeShippingThreshold || 0)
+  const cityRate = (input.cityShipping || []).find((rate) => rate.city === input.city)
+  const shipping = threshold > 0 && subtotal >= threshold ? 0 : (cityRate?.fee ?? defaultShipping)
+  const codFee = Number(input.codFee || 0)
+  return {
+    subtotal,
+    shipping,
+    codFee,
+    total: subtotal + shipping + codFee,
+  }
+}
+
 export function applyShipmentSnapshot(
   current: Partial<ShipmentSnapshot> | null | undefined,
   update: Partial<ShipmentSnapshot>,

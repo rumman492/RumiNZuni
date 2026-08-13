@@ -9,6 +9,10 @@ export const RATE_LIMITS = {
   trackIp: { limit: 30, windowMs: 15 * 60 * 1000 },
 } as const
 
+export function resetRateLimits() {
+  buckets.clear()
+}
+
 function pruneBuckets(now: number) {
   if (buckets.size < 2000) return
   for (const [key, bucket] of buckets) {

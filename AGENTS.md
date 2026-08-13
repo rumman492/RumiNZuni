@@ -21,6 +21,7 @@ Kids wear store for **Pakistan**, **cash on delivery only**. Shoppers pay the ri
 - Media storage: local disk by default; S3-compatible object storage via `MEDIA_STORAGE=s3` (`src/lib/storage.ts`). Keep `/api/media/file/:filename` URLs.
 - Cart is client-side (`localStorage`), guest checkout
 - SEO: `src/lib/site.ts` (canonical origin), `src/lib/seo.ts`, `src/app/sitemap.ts`, `src/app/robots.ts`
+- Tests: `tests/` (Vitest). `npm test` runs cart, phone, shipping/COD, checkout, stock, orders, tracking, access, and the COD purchase flow.
 
 ## Commands
 
@@ -28,6 +29,7 @@ Kids wear store for **Pakistan**, **cash on delivery only**. Shoppers pay the ri
 npm install
 npm run dev
 npm run seed
+npm test
 ```
 
 - Store: http://localhost:3000

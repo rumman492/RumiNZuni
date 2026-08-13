@@ -1,7 +1,7 @@
 'use client'
 
 import { createContext, useContext, useEffect, useMemo, useState } from 'react'
-import { CART_KEY, cartTotal, type CartItem } from '@/lib/cart'
+import { addCartItem, CART_KEY, cartCount, cartTotal, removeCartItem, updateCartQty, type CartItem } from '@/lib/cart'
 
 type CartContextValue = {
   items: CartItem[]
@@ -37,26 +37,15 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   const value = useMemo<CartContextValue>(
     () => ({
       items,
-      count: items.reduce((sum, item) => sum + item.qty, 0),
+      count: cartCount(items),
       subtotal: cartTotal(items),
       addItem: (incoming) => {
-        setItems((current) => {
-          const qty = incoming.qty || 1
-          const existing = current.find((item) => item.sku === incoming.sku)
-          if (existing) {
-            return current.map((item) =>
-              item.sku === incoming.sku ? { ...item, qty: item.qty + qty } : item,
-            )
-          }
-          return [...current, { ...incoming, qty }]
-        })
+        setItems((current) => addCartItem(current, incoming))
       },
       updateQty: (sku, qty) => {
-        setItems((current) =>
-          qty < 1 ? current.filter((item) => item.sku !== sku) : current.map((item) => (item.sku === sku ? { ...item, qty } : item)),
-        )
+        setItems((current) => updateCartQty(current, sku, qty))
       },
-      removeItem: (sku) => setItems((current) => current.filter((item) => item.sku !== sku)),
+      removeItem: (sku) => setItems((current) => removeCartItem(current, sku)),
       clear: () => setItems([]),
     }),
     [items],

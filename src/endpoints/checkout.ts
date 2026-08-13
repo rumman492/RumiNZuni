@@ -5,28 +5,21 @@ import {
   type PayloadHandler,
 } from 'payload'
 import {
-  CheckoutError,
-  normalizeCheckoutLines,
-  reserveVariantStock,
-  StockReservationError,
-} from '@/lib/inventory'
+  checkoutAccessToken,
+  placeCodOrder,
+  readCheckoutInput,
+  readTrackQuery,
+  type CheckoutProduct,
+  type CheckoutStore,
+} from '@/lib/checkout'
+import { CheckoutError, reserveVariantStock } from '@/lib/inventory'
 import { notifyOrderPlaced } from '@/lib/notifications'
-import { createOrderAccessToken } from '@/lib/order-access'
 import { formatOrderStatus, formatPaymentStatus, orderStatusMessage } from '@/lib/orders'
-import {
-  clampText,
-  formatPkr,
-  isPakistanCity,
-  isValidEmail,
-  isValidPkPhone,
-  normalizePkPhone,
-  type PakistanCity,
-} from '@/lib/pakistan'
+import { formatPkr } from '@/lib/pakistan'
 import { formatShippingStatus } from '@/lib/shipping'
 import {
   clientIp,
   isSameOrigin,
-  ORDER_NUMBER_PATTERN,
   publicError,
   publicHttpUrl,
   RATE_LIMITS,
@@ -35,20 +28,7 @@ import {
   rejectOversizedJson,
   requireJsonPost,
   safePublicError,
-  SKU_PATTERN,
 } from '@/lib/security'
-
-type CartItemInput = {
-  productId: string | number
-  sku: string
-  qty: number
-}
-
-function generateOrderNumber() {
-  const stamp = new Date().toISOString().slice(0, 10).replaceAll('-', '')
-  const rand = crypto.getRandomValues(new Uint32Array(1))[0] % 900000
-  return `RNZ-${stamp}-${String(100000 + rand)}`
-}
 
 function checkoutErrorResponse(error: unknown) {
   if (error instanceof CheckoutError) {
@@ -88,66 +68,17 @@ export const checkoutHandler: PayloadHandler = async (req) => {
       return publicError('Invalid request.')
     }
 
-    if (clampText(body.website, 80) || clampText(body.company, 80)) {
-      return publicError('Could not place order. Please try again.')
-    }
-
-    const customerName = clampText(body.customerName, 80)
-    const phone = normalizePkPhone(clampText(body.phone, 20))
-    const emailRaw = clampText(body.email, 120)
-    const email = emailRaw || undefined
-    const city = clampText(body.city, 40)
-    const area = clampText(body.area, 80)
-    const address = clampText(body.address, 300)
-    const landmark = clampText(body.landmark, 120) || undefined
-    const customerNotes = clampText(body.customerNotes, 300) || undefined
-    const itemsInput = Array.isArray(body.items) ? (body.items as CartItemInput[]) : []
-
-    if (customerName.length < 3) {
-      return publicError('Please enter your full name.')
-    }
-    if (!isValidPkPhone(phone)) {
-      return publicError('Enter a valid Pakistani mobile number (03XXXXXXXXX).')
-    }
-    if (email && !isValidEmail(email)) {
-      return publicError('Enter a valid email, or leave it blank.')
-    }
-    if (!isPakistanCity(city)) {
-      return publicError('Please select your city.')
-    }
-    if (area.length < 2) {
-      return publicError('Please enter your area or colony.')
-    }
-    if (address.length < 8) {
-      return publicError('Please enter a complete delivery address.')
-    }
-    if (itemsInput.length === 0 || itemsInput.length > 20) {
-      return publicError('Your cart is empty.')
-    }
-    if (itemsInput.some((item) => !SKU_PATTERN.test(String(item.sku || '')))) {
-      return publicError('Your cart has an invalid item. Please refresh and try again.')
+    const parsed = readCheckoutInput(body)
+    if (!parsed.ok) {
+      return publicError(parsed.message, parsed.status)
     }
 
     const phoneLimit = rateLimit(
-      `checkout:phone:${phone}`,
+      `checkout:phone:${parsed.input.phone}`,
       RATE_LIMITS.checkoutPhone.limit,
       RATE_LIMITS.checkoutPhone.windowMs,
     )
     if (!phoneLimit.ok) return rateLimitedResponse(phoneLimit.retryAfter)
-
-    let lines
-    try {
-      lines = normalizeCheckoutLines(itemsInput)
-    } catch (error) {
-      const response = checkoutErrorResponse(error)
-      if (response) return response
-      return safePublicError(error, req.payload.logger)
-    }
-
-    const settings = await req.payload.findGlobal({
-      slug: 'site-settings',
-      overrideAccess: true,
-    })
 
     const shouldCommit = await initTransaction(req)
     const transactionID = req.transactionID instanceof Promise ? await req.transactionID : req.transactionID
@@ -155,111 +86,59 @@ export const checkoutHandler: PayloadHandler = async (req) => {
       return publicError('Could not start checkout. Please try again.', 503)
     }
 
-    try {
-      const orderItems: Array<{
-        product: number
-        title: string
-        sku: string
-        size: string
-        color: string
-        qty: number
-        price: number
-      }> = []
-
-      let subtotal = 0
-
-      for (const line of lines) {
+    const store: CheckoutStore = {
+      async getSettings() {
+        return req.payload.findGlobal({
+          slug: 'site-settings',
+          overrideAccess: true,
+        })
+      },
+      async getProduct(id) {
         const product = await req.payload.findByID({
           collection: 'products',
-          id: line.productId,
+          id,
           overrideAccess: true,
           depth: 0,
           draft: false,
           req,
         })
-
-        if (!product || product._status !== 'published') {
-          throw new CheckoutError('A product in your cart is no longer available.')
-        }
-
-        const variants = (product.variants || []) as Array<{
-          sku: string
-          size: string
-          color: string
-          price: number
-          stock: number
-        }>
-        const variant = variants.find((item) => item.sku === line.sku)
-        if (!variant) {
-          throw new CheckoutError('A product in your cart is no longer available.')
-        }
-
-        const reserved = await reserveVariantStock(req, line)
-        if (!reserved.ok) {
-          const label = `${product.title} (${variant.size} / ${variant.color})`
-          if (reserved.reason === 'missing') {
-            throw new StockReservationError('A product in your cart is no longer available.')
-          }
-          throw new StockReservationError(
-            reserved.available < 1 ? `${label} is out of stock.` : `${label} only has ${reserved.available} left.`,
-          )
-        }
-
-        orderItems.push({
-          product: Number(product.id),
+        if (!product) return null
+        return {
+          id: Number(product.id),
           title: product.title,
-          sku: variant.sku,
-          size: variant.size,
-          color: variant.color,
-          qty: line.qty,
-          price: variant.price,
+          _status: product._status,
+          variants: (product.variants || []) as CheckoutProduct['variants'],
+        }
+      },
+      reserveStock: (line) => reserveVariantStock(req, line),
+      async createOrder(order) {
+        const created = await req.payload.create({
+          collection: 'orders',
+          overrideAccess: true,
+          disableTransaction: true,
+          req,
+          data: order,
         })
-        subtotal += variant.price * line.qty
-      }
+        return {
+          ...order,
+          id: created.id,
+          orderNumber: String(created.orderNumber),
+          total: Number(created.total),
+        }
+      },
+    }
 
-      const cityRates = (settings.cityShipping || []) as Array<{ city: string; fee: number }>
-      const cityRate = cityRates.find((rate) => rate.city === city)
-      const defaultShipping = Number(settings.defaultShippingFee || 250)
-      const threshold = Number(settings.freeShippingThreshold || 0)
-      const shipping = threshold > 0 && subtotal >= threshold ? 0 : (cityRate?.fee ?? defaultShipping)
-      const codFee = Number(settings.codFee || 0)
-      const total = subtotal + shipping + codFee
-
-      const order = await req.payload.create({
-        collection: 'orders',
-        overrideAccess: true,
-        disableTransaction: true,
-        req,
-        data: {
-          orderNumber: generateOrderNumber(),
-          status: 'pending',
-          paymentMethod: 'cod',
-          paymentStatus: 'unpaid',
-          customerName,
-          phone,
-          email,
-          city: city as PakistanCity,
-          area,
-          address,
-          landmark,
-          customerNotes,
-          items: orderItems,
-          subtotal,
-          shipping,
-          codFee,
-          total,
-          shipment: {
-            provider: 'manual',
-            shippingStatus: 'not_booked',
-            codAmount: total,
-          },
-        },
-      })
+    try {
+      const order = await placeCodOrder(store, parsed.input)
 
       if (shouldCommit) {
         await commitTransaction(req)
       }
 
+      const settings = await req.payload.findGlobal({
+        slug: 'site-settings',
+        overrideAccess: true,
+      })
       const notification = await notifyOrderPlaced({
         payload: req.payload,
         order,
@@ -273,7 +152,7 @@ export const checkoutHandler: PayloadHandler = async (req) => {
       return Response.json({
         ok: true,
         orderNumber: order.orderNumber,
-        accessToken: createOrderAccessToken(String(order.orderNumber)),
+        accessToken: checkoutAccessToken(String(order.orderNumber)),
         total: order.total,
         formattedTotal: formatPkr(Number(order.total)),
         message: 'Order placed. Pay cash when your parcel arrives.',
@@ -302,12 +181,11 @@ export const trackOrderHandler: PayloadHandler = async (req) => {
     if (!ipLimit.ok) return rateLimitedResponse(ipLimit.retryAfter)
 
     const url = req.url ? new URL(req.url) : null
-    const orderNumber = clampText(url?.searchParams.get('orderNumber'), 24).toUpperCase()
-    const phone = normalizePkPhone(clampText(url?.searchParams.get('phone'), 20))
-
-    if (!ORDER_NUMBER_PATTERN.test(orderNumber) || !isValidPkPhone(phone)) {
-      return publicError('Enter your order number and the phone used at checkout.')
+    const parsed = readTrackQuery(url?.searchParams.get('orderNumber') || '', url?.searchParams.get('phone') || '')
+    if (!parsed.ok) {
+      return publicError(parsed.message, parsed.status)
     }
+    const { orderNumber, phone } = parsed
 
     const result = await req.payload.find({
       collection: 'orders',

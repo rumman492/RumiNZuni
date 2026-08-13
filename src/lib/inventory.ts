@@ -118,6 +118,19 @@ export type ReserveStockResult =
   | { ok: true; remaining: number }
   | { ok: false; reason: 'missing' | 'insufficient'; available: number }
 
+export function evaluateStockReservation(
+  stockBefore: number | null | undefined,
+  qty: number,
+): ReserveStockResult {
+  if (stockBefore === null || stockBefore === undefined || !Number.isFinite(stockBefore)) {
+    return { ok: false, reason: 'missing', available: 0 }
+  }
+  if (stockBefore < qty) {
+    return { ok: false, reason: 'insufficient', available: stockBefore }
+  }
+  return { ok: true, remaining: stockBefore - qty }
+}
+
 /**
  * Lock the variant row and decrement stock only if enough units remain.
  * Must run inside an open Payload/Postgres transaction. A failed result

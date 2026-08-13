@@ -2,10 +2,9 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 import { getPayloadClient } from '@/lib/payload'
 import { buildOrderNotificationPayload, buildWhatsAppConfirmAction } from '@/lib/notifications'
-import { verifyOrderAccessToken } from '@/lib/order-access'
+import { canViewOrderConfirmation } from '@/lib/checkout'
 import { formatPkr } from '@/lib/pakistan'
 import { pageMeta } from '@/lib/seo'
-import { ORDER_NUMBER_PATTERN } from '@/lib/security'
 
 export async function generateMetadata({
   params,
@@ -44,7 +43,7 @@ export default async function OrderConfirmationPage({
   const token = (await searchParams).t
   const accessToken = Array.isArray(token) ? token[0] : token
 
-  if (!ORDER_NUMBER_PATTERN.test(orderNumber) || !verifyOrderAccessToken(orderNumber, accessToken)) {
+  if (!canViewOrderConfirmation(orderNumber, accessToken)) {
     return notFoundCard()
   }
 
