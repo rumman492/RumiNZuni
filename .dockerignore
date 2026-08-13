@@ -6,7 +6,7 @@ node_modules
 !.env.example
 *.db
 *.db-journal
-media
+/media
 README.md
 DEPLOY.md
 AGENTS.md

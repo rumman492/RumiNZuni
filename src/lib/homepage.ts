@@ -52,6 +52,7 @@ export const DEFAULT_HOME_COLLECTIONS = [
   { title: 'Boys', copy: 'Polos, sets, and play tees', href: '/shop/boys' },
   { title: 'Girls', copy: 'Frocks, two-piece sets, everyday knits', href: '/shop/girls' },
   { title: 'Newborn', copy: 'Rompers, sleepsuits, first outfits', href: '/shop/newborn' },
+  { title: 'Unisex', copy: 'Soft basics for everyone', href: '/shop/unisex' },
 ]
 
 export const DEFAULT_HOME_PROMOS = [

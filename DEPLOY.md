@@ -87,7 +87,13 @@ Open:
 - https://ruminzuni.com
 - https://ruminzuni.com/admin
 
-First visit runs Postgres migrations and creates the database schema. Then create the first admin user on https://ruminzuni.com/admin (Payload first-user setup). Seed is local-only (`npm run seed`); the production image does not include it.
+First visit runs Postgres migrations and creates the database schema. Then create the first admin user on https://ruminzuni.com/admin (Payload first-user setup).
+
+To load sample products in every category (two each, with photos; does not create an admin):
+
+```bash
+docker compose --profile seed run --rm seed
+```
 
 After the first successful boot you can set `PAYLOAD_DB_PUSH=false` in `.env` (dev schema push is already off in production).
 

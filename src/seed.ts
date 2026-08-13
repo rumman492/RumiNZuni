@@ -1,40 +1,83 @@
 import 'dotenv/config'
-import { getPayload } from 'payload'
+import fs from 'fs'
+import path from 'path'
+import { fileURLToPath } from 'url'
+import { getPayload, type Payload } from 'payload'
 import config from './payload.config'
 import { assertStrongPassword } from './lib/env'
 
+const dirname = path.dirname(fileURLToPath(import.meta.url))
+const seedMediaDir = path.resolve(dirname, '../seed/media')
+
+async function upsertMedia(payload: Payload, filename: string, alt: string) {
+  const found = await payload.find({
+    collection: 'media',
+    where: { filename: { equals: filename } },
+    limit: 1,
+  })
+  if (found.docs[0]) return found.docs[0].id
+
+  const filePath = path.join(seedMediaDir, filename)
+  if (!fs.existsSync(filePath)) {
+    throw new Error(`Missing seed image: ${filePath}`)
+  }
+
+  const doc = await payload.create({
+    collection: 'media',
+    data: { alt },
+    filePath,
+  })
+  payload.logger.info(`Uploaded ${filename}`)
+  return doc.id
+}
+
+function hasImages(product: { images?: Array<{ image?: unknown }> | null }) {
+  return Boolean(product.images?.some((row) => row.image))
+}
+
 async function seed() {
-  if (process.env.NODE_ENV === 'production') {
-    throw new Error('npm run seed is blocked in production. Create the admin user at /admin.')
+  const catalogOnly = process.env.SEED_CATALOG === 'true'
+  if (process.env.NODE_ENV === 'production' && !catalogOnly) {
+    throw new Error(
+      'npm run seed is blocked in production. Create the admin user at /admin, or seed the catalog with SEED_CATALOG=true.',
+    )
   }
 
   const payload = await getPayload({ config })
-  const adminEmail = process.env.SEED_ADMIN_EMAIL?.trim()
-  const adminPassword = process.env.SEED_ADMIN_PASSWORD
-  const adminName = process.env.SEED_ADMIN_NAME?.trim() || 'Store admin'
+  const skipAdmin = process.env.NODE_ENV === 'production' || catalogOnly
 
-  if (adminEmail && adminPassword) {
-    assertStrongPassword(adminPassword)
-    const existingAdmin = await payload.find({
-      collection: 'users',
-      where: { email: { equals: adminEmail } },
-      limit: 1,
-    })
+  if (!skipAdmin) {
+    const adminEmail = process.env.SEED_ADMIN_EMAIL?.trim()
+    const adminPassword = process.env.SEED_ADMIN_PASSWORD
+    const adminName = process.env.SEED_ADMIN_NAME?.trim() || 'Store admin'
 
-    if (existingAdmin.totalDocs === 0) {
-      await payload.create({
+    if (adminEmail && adminPassword) {
+      assertStrongPassword(adminPassword)
+      const existingAdmin = await payload.find({
         collection: 'users',
-        data: {
-          email: adminEmail,
-          password: adminPassword,
-          name: adminName,
-          role: 'admin',
-        },
+        where: { email: { equals: adminEmail } },
+        limit: 1,
       })
-      payload.logger.info(`Created admin user ${adminEmail}`)
+
+      if (existingAdmin.totalDocs === 0) {
+        await payload.create({
+          collection: 'users',
+          data: {
+            email: adminEmail,
+            password: adminPassword,
+            name: adminName,
+            role: 'admin',
+          },
+        })
+        payload.logger.info(`Created admin user ${adminEmail}`)
+      }
+    } else {
+      payload.logger.info(
+        'Skipping admin seed. Create a user at /admin or set SEED_ADMIN_EMAIL and SEED_ADMIN_PASSWORD.',
+      )
     }
   } else {
-    payload.logger.info('Skipping admin seed. Create a user at /admin or set SEED_ADMIN_EMAIL and SEED_ADMIN_PASSWORD.')
+    payload.logger.info('Catalog seed only — admin users are not created.')
   }
 
   const categoryData = [
@@ -82,69 +125,6 @@ async function seed() {
       payload.logger.info(`Created courier ${courier.name}`)
     }
   }
-
-  await payload.updateGlobal({
-    slug: 'site-settings',
-    data: {
-      storeName: 'RumiNZuni',
-      tagline: 'Soft clothes for little explorers',
-      announcement: 'Cash on delivery across Pakistan · Free shipping over Rs 3,000',
-      whatsapp: process.env.SEED_WHATSAPP || undefined,
-      phone: process.env.SEED_PHONE || undefined,
-      email: process.env.SEED_EMAIL || undefined,
-      freeShippingThreshold: 3000,
-      defaultShippingFee: 250,
-      codFee: 0,
-      cityShipping: [
-        { city: 'Karachi', fee: 150 },
-        { city: 'Lahore', fee: 200 },
-        { city: 'Islamabad', fee: 200 },
-        { city: 'Rawalpindi', fee: 200 },
-      ],
-      heroEyebrow: 'Pakistan · Cash on delivery',
-      heroTitle: 'Little outfits, made for everyday play',
-      heroSubtitle:
-        'Breathable kids wear for Pakistani weather. Order on cash on delivery — pay when it arrives.',
-      heroCta: 'Shop new arrivals',
-      heroCtaLink: '/shop',
-      heroSecondaryCta: 'How COD works',
-      heroSecondaryCtaLink: '/shipping',
-      heroOverlayTitle: 'Ages newborn – 12',
-      heroOverlaySubtitle: 'Boys · Girls · Unisex',
-      homeCollections: [
-        { title: 'Boys', copy: 'Polos, sets, and play tees', href: '/shop/boys', category: categories.boys },
-        { title: 'Girls', copy: 'Frocks, two-piece sets, everyday knits', href: '/shop/girls', category: categories.girls },
-        { title: 'Newborn', copy: 'Rompers, sleepsuits, first outfits', href: '/shop/newborn', category: categories.newborn },
-      ],
-      featuredEyebrow: 'Featured',
-      featuredHeading: 'Little bestsellers',
-      featuredCta: 'View all',
-      featuredCtaLink: '/shop',
-      homePromos: [
-        {
-          icon: 'cod',
-          title: 'Cash on delivery',
-          copy: 'Pay the rider in PKR when your parcel arrives. No card needed.',
-        },
-        {
-          icon: 'shipping',
-          title: 'Pakistan-wide',
-          copy: 'We ship to major cities. Free delivery over the store threshold.',
-        },
-        {
-          icon: 'returns',
-          title: 'Easy exchanges',
-          copy: 'Wrong size? Message us on WhatsApp within 3 days of delivery.',
-        },
-      ],
-      homeStoryEyebrow: 'Our story',
-      homeStoryTitle: 'Clothes for play, not fuss',
-      homeStoryBody:
-        'RumiNZuni is a Pakistan kids-wear shop. Soft cotton, easy everyday fits, and cash on delivery — pay the rider when the parcel arrives.',
-      homeStoryCta: 'WhatsApp us',
-      homeStoryCtaLink: '/contact',
-    },
-  })
 
   const tagData = [
     { name: 'Cotton', slug: 'cotton' },
@@ -204,6 +184,8 @@ async function seed() {
       sortPriority: 20,
       tags: [tags.cotton, tags.newborn],
       sizeGuide: newbornGuide.id,
+      imageFile: 'cotton-romper-set.jpg',
+      imageAlt: 'Cream and sage cotton romper set for newborns',
       seo: {
         title: 'Cotton romper set for newborns',
         description: 'Soft cotton romper set for easy newborn changes. Cash on delivery across Pakistan.',
@@ -225,6 +207,8 @@ async function seed() {
       material: 'Printed lawn with cotton lining',
       sortPriority: 18,
       tags: [tags.eid, tags.everyday],
+      imageFile: 'printed-lawn-frock.jpg',
+      imageAlt: 'Blush printed lawn frock for girls',
       variants: [
         { sku: 'RNZ-FRK-3Y-PNK', size: '3y', color: 'Blush', price: 2490, compareAtPrice: 2890, stock: 9 },
         { sku: 'RNZ-FRK-4Y-PNK', size: '4y', color: 'Blush', price: 2490, stock: 7 },
@@ -242,6 +226,8 @@ async function seed() {
       material: 'Cotton pique',
       sortPriority: 16,
       tags: [tags.cotton, tags.everyday],
+      imageFile: 'pique-polo-shirt.jpg',
+      imageAlt: 'Navy cotton pique polo shirt for boys',
       variants: [
         { sku: 'RNZ-PLO-4Y-NVY', size: '4y', color: 'Navy', price: 1690, stock: 14 },
         { sku: 'RNZ-PLO-5Y-NVY', size: '5y', color: 'Navy', price: 1690, stock: 11 },
@@ -256,6 +242,8 @@ async function seed() {
       gender: 'unisex' as const,
       ageGroup: 'kids' as const,
       featured: true,
+      imageFile: 'knit-hoodie.jpg',
+      imageAlt: 'Heather grey kids knit hoodie',
       variants: [
         { sku: 'RNZ-HOD-3Y-GRY', size: '3y', color: 'Heather grey', price: 2290, stock: 8 },
         { sku: 'RNZ-HOD-5Y-GRY', size: '5y', color: 'Heather grey', price: 2490, stock: 8 },
@@ -270,6 +258,8 @@ async function seed() {
       gender: 'boys' as const,
       ageGroup: 'kids' as const,
       featured: false,
+      imageFile: 'two-piece-linen-suit.jpg',
+      imageAlt: 'Beige two-piece linen-look suit for boys',
       variants: [
         { sku: 'RNZ-SUT-2Y-BGE', size: '2y', color: 'Beige', price: 3290, stock: 6 },
         { sku: 'RNZ-SUT-3Y-BGE', size: '3y', color: 'Beige', price: 3290, stock: 6 },
@@ -284,33 +274,167 @@ async function seed() {
       gender: 'unisex' as const,
       ageGroup: 'infant' as const,
       featured: false,
+      imageFile: 'zip-sleepsuit.jpg',
+      imageAlt: 'Ivory full-zip sleepsuit for infants',
       variants: [
         { sku: 'RNZ-SLP-03-IVR', size: '0-3m', color: 'Ivory', price: 1590, stock: 15 },
         { sku: 'RNZ-SLP-36-IVR', size: '3-6m', color: 'Ivory', price: 1590, stock: 12 },
         { sku: 'RNZ-SLP-69-MNT', size: '6-9m', color: 'Mint', price: 1690, stock: 7 },
       ],
     },
+    {
+      title: 'Girls cotton play set',
+      slug: 'girls-cotton-play-set',
+      description: 'Matching top and shorts for warm days. Sample placeholder — replace with your own girls styles later.',
+      category: categories.girls,
+      gender: 'girls' as const,
+      ageGroup: 'toddler' as const,
+      featured: false,
+      material: 'Cotton jersey',
+      sortPriority: 14,
+      tags: [tags.cotton, tags.everyday],
+      imageFile: 'girls-play-set.jpg',
+      imageAlt: 'Blush cotton two-piece play set for girls',
+      variants: [
+        { sku: 'RNZ-PLY-2Y-PNK', size: '2y', color: 'Blush', price: 2190, stock: 8 },
+        { sku: 'RNZ-PLY-3Y-PNK', size: '3y', color: 'Blush', price: 2190, stock: 8 },
+        { sku: 'RNZ-PLY-4Y-COR', size: '4y', color: 'Coral', price: 2290, stock: 6 },
+      ],
+    },
+    {
+      title: 'Cotton jersey tee',
+      slug: 'cotton-jersey-tee',
+      description: 'Everyday crew-neck tee in breathable cotton. Sample placeholder — replace with your own unisex basics later.',
+      category: categories.unisex,
+      gender: 'unisex' as const,
+      ageGroup: 'kids' as const,
+      featured: false,
+      material: '100% cotton jersey',
+      sortPriority: 12,
+      tags: [tags.cotton, tags.everyday],
+      imageFile: 'cotton-jersey-tee.jpg',
+      imageAlt: 'Cream and sage unisex cotton jersey t-shirts',
+      variants: [
+        { sku: 'RNZ-TEE-3Y-CRM', size: '3y', color: 'Cream', price: 1290, stock: 12 },
+        { sku: 'RNZ-TEE-5Y-SGE', size: '5y', color: 'Sage', price: 1290, stock: 10 },
+        { sku: 'RNZ-TEE-78-CRM', size: '7-8y', color: 'Cream', price: 1390, stock: 8 },
+      ],
+    },
   ]
 
+  const productIds: Array<string | number> = []
+  const featuredIds: Array<string | number> = []
+
   for (const product of products) {
+    const { imageFile, imageAlt, ...data } = product
+    const imageId = await upsertMedia(payload, imageFile, imageAlt)
+    const images = [{ image: imageId }]
     const found = await payload.find({
       collection: 'products',
       where: { slug: { equals: product.slug } },
       limit: 1,
     })
+
     if (found.totalDocs === 0) {
-      await payload.create({
+      const created = await payload.create({
         collection: 'products',
         data: {
-          ...product,
+          ...data,
+          images,
           _status: 'published',
         },
       })
+      productIds.push(created.id)
+      if (product.featured) featuredIds.push(created.id)
       payload.logger.info(`Created product ${product.title}`)
+      continue
+    }
+
+    const existing = found.docs[0]
+    productIds.push(existing.id)
+    if (product.featured) featuredIds.push(existing.id)
+
+    if (!hasImages(existing)) {
+      await payload.update({
+        collection: 'products',
+        id: existing.id,
+        data: { images, _status: 'published' },
+      })
+      payload.logger.info(`Added photo to ${product.title}`)
     }
   }
 
-  payload.logger.info('Seed complete. Create or use an admin user at /admin — credentials are never logged.')
+  const settingsData: Record<string, unknown> = {
+    storeName: 'RumiNZuni',
+    tagline: 'Soft clothes for little explorers',
+    announcement: 'Cash on delivery across Pakistan · Free shipping over Rs 3,000',
+    freeShippingThreshold: 3000,
+    defaultShippingFee: 250,
+    codFee: 0,
+    cityShipping: [
+      { city: 'Karachi', fee: 150 },
+      { city: 'Lahore', fee: 200 },
+      { city: 'Islamabad', fee: 200 },
+      { city: 'Rawalpindi', fee: 200 },
+    ],
+    heroEyebrow: 'Pakistan · Cash on delivery',
+    heroTitle: 'Little outfits, made for everyday play',
+    heroSubtitle:
+      'Breathable kids wear for Pakistani weather. Order on cash on delivery — pay when it arrives.',
+    heroCta: 'Shop new arrivals',
+    heroCtaLink: '/shop',
+    heroSecondaryCta: 'How COD works',
+    heroSecondaryCtaLink: '/shipping',
+    heroOverlayTitle: 'Ages newborn – 12',
+    heroOverlaySubtitle: 'Boys · Girls · Unisex',
+    homeCollections: [
+      { title: 'Boys', copy: 'Polos, sets, and play tees', href: '/shop/boys', category: categories.boys },
+      { title: 'Girls', copy: 'Frocks, two-piece sets, everyday knits', href: '/shop/girls', category: categories.girls },
+      { title: 'Newborn', copy: 'Rompers, sleepsuits, first outfits', href: '/shop/newborn', category: categories.newborn },
+      { title: 'Unisex', copy: 'Soft basics for everyone', href: '/shop/unisex', category: categories.unisex },
+    ],
+    featuredEyebrow: 'Featured',
+    featuredHeading: 'Little bestsellers',
+    featuredCta: 'View all',
+    featuredCtaLink: '/shop',
+    homeFeaturedProducts: featuredIds,
+    homePromos: [
+      {
+        icon: 'cod',
+        title: 'Cash on delivery',
+        copy: 'Pay the rider in PKR when your parcel arrives. No card needed.',
+      },
+      {
+        icon: 'shipping',
+        title: 'Pakistan-wide',
+        copy: 'We ship to major cities. Free delivery over the store threshold.',
+      },
+      {
+        icon: 'returns',
+        title: 'Easy exchanges',
+        copy: 'Wrong size? Message us on WhatsApp within 3 days of delivery.',
+      },
+    ],
+    homeStoryEyebrow: 'Our story',
+    homeStoryTitle: 'Clothes for play, not fuss',
+    homeStoryBody:
+      'RumiNZuni is a Pakistan kids-wear shop. Soft cotton, easy everyday fits, and cash on delivery — pay the rider when the parcel arrives.',
+    homeStoryCta: 'WhatsApp us',
+    homeStoryCtaLink: '/contact',
+  }
+
+  if (process.env.SEED_WHATSAPP) settingsData.whatsapp = process.env.SEED_WHATSAPP
+  if (process.env.SEED_PHONE) settingsData.phone = process.env.SEED_PHONE
+  if (process.env.SEED_EMAIL) settingsData.email = process.env.SEED_EMAIL
+
+  await payload.updateGlobal({
+    slug: 'site-settings',
+    data: settingsData,
+  })
+
+  payload.logger.info(
+    `Seed complete. ${productIds.length} sample products with photos. Create or use an admin user at /admin — credentials are never logged.`,
+  )
   process.exit(0)
 }
 

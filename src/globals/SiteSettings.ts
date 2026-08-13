@@ -196,7 +196,7 @@ export const SiteSettings: GlobalConfig = {
                   type: 'array',
                   labels: { singular: 'Collection', plural: 'Collections' },
                   admin: {
-                    description: 'Empty uses Boys / Girls / Newborn. Fill this to replace those cards.',
+                    description: 'Empty uses Boys / Girls / Newborn / Unisex. Fill this to replace those cards.',
                   },
                   fields: [
                     { name: 'title', type: 'text', required: true },

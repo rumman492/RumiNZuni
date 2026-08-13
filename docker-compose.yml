@@ -32,6 +32,25 @@ services:
     volumes:
       - ./media:/app/media
 
+  seed:
+    profiles: ['seed']
+    build:
+      context: .
+      dockerfile: Dockerfile.seed
+    env_file:
+      - .env
+    environment:
+      NODE_ENV: production
+      SEED_CATALOG: 'true'
+      DATABASE_URL: postgresql://ruminzuni:${POSTGRES_PASSWORD}@postgres:5432/ruminzuni
+      PAYLOAD_SECRET: ${PAYLOAD_SECRET}
+      NEXT_PUBLIC_SERVER_URL: https://ruminzuni.com
+    volumes:
+      - ./media:/app/media
+    depends_on:
+      postgres:
+        condition: service_healthy
+
   caddy:
     image: caddy:2-alpine
     restart: unless-stopped
