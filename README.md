@@ -6,7 +6,7 @@ Kids wear store for Pakistan. Shoppers pay **cash on delivery**. Staff manage ca
 
 - Next.js 15 (App Router) + TypeScript + Tailwind CSS
 - Payload CMS 3 (admin at `/admin`)
-- SQLite for local zero-setup, PostgreSQL for production
+- PostgreSQL for catalog, orders, and admin users
 - COD checkout with PK phone, city, and address fields
 
 ## Run locally
@@ -38,7 +38,7 @@ Open:
 
 ## Go live
 
-Local laptop = **SQLite**. Live site = **PostgreSQL** on a VPS (not Vercel).
+Live site = **PostgreSQL** on a VPS (not Vercel).
 
 Full steps for `ruminzuni.com`: see [DEPLOY.md](./DEPLOY.md).
 

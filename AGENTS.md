@@ -6,8 +6,7 @@ Kids wear store for **Pakistan**, **cash on delivery only**. Shoppers pay the ri
 
 - Next.js 15 App Router + TypeScript + Tailwind CSS v4
 - Payload CMS 3 (admin at `/admin`)
-- Local DB: SQLite via `DATABASE_URL=file:./ruminzuni.db`
-- Production DB: PostgreSQL (`DATABASE_URL=postgresql://...`, see `docker-compose.yml`)
+- Database: PostgreSQL only (`DATABASE_URL=postgresql://...`, see `docker-compose.yml`)
 
 ## Layout
 
@@ -32,7 +31,7 @@ npm run seed
 
 Copy `.env.example` to `.env`. Never commit `.env`.
 
-Live site uses **PostgreSQL** + Docker on a VPS (`ruminzuni.com`). Follow `DEPLOY.md`. Do not deploy SQLite. Do not use Vercel for this app.
+Live site uses **PostgreSQL** + Docker on a VPS (`ruminzuni.com`). Follow `DEPLOY.md`. Do not use Vercel for this app.
 
 ## Product and order rules
 

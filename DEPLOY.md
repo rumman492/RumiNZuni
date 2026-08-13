@@ -1,15 +1,8 @@
 # Go live on ruminzuni.com
 
-## SQLite vs PostgreSQL
+## Database
 
-| | Local (this laptop) | Live website |
-|---|---|---|
-| Database | **SQLite** (`ruminzuni.db` file) | **PostgreSQL** |
-| Why | Zero install, fine for testing | Handles orders, admin users, concurrent visitors |
-
-SQLite is a single file. It is **not** for production. Docker on the VPS runs PostgreSQL. Payload already switches automatically: if `DATABASE_URL` starts with `file:` it uses SQLite; if it starts with `postgresql://` it uses Postgres.
-
-Your local products/orders do **not** copy over. After go-live, create the real catalog in **Admin** on the live site (or run `npm run seed` once against Postgres).
+The site uses **PostgreSQL** only (local and live). Docker on the VPS runs Postgres. Local products/orders do **not** copy over. After go-live, create the real catalog in **Admin** on the live site.
 
 ## Hosting (cheaper than Vercel)
 

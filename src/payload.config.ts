@@ -1,5 +1,4 @@
 import path from 'path'
-import { createRequire } from 'node:module'
 import { fileURLToPath } from 'url'
 import { postgresAdapter } from '@payloadcms/db-postgres'
 import { lexicalEditor } from '@payloadcms/richtext-lexical'
@@ -14,25 +13,10 @@ import { Pages } from './collections/Pages'
 import { SiteSettings } from './globals/SiteSettings'
 import { checkoutHandler, trackOrderHandler } from './endpoints/checkout'
 
-const require = createRequire(import.meta.url)
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
-const databaseUrl = process.env.DATABASE_URL || 'file:./ruminzuni.db'
+const databaseUrl = process.env.DATABASE_URL || 'postgresql://ruminzuni:ruminzuni@127.0.0.1:5432/ruminzuni'
 const serverURL = process.env.NEXT_PUBLIC_SERVER_URL || 'http://localhost:3000'
-
-function createDatabaseAdapter() {
-  if (databaseUrl.startsWith('postgres')) {
-    return postgresAdapter({
-      pool: { connectionString: databaseUrl },
-      push: process.env.PAYLOAD_DB_PUSH !== 'false',
-    })
-  }
-
-  const { sqliteAdapter } = require('@payloadcms/db-sqlite') as typeof import('@payloadcms/db-sqlite')
-  return sqliteAdapter({
-    client: { url: databaseUrl },
-  })
-}
 
 export default buildConfig({
   serverURL,
@@ -54,7 +38,12 @@ export default buildConfig({
   typescript: {
     outputFile: path.resolve(dirname, 'payload-types.ts'),
   },
-  db: createDatabaseAdapter(),
+  db: postgresAdapter({
+    pool: {
+      connectionString: databaseUrl,
+    },
+    push: process.env.PAYLOAD_DB_PUSH !== 'false',
+  }),
   sharp,
   endpoints: [
     {
