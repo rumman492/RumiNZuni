@@ -17,9 +17,26 @@ const securityHeaders = [
   },
 ]
 
+const payloadStandaloneIncludes = [
+  'graphql',
+  'pino',
+  'pino-pretty',
+  'sharp',
+  'payload',
+  '@payloadcms/next',
+  '@payloadcms/ui',
+  '@payloadcms/db-postgres',
+  '@payloadcms/drizzle',
+  '@payloadcms/graphql',
+  '@payloadcms/richtext-lexical',
+]
+
 const nextConfig: NextConfig = {
   output: 'standalone',
   poweredByHeader: false,
+  outputFileTracingIncludes: {
+    '**/*': payloadStandaloneIncludes,
+  },
   images: {
     localPatterns: [{ pathname: '/api/media/file/**' }],
   },

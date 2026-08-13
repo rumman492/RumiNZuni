@@ -9,7 +9,13 @@ export default async function DashboardStats({ payload, user }: ServerProps) {
   if (!user || !payload) return null
 
   const adminRoute = payload.config.routes.admin || '/admin'
-  const data = await getAdminDashboardData(payload)
+  let data
+  try {
+    data = await getAdminDashboardData(payload)
+  } catch (error) {
+    payload.logger.error({ err: error, msg: 'Admin dashboard stats failed.' })
+    return null
+  }
   const orders = formatAdminURL({ adminRoute, path: '/collections/orders' })
   const products = formatAdminURL({ adminRoute, path: '/collections/products' })
   const newProduct = formatAdminURL({ adminRoute, path: '/collections/products/create' })

@@ -18,15 +18,20 @@ import { checkoutHandler, trackOrderHandler } from './endpoints/checkout'
 import { mediaStoragePlugins } from './lib/storage'
 import { siteOrigin } from './lib/site'
 
+function runtimeEnv(name: string) {
+  return process.env[name]
+}
+
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
-const databaseUrl = process.env.DATABASE_URL || 'postgresql://ruminzuni:ruminzuni@127.0.0.1:5432/ruminzuni'
+const databaseUrl = runtimeEnv('DATABASE_URL') || 'postgresql://ruminzuni:ruminzuni@127.0.0.1:5432/ruminzuni'
 const serverURL = siteOrigin()
+const payloadSecret = runtimeEnv('PAYLOAD_SECRET') || ''
 
 export default buildConfig({
   serverURL,
-  cors: [serverURL],
-  csrf: [serverURL],
+  cors: [serverURL, 'https://ruminzuni.com'],
+  csrf: [serverURL, 'https://ruminzuni.com'],
   telemetry: false,
   graphQL: {
     disablePlaygroundInProduction: true,
@@ -48,7 +53,7 @@ export default buildConfig({
   collections: [Users, Media, Categories, Products, Tags, SizeGuides, Orders, Couriers, Pages],
   globals: [SiteSettings],
   editor: lexicalEditor(),
-  secret: process.env.PAYLOAD_SECRET || '',
+  secret: payloadSecret,
   typescript: {
     outputFile: path.resolve(dirname, 'payload-types.ts'),
   },
@@ -56,7 +61,7 @@ export default buildConfig({
     pool: {
       connectionString: databaseUrl,
     },
-    push: process.env.PAYLOAD_DB_PUSH !== 'false',
+    push: runtimeEnv('PAYLOAD_DB_PUSH') !== 'false',
   }),
   sharp,
   plugins: [...mediaStoragePlugins()],
