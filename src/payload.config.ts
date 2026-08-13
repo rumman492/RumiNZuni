@@ -34,6 +34,9 @@ export default buildConfig({
     meta: {
       titleSuffix: ' — RumiNZuni',
     },
+    components: {
+      beforeDashboard: ['/components/admin/DashboardStats'],
+    },
   },
   collections: [Users, Media, Categories, Products, Tags, SizeGuides, Orders, Couriers, Pages],
   globals: [SiteSettings],

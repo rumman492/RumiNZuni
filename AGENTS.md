@@ -12,6 +12,7 @@ Kids wear store for **Pakistan**, **cash on delivery only**. Shoppers pay the ri
 
 - Storefront: `src/app/(storefront)/`
 - Admin + Payload API: `src/app/(payload)/`
+- Admin dashboard stats: `src/components/admin/DashboardStats.tsx` (`beforeDashboard` — today's COD orders/sales, pipeline counts, low stock)
 - Collections: `src/collections/` (Users, Media, Categories, Products, Tags, Size guides, Orders, Couriers, Pages)
 - Store settings global: `src/globals/SiteSettings.ts` (Homepage tab drives hero, collections, featured products, promos, and story copy)
 - COD checkout (server-verified prices/stock): `src/endpoints/checkout.ts`
