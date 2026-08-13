@@ -9,5 +9,6 @@ Pakistan kids wear store. Cash on delivery only (no Stripe unless explicitly req
 
 - Next.js 15 + Payload CMS 3 + TypeScript + Tailwind. Admin is `/admin`.
 - Read `AGENTS.md` for stack, folders, commands, and COD/order rules.
-- Never commit `.env`. Verify prices and stock on the server in checkout.
+- Never commit `.env`. Never document default admin passwords. Production needs unique `PAYLOAD_SECRET` and `POSTGRES_PASSWORD`.
+- Verify prices and stock on the server in checkout.
 - PKR + Pakistani mobile numbers. Reuse `src/lib/pakistan.ts`.

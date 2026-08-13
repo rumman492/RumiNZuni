@@ -1,13 +1,26 @@
-import type { CollectionConfig } from 'payload'
+import { APIError, type CollectionBeforeValidateHook, type CollectionConfig } from 'payload'
 import { isAdmin } from '@/access/isAdmin'
+import { assertStrongPassword } from '@/lib/env'
 
 const isProduction = process.env.NODE_ENV === 'production'
+
+const requireStrongPassword: CollectionBeforeValidateHook = ({ data }) => {
+  if (data && typeof data.password === 'string' && data.password.length > 0) {
+    try {
+      assertStrongPassword(data.password)
+    } catch (error) {
+      throw new APIError(error instanceof Error ? error.message : 'Choose a stronger password.', 400)
+    }
+  }
+  return data
+}
 
 export const Users: CollectionConfig = {
   slug: 'users',
   admin: {
     useAsTitle: 'email',
     group: 'Staff',
+    description: 'Create the first admin on this screen. Use a unique 12+ character password.',
   },
   auth: {
     tokenExpiration: 60 * 60 * 8,
@@ -18,6 +31,9 @@ export const Users: CollectionConfig = {
       sameSite: 'Lax',
       secure: isProduction,
     },
+  },
+  hooks: {
+    beforeValidate: [requireStrongPassword],
   },
   access: {
     admin: ({ req: { user } }) => Boolean(user),

@@ -1,7 +1,7 @@
 import { createHmac, timingSafeEqual } from 'crypto'
-
+import { productionPayloadSecret } from '@/lib/env'
 function secret() {
-  return process.env.PAYLOAD_SECRET || ''
+  return productionPayloadSecret()
 }
 
 export function createOrderAccessToken(orderNumber: string) {

@@ -10,32 +10,37 @@ export const metadata = pageMeta({
 })
 
 export default async function ContactPage() {
-  let whatsapp = '03001234567'
-  let phone = '03001234567'
-  let email = 'hello@ruminzuni.com'
+  let whatsapp: string | null = null
+  let phone: string | null = null
+  let email: string | null = null
   try {
     const settings = await getSettings()
-    whatsapp = String(settings.whatsapp || whatsapp)
-    phone = String(settings.phone || phone)
-    email = String(settings.email || email)
+    whatsapp = settings.whatsapp || null
+    phone = settings.phone || null
+    email = settings.email || null
   } catch {
-    // defaults
+    // Store settings unavailable
   }
 
   return (
     <article className="mx-auto max-w-2xl space-y-4">
       <Breadcrumbs items={[{ name: 'Home', href: '/' }, { name: 'Contact', href: '/contact' }]} />
       <h1 className="display text-5xl">Contact</h1>
-      <p>Questions about size, stock, or an order? Message us on WhatsApp — that is the fastest way.</p>
-      <p>WhatsApp: {whatsapp}</p>
-      <p>Phone: {phone}</p>
-      <p>Email: {email}</p>
-      <a
-        href={`https://wa.me/${toWhatsAppNumber(whatsapp)}`}
-        className="inline-block rounded-full bg-sage px-6 py-3 text-sm font-bold text-white"
-      >
-        Chat on WhatsApp
-      </a>
+      <p>Questions about size, stock, or an order? WhatsApp is the fastest way once the shop number is published.</p>
+      {whatsapp ? <p>WhatsApp: {whatsapp}</p> : null}
+      {phone ? <p>Phone: {phone}</p> : null}
+      {email ? <p>Email: {email}</p> : null}
+      {!whatsapp && !phone && !email ? (
+        <p className="text-ink-soft">Contact details will appear here after they are added in Store settings.</p>
+      ) : null}
+      {whatsapp ? (
+        <a
+          href={`https://wa.me/${toWhatsAppNumber(whatsapp)}`}
+          className="inline-block rounded-full bg-sage px-6 py-3 text-sm font-bold text-white"
+        >
+          Chat on WhatsApp
+        </a>
+      ) : null}
     </article>
   )
 }

@@ -13,7 +13,7 @@ Kids wear store for Pakistan. Shoppers pay **cash on delivery**. Staff manage ca
 
 Node.js 20+ is required. If `node` is not on your PATH, a portable copy lives at `%USERPROFILE%\source\tools\node`.
 
-1. Copy `.env.example` to `.env` (already done for this repo).
+1. Copy `.env.example` to `.env` and set `PAYLOAD_SECRET` (`openssl rand -hex 32`). Never commit `.env`.
 2. Install dependencies and start the app:
 
 ```bash
@@ -23,7 +23,9 @@ npm run dev
 
 On this Windows machine you can also run `.\dev.ps1` from the project folder.
 
-3. In another terminal, seed sample products and an admin user:
+3. Open [http://localhost:3000/admin](http://localhost:3000/admin) and create the first admin user. Use a unique password with at least 12 characters, mixed case, and a number.
+
+4. Optional local catalog seed (does not create an admin unless `SEED_ADMIN_EMAIL` and `SEED_ADMIN_PASSWORD` are in `.env`):
 
 ```bash
 npm run seed
@@ -33,8 +35,6 @@ Open:
 
 - Store: [http://localhost:3000](http://localhost:3000)
 - Admin CMS: [http://localhost:3000/admin](http://localhost:3000/admin)
-  - Email: `admin@ruminzuni.com`
-  - Password: `ChangeMeNow1` (change this after first login)
 
 ## Go live
 

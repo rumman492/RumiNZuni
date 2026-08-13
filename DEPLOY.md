@@ -23,7 +23,7 @@ Code cannot finish these:
 
 1. Buy the VPS and SSH in.
 2. Point DNS: `ruminzuni.com` and `www` **A records** to the VPS IP.
-3. Change the admin password.
+3. Create the first admin at `/admin` with a unique password. Never reuse documented examples.
 4. Put your real WhatsApp number in **Admin → Store settings**.
 5. Upload real product photos.
 6. Set city shipping rates.
@@ -42,13 +42,13 @@ cd RumiNZuni
 nano .env
 ```
 
-Put this in `.env` (use your own long passwords):
+Put this in `.env`. Generate secrets on the VPS with `openssl rand -hex 32` — do not paste example passwords.
 
 ```
-POSTGRES_PASSWORD=change-me-strong
-PAYLOAD_SECRET=change-me-even-longer
+POSTGRES_PASSWORD=
+PAYLOAD_SECRET=
 NEXT_PUBLIC_SERVER_URL=https://ruminzuni.com
-PAYLOAD_DB_PUSH=true
+PAYLOAD_DB_PUSH=false
 
 # Optional outbound notifications. Leave off until credentials are ready.
 # Customer WhatsApp confirmation uses Admin → Store settings (no API key).

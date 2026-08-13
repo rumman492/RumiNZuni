@@ -45,7 +45,7 @@ describe('Pakistan helpers', () => {
   })
 
   it('validates optional emails and clamps unsafe text', () => {
-    expect(isValidEmail('hello@ruminzuni.com')).toBe(true)
+    expect(isValidEmail('owner@example.com')).toBe(true)
     expect(isValidEmail('not-an-email')).toBe(false)
     expect(clampText('  Ayesha\u0000Khan  ', 80)).toBe('AyeshaKhan')
   })

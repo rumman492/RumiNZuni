@@ -18,16 +18,20 @@ import { checkoutHandler, trackOrderHandler } from './endpoints/checkout'
 import { mediaStoragePlugins } from './lib/storage'
 import { siteOrigin } from './lib/site'
 import { migrations } from './migrations'
+import {
+  assertProductionEnv,
+  productionDatabaseUrl,
+  productionPayloadSecret,
+  runtimeEnv,
+} from './lib/env'
 
-function runtimeEnv(name: string) {
-  return process.env[name]
-}
+assertProductionEnv()
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
-const databaseUrl = runtimeEnv('DATABASE_URL') || 'postgresql://ruminzuni:ruminzuni@127.0.0.1:5432/ruminzuni'
+const databaseUrl = productionDatabaseUrl()
 const serverURL = siteOrigin()
-const payloadSecret = runtimeEnv('PAYLOAD_SECRET') || ''
+const payloadSecret = productionPayloadSecret()
 
 export default buildConfig({
   serverURL,

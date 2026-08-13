@@ -1,27 +1,40 @@
 import 'dotenv/config'
 import { getPayload } from 'payload'
 import config from './payload.config'
+import { assertStrongPassword } from './lib/env'
 
 async function seed() {
+  if (process.env.NODE_ENV === 'production') {
+    throw new Error('npm run seed is blocked in production. Create the admin user at /admin.')
+  }
+
   const payload = await getPayload({ config })
+  const adminEmail = process.env.SEED_ADMIN_EMAIL?.trim()
+  const adminPassword = process.env.SEED_ADMIN_PASSWORD
+  const adminName = process.env.SEED_ADMIN_NAME?.trim() || 'Store admin'
 
-  const existingAdmin = await payload.find({
-    collection: 'users',
-    where: { email: { equals: 'admin@ruminzuni.com' } },
-    limit: 1,
-  })
-
-  if (existingAdmin.totalDocs === 0) {
-    await payload.create({
+  if (adminEmail && adminPassword) {
+    assertStrongPassword(adminPassword)
+    const existingAdmin = await payload.find({
       collection: 'users',
-      data: {
-        email: 'admin@ruminzuni.com',
-        password: 'ChangeMeNow1',
-        name: 'RumiNZuni Admin',
-        role: 'admin',
-      },
+      where: { email: { equals: adminEmail } },
+      limit: 1,
     })
-    payload.logger.info('Created admin@ruminzuni.com / ChangeMeNow1')
+
+    if (existingAdmin.totalDocs === 0) {
+      await payload.create({
+        collection: 'users',
+        data: {
+          email: adminEmail,
+          password: adminPassword,
+          name: adminName,
+          role: 'admin',
+        },
+      })
+      payload.logger.info(`Created admin user ${adminEmail}`)
+    }
+  } else {
+    payload.logger.info('Skipping admin seed. Create a user at /admin or set SEED_ADMIN_EMAIL and SEED_ADMIN_PASSWORD.')
   }
 
   const categoryData = [
@@ -76,9 +89,9 @@ async function seed() {
       storeName: 'RumiNZuni',
       tagline: 'Soft clothes for little explorers',
       announcement: 'Cash on delivery across Pakistan · Free shipping over Rs 3,000',
-      whatsapp: '03001234567',
-      phone: '03001234567',
-      email: 'hello@ruminzuni.com',
+      whatsapp: process.env.SEED_WHATSAPP || undefined,
+      phone: process.env.SEED_PHONE || undefined,
+      email: process.env.SEED_EMAIL || undefined,
       freeShippingThreshold: 3000,
       defaultShippingFee: 250,
       codFee: 0,
@@ -297,7 +310,7 @@ async function seed() {
     }
   }
 
-  payload.logger.info('Seed complete. Admin: admin@ruminzuni.com / ChangeMeNow1')
+  payload.logger.info('Seed complete. Create or use an admin user at /admin — credentials are never logged.')
   process.exit(0)
 }
 

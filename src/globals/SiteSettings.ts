@@ -36,12 +36,21 @@ export const SiteSettings: GlobalConfig = {
             {
               name: 'whatsapp',
               type: 'text',
-              required: true,
-              defaultValue: '03001234567',
-              admin: { description: 'Used for order WhatsApp buttons (03XXXXXXXXX)' },
+              admin: {
+                description:
+                  'Pakistani mobile for order WhatsApp buttons (03XXXXXXXXX). Leave empty until you have the real shop number.',
+              },
             },
-            { name: 'phone', type: 'text', defaultValue: '03001234567' },
-            { name: 'email', type: 'email', defaultValue: 'hello@ruminzuni.com' },
+            {
+              name: 'phone',
+              type: 'text',
+              admin: { description: 'Public shop phone. Leave empty if you only use WhatsApp.' },
+            },
+            {
+              name: 'email',
+              type: 'email',
+              admin: { description: 'Public shop email. Leave empty until the real inbox exists.' },
+            },
             { name: 'instagram', type: 'text' },
             { name: 'facebook', type: 'text' },
           ],
