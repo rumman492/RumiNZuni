@@ -1,0 +1,13 @@
+---
+description: RumiNZuni project context for every chat
+alwaysApply: true
+---
+
+# RumiNZuni
+
+Pakistan kids wear store. Cash on delivery only (no Stripe unless explicitly requested).
+
+- Next.js 15 + Payload CMS 3 + TypeScript + Tailwind. Admin is `/admin`.
+- Read `AGENTS.md` for stack, folders, commands, and COD/order rules.
+- Never commit `.env`. Verify prices and stock on the server in checkout.
+- PKR + Pakistani mobile numbers. Reuse `src/lib/pakistan.ts`.
