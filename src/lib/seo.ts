@@ -1,11 +1,11 @@
 import type { Metadata } from 'next'
 import { mediaUrl } from '@/lib/media'
-import { absoluteMediaUrl, absoluteUrl, siteOrigin, socialProfileUrl } from '@/lib/site'
+import { absoluteMediaUrl, absoluteUrl, siteOrigin, socialProfileUrl, STORE_NAME } from '@/lib/site'
 import type { ProductDoc } from '@/lib/products'
 
-export const DEFAULT_TITLE = 'RumiNZuni — Kids wear, cash on delivery'
+export const DEFAULT_TITLE = `${STORE_NAME} — Kids wear, cash on delivery`
 export const DEFAULT_DESCRIPTION =
-  'RumiNZuni sells kids wear across Pakistan on cash on delivery. Soft everyday outfits for newborn to 12 years.'
+  `${STORE_NAME} sells kids wear across Pakistan on cash on delivery. Soft everyday outfits for newborn to 12 years.`
 
 export const noIndexRobots = {
   index: false,
@@ -41,7 +41,7 @@ export function pageMeta(opts: {
       type: opts.ogType || 'website',
       locale: 'en_PK',
       url,
-      siteName: 'RumiNZuni',
+      siteName: STORE_NAME,
       title: opts.title,
       description: opts.description,
       images: image ? [{ url: image, alt: opts.title }] : undefined,
@@ -96,8 +96,8 @@ export function organizationJsonLd(settings?: SettingsLike | null) {
   return {
     '@context': 'https://schema.org',
     '@type': ['Organization', 'OnlineStore'],
-    name: settings?.storeName || 'RumiNZuni',
-    alternateName: 'Rumi NZ uni',
+    name: settings?.storeName || STORE_NAME,
+    alternateName: 'RumiNZuni',
     url: origin,
     description: settings?.tagline || DEFAULT_DESCRIPTION,
     logo: logo || undefined,
@@ -119,7 +119,7 @@ export function websiteJsonLd(settings?: SettingsLike | null) {
   return {
     '@context': 'https://schema.org',
     '@type': 'WebSite',
-    name: settings?.storeName || 'RumiNZuni',
+    name: settings?.storeName || STORE_NAME,
     url: origin,
     description: settings?.tagline || DEFAULT_DESCRIPTION,
     inLanguage: 'en-PK',
@@ -145,12 +145,12 @@ export function productJsonLd(product: ProductDoc) {
   const low = prices.length ? Math.min(...prices) : 0
   const high = prices.length ? Math.max(...prices) : 0
   const sku = variants[0]?.sku
-  const brand = { '@type': 'Brand', name: 'RumiNZuni' }
+  const brand = { '@type': 'Brand', name: STORE_NAME }
   const category =
     typeof product.category === 'object' && product.category?.name ? product.category.name : undefined
   const seller = {
     '@type': 'Organization',
-    name: 'RumiNZuni',
+    name: STORE_NAME,
     url: siteOrigin(),
   }
 

@@ -55,7 +55,7 @@ export default buildConfig({
       baseDir: path.resolve(dirname),
     },
     meta: {
-      titleSuffix: ' — RumiNZuni',
+      titleSuffix: ' — Rumi & Zuni',
     },
     components: {
       beforeDashboard: ['/components/admin/DashboardStats'],

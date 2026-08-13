@@ -14,7 +14,7 @@ export async function generateMetadata({
   const { orderNumber } = await params
   return pageMeta({
     title: `Order ${orderNumber}`,
-    description: 'Your RumiNZuni cash-on-delivery order was placed.',
+    description: 'Your Rumi & Zuni cash-on-delivery order was placed.',
     path: `/order/${orderNumber}`,
     index: false,
     follow: false,

@@ -4,7 +4,7 @@ import { pageMeta } from '@/lib/seo'
 export const metadata = pageMeta({
   title: 'Returns & exchanges',
   description:
-    'Wrong size or a stitching issue? WhatsApp RumiNZuni within 3 days of delivery for an exchange.',
+    'Wrong size or a stitching issue? WhatsApp Rumi & Zuni within 3 days of delivery for an exchange.',
   path: '/returns',
 })
 

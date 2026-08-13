@@ -1,4 +1,6 @@
 import Link from 'next/link'
+import { BrandMark } from '@/components/BrandMark'
+import { STORE_NAME } from '@/lib/site'
 
 export function Footer({
   whatsapp,
@@ -13,7 +15,9 @@ export function Footer({
     <footer className="mt-20 border-t border-sand bg-sand/50">
       <div className="mx-auto grid max-w-6xl gap-10 px-4 py-12 md:grid-cols-4">
         <div className="md:col-span-2">
-          <p className="display text-2xl">RumiNZuni</p>
+          <p className="display text-2xl">
+            <BrandMark />
+          </p>
           <p className="mt-3 max-w-md text-sm leading-6 text-ink-soft">
             Kids wear made for Pakistani weather — soft cotton, easy everyday fits, and cash on
             delivery nationwide. Pay when your parcel arrives.
@@ -42,7 +46,7 @@ export function Footer({
         </div>
       </div>
       <p className="border-t border-sand px-4 py-4 text-center text-xs text-ink-soft">
-        © {new Date().getFullYear()} RumiNZuni. Cash on delivery across Pakistan.
+        © {new Date().getFullYear()} {STORE_NAME}. Cash on delivery across Pakistan.
       </p>
     </footer>
   )

@@ -4,7 +4,7 @@ import { pageMeta } from '@/lib/seo'
 
 export const metadata = pageMeta({
   title: 'Checkout',
-  description: 'Place a RumiNZuni cash-on-delivery order. Pay the rider in PKR when your parcel arrives.',
+  description: 'Place a Rumi & Zuni cash-on-delivery order. Pay the rider in PKR when your parcel arrives.',
   path: '/checkout',
   index: false,
   follow: false,

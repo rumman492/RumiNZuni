@@ -7,7 +7,7 @@ import { JsonLd } from '@/components/JsonLd'
 import { mediaUrl } from '@/lib/media'
 import { getSettings } from '@/lib/products'
 import { DEFAULT_DESCRIPTION, DEFAULT_TITLE, organizationJsonLd, websiteJsonLd } from '@/lib/seo'
-import { absoluteMediaUrl, siteOrigin } from '@/lib/site'
+import { absoluteMediaUrl, siteOrigin, STORE_NAME } from '@/lib/site'
 import './globals.css'
 
 const fraunces = Fraunces({
@@ -30,7 +30,7 @@ export async function generateMetadata(): Promise<Metadata> {
 
   try {
     const settings = await getSettings()
-    const name = settings.storeName || 'RumiNZuni'
+    const name = settings.storeName || STORE_NAME
     const tagline = settings.tagline || 'Kids wear, cash on delivery'
     title = `${name} — ${tagline}`
     description = `${name} sells kids wear across Pakistan on cash on delivery. ${tagline}.`
@@ -45,19 +45,19 @@ export async function generateMetadata(): Promise<Metadata> {
     metadataBase: new URL(origin),
     title: {
       default: title,
-      template: '%s · RumiNZuni',
+      template: `%s · ${STORE_NAME}`,
     },
     description,
-    applicationName: 'RumiNZuni',
+    applicationName: STORE_NAME,
     robots: { index: true, follow: true },
     openGraph: {
       type: 'website',
       locale: 'en_PK',
       url: origin,
-      siteName: 'RumiNZuni',
+      siteName: STORE_NAME,
       title,
       description,
-      images: image ? [{ url: image, alt: 'RumiNZuni' }] : undefined,
+      images: image ? [{ url: image, alt: STORE_NAME }] : undefined,
     },
     twitter: {
       card: image ? 'summary_large_image' : 'summary',

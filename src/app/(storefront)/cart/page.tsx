@@ -3,7 +3,7 @@ import { pageMeta } from '@/lib/seo'
 
 export const metadata = pageMeta({
   title: 'Cart',
-  description: 'Your RumiNZuni cart. Checkout with cash on delivery across Pakistan.',
+  description: 'Your Rumi & Zuni cart. Checkout with cash on delivery across Pakistan.',
   path: '/cart',
   index: false,
   follow: false,

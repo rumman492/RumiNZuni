@@ -1,6 +1,9 @@
 /** Production canonical origin. www is redirected here by Caddy. */
 export const CANONICAL_PRODUCTION_ORIGIN = 'https://ruminzuni.com'
 
+/** Public storefront name. Domain and repo stay ruminzuni.com. */
+export const STORE_NAME = 'Rumi & Zuni'
+
 export function siteOrigin() {
   const raw = (process.env.NEXT_PUBLIC_SERVER_URL || process.env.SITE_URL || '').trim().replace(/\/$/, '')
   if (raw) {

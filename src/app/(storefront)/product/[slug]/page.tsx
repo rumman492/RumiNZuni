@@ -24,7 +24,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
       description:
         product.seo?.description ||
         product.description ||
-        `Buy ${product.title} from RumiNZuni. Cash on delivery across Pakistan.`,
+        `Buy ${product.title} from Rumi & Zuni. Cash on delivery across Pakistan.`,
       path: `/product/${product.slug}`,
       image,
     }),

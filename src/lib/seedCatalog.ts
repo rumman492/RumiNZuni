@@ -361,7 +361,7 @@ export async function seedCatalog(payload: Payload) {
   }
 
   const settingsData: Record<string, unknown> = {
-    storeName: 'RumiNZuni',
+    storeName: 'Rumi & Zuni',
     tagline: 'Soft clothes for little explorers',
     announcement: 'Cash on delivery across Pakistan · Free shipping over Rs 3,000',
     freeShippingThreshold: 3000,
@@ -414,7 +414,7 @@ export async function seedCatalog(payload: Payload) {
     homeStoryEyebrow: 'Our story',
     homeStoryTitle: 'Clothes for play, not fuss',
     homeStoryBody:
-      'RumiNZuni is a Pakistan kids-wear shop. Soft cotton, easy everyday fits, and cash on delivery — pay the rider when the parcel arrives.',
+      'Rumi & Zuni is a Pakistan kids-wear shop. Soft cotton, easy everyday fits, and cash on delivery — pay the rider when the parcel arrives.',
     homeStoryCta: 'WhatsApp us',
     homeStoryCtaLink: '/contact',
   }

@@ -2,6 +2,7 @@
 
 import Link from 'next/link'
 import { Search, ShoppingBag } from 'lucide-react'
+import { BrandMark } from '@/components/BrandMark'
 import { useCart } from '@/components/CartProvider'
 
 const nav = [
@@ -24,8 +25,8 @@ export function Header({ announcement }: { announcement?: string | null }) {
       ) : null}
       <div className="border-b border-sand bg-cream/90 backdrop-blur">
         <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-4 py-4">
-          <Link href="/" className="display text-2xl tracking-tight text-ink">
-            Rumi<span className="text-coral">NZ</span>uni
+          <Link href="/" className="display text-2xl tracking-tight">
+            <BrandMark />
           </Link>
           <nav className="hidden items-center gap-6 text-sm font-semibold text-ink-soft md:flex">
             {nav.map((item) => (

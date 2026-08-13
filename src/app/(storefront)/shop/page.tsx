@@ -10,7 +10,7 @@ export async function generateMetadata({ searchParams }: Props): Promise<Metadat
     basePath: '/shop',
     heading: 'Shop kids wear',
     description:
-      'Shop kids wear at RumiNZuni. Filter by category, gender, age, size, colour, and price. Cash on delivery across Pakistan.',
+      'Shop kids wear at Rumi & Zuni. Filter by category, gender, age, size, colour, and price. Cash on delivery across Pakistan.',
   })
 }
 

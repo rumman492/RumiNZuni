@@ -32,7 +32,7 @@ export async function generateMetadata({ params, searchParams }: Props): Promise
     {
       basePath: `/shop/${slug}`,
       heading,
-      description: preset?.description || category?.description || `Shop ${heading} at RumiNZuni. Cash on delivery across Pakistan.`,
+      description: preset?.description || category?.description || `Shop ${heading} at Rumi & Zuni. Cash on delivery across Pakistan.`,
       locked,
     },
   )

@@ -16,7 +16,7 @@ export const SiteSettings: GlobalConfig = {
         {
           label: 'Brand',
           fields: [
-            { name: 'storeName', type: 'text', required: true, defaultValue: 'RumiNZuni' },
+            { name: 'storeName', type: 'text', required: true, defaultValue: 'Rumi & Zuni' },
             {
               name: 'tagline',
               type: 'text',

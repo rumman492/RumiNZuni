@@ -14,10 +14,10 @@ import {
 } from '@/lib/homepage'
 import { getSettings } from '@/lib/products'
 import { pageMeta } from '@/lib/seo'
-import { absoluteMediaUrl } from '@/lib/site'
+import { absoluteMediaUrl, STORE_NAME } from '@/lib/site'
 
 export async function generateMetadata(): Promise<Metadata> {
-  let storeName = 'RumiNZuni'
+  let storeName = STORE_NAME
   let homepage: HomepageSettings | null = null
   try {
     const settings = await getSettings()

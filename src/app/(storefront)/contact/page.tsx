@@ -5,7 +5,7 @@ import { pageMeta } from '@/lib/seo'
 
 export const metadata = pageMeta({
   title: 'Contact',
-  description: 'WhatsApp RumiNZuni about size, stock, or a cash-on-delivery order anywhere in Pakistan.',
+  description: 'WhatsApp Rumi & Zuni about size, stock, or a cash-on-delivery order anywhere in Pakistan.',
   path: '/contact',
 })
 

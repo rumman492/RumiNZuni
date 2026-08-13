@@ -94,7 +94,7 @@ export function buildOrderNotificationPayload(order: OrderLike, settings: Settin
     codFee: Number(order.codFee || 0),
     total: Number(order.total),
     formattedTotal: formatPkr(Number(order.total)),
-    storeName: settings.storeName?.trim() || 'RumiNZuni',
+    storeName: settings.storeName?.trim() || 'Rumi & Zuni',
     storeWhatsapp: optionalPhone(settings.whatsapp),
     storePhone: optionalPhone(settings.phone),
     storeEmail: settings.email?.trim() || undefined,

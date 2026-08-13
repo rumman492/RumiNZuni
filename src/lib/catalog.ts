@@ -4,7 +4,7 @@ import { formatProductSize } from '@/lib/pakistan'
 import { getPayloadClient } from '@/lib/payload'
 import { productCardData, type ProductDoc } from '@/lib/products'
 import { pageMeta } from '@/lib/seo'
-import { absoluteUrl } from '@/lib/site'
+import { absoluteUrl, STORE_NAME } from '@/lib/site'
 import {
   AGE_OPTIONS,
   GENDER_OPTIONS,
@@ -50,7 +50,7 @@ export function catalogMetadata(
   const title = bits.length > 0 ? `${opts.heading}: ${bits.join(' · ')}` : opts.heading
   const description =
     opts.description ||
-    `${opts.heading} at RumiNZuni. Kids wear with cash on delivery across Pakistan.`
+    `${opts.heading} at ${STORE_NAME}. Kids wear with cash on delivery across Pakistan.`
   const index = !hasFacetParams(query, opts.locked)
   const sharePath = index ? opts.basePath : catalogHref(opts.basePath, { ...query, page: 1 })
 

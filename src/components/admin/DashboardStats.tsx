@@ -76,7 +76,7 @@ export default async function DashboardStats({ payload, user }: ServerProps) {
     <section className="rnz-dashboard">
       <div className="rnz-dashboard__header">
         <div>
-          <p className="rnz-dashboard__eyebrow">RumiNZuni · Pakistan · COD</p>
+          <p className="rnz-dashboard__eyebrow">Rumi & Zuni · Pakistan · COD</p>
           <h1 className="rnz-dashboard__title">Shop dashboard</h1>
           <p className="rnz-dashboard__lede">{data.todayLabel} · Asia/Karachi</p>
         </div>
