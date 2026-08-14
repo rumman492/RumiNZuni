@@ -51,6 +51,8 @@ type SeedProduct = {
   skinType?: string
   ingredients?: string
   volume?: string
+  fragranceType?: string
+  fragranceFamily?: string
   dimensions?: string
   featured?: boolean
   material?: string
@@ -347,6 +349,7 @@ async function loadSeedContext(payload: Payload) {
     'handbags',
     'beauty',
     'skincare',
+    'perfumes',
   ]
   const categories: Record<string, number> = {}
   for (const slug of slugs) {
@@ -384,6 +387,7 @@ export async function seedMissingCategorySamples(payload: Payload) {
   }
   const ctx = await loadSeedContext(payload)
   const pools = extraSamplesByCategory(ctx)
+  const alwaysFill = new Set(['handbags', 'beauty', 'skincare', 'perfumes'])
   for (const [slug, extras] of Object.entries(pools)) {
     const categoryId = ctx.categories[slug]
     if (!categoryId) continue
@@ -393,11 +397,12 @@ export async function seedMissingCategorySamples(payload: Payload) {
       limit: 0,
       overrideAccess: true,
     })
-    if (existing.totalDocs >= MIN_SAMPLE_PRODUCTS) {
+    const fillAll = alwaysFill.has(slug)
+    if (!fillAll && existing.totalDocs >= MIN_SAMPLE_PRODUCTS) {
       payload.logger.info(`${slug} already has ${existing.totalDocs} products — skipping samples.`)
       continue
     }
-    let need = MIN_SAMPLE_PRODUCTS - existing.totalDocs
+    let need = fillAll ? extras.length : MIN_SAMPLE_PRODUCTS - existing.totalDocs
     const toCreate = []
     for (const item of extras) {
       if (need <= 0) break
@@ -425,6 +430,9 @@ const CATEGORY_PLACEHOLDER_IMAGES: Record<string, Array<{ file: string; alt: str
     { file: 'womens-sage-tote.jpg', alt: 'Sage tote bag' },
     { file: 'womens-coral-crossbody.jpg', alt: 'Coral crossbody bag' },
     { file: 'womens-blush-clutch.jpg', alt: 'Blush clutch bag' },
+    { file: 'womens-navy-satchel.jpg', alt: 'Navy satchel bag' },
+    { file: 'womens-mini-backpack.jpg', alt: 'Mini backpack bag' },
+    { file: 'womens-ivory-shoulder.jpg', alt: 'Ivory shoulder bag' },
   ],
   beauty: [
     { file: 'womens-lipstick-compact.jpg', alt: 'Lipstick and compact' },
@@ -437,9 +445,12 @@ const CATEGORY_PLACEHOLDER_IMAGES: Record<string, Array<{ file: string; alt: str
     { file: 'womens-serum.jpg', alt: 'Serum bottle' },
   ],
   perfumes: [
-    { file: 'womens-serum.jpg', alt: 'Perfume bottle' },
-    { file: 'womens-cleanser.jpg', alt: 'Fragrance mist' },
-    { file: 'womens-face-cream.jpg', alt: 'Fragrance oil' },
+    { file: 'womens-floral-edp.jpg', alt: 'Floral eau de parfum' },
+    { file: 'womens-citrus-mist.jpg', alt: 'Citrus body mist' },
+    { file: 'womens-amber-oil.jpg', alt: 'Amber perfume oil' },
+    { file: 'womens-woody-edt.jpg', alt: 'Woody eau de toilette' },
+    { file: 'womens-musk-edp.jpg', alt: 'Musk eau de parfum' },
+    { file: 'womens-rose-mist.jpg', alt: 'Rose body mist' },
   ],
 }
 

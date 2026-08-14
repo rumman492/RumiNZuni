@@ -149,3 +149,24 @@ describe('catalog taxonomy', () => {
     expect(slugify('Boys Navy Polo')).toBe('boys-navy-polo')
   })
 })
+
+describe('women’s sample catalog', () => {
+  it('keeps at least nine pictured samples for each active Women’s category', async () => {
+    const { extraSamplesByCategory } = await import('@/lib/seedSamples')
+    const pools = extraSamplesByCategory({
+      categories: { handbags: 1, beauty: 2, skincare: 3, perfumes: 4 },
+      ageGroupIds: {},
+      tags: {},
+      departments: {
+        'womens-handbags': 10,
+        'womens-beauty': 11,
+        'womens-skincare': 12,
+        'womens-perfumes': 13,
+      },
+    })
+    for (const slug of ['handbags', 'beauty', 'skincare', 'perfumes']) {
+      expect(pools[slug].length).toBeGreaterThanOrEqual(9)
+      expect(pools[slug].every((item) => item.imageFile.endsWith('.jpg'))).toBe(true)
+    }
+  })
+})

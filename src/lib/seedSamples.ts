@@ -150,12 +150,12 @@ export function extraSamplesByCategory(ctx: SampleCtx): Record<string, Sample[]>
           bag(ctx, bags, 'Sage everyday tote', 'womens-sage-tote', 'womens-sage-tote.jpg', 'Sage tote bag', 'RNZ-TOT', 'Sage', 'tote', 3490),
           bag(ctx, bags, 'Coral crossbody', 'womens-coral-crossbody', 'womens-coral-crossbody.jpg', 'Coral crossbody bag', 'RNZ-CRS', 'Coral', 'crossbody', 2990),
           bag(ctx, bags, 'Blush evening clutch', 'womens-blush-clutch', 'womens-blush-clutch.jpg', 'Blush clutch', 'RNZ-CLT', 'Blush', 'clutch', 2490),
-          bag(ctx, bags, 'Work tote sample', 'womens-work-tote', 'womens-sage-tote.jpg', 'Sage work tote', 'RNZ-WRK', 'Sage', 'tote', 3990),
-          bag(ctx, bags, 'Mini crossbody sample', 'womens-mini-crossbody', 'womens-coral-crossbody.jpg', 'Mini crossbody', 'RNZ-MIN', 'Coral', 'crossbody', 2690),
-          bag(ctx, bags, 'Party clutch sample', 'womens-party-clutch', 'womens-blush-clutch.jpg', 'Party clutch', 'RNZ-PTY', 'Blush', 'clutch', 2290),
-          bag(ctx, bags, 'Market tote sample', 'womens-market-tote', 'womens-sage-tote.jpg', 'Market tote', 'RNZ-MKT', 'Olive', 'tote', 3190),
-          bag(ctx, bags, 'City sling sample', 'womens-city-sling', 'womens-coral-crossbody.jpg', 'City sling', 'RNZ-SLG', 'Navy', 'sling', 2790),
-          bag(ctx, bags, 'Foldover clutch sample', 'womens-foldover-clutch', 'womens-blush-clutch.jpg', 'Foldover clutch', 'RNZ-FLD', 'Ivory', 'clutch', 2190),
+          bag(ctx, bags, 'Navy work satchel', 'womens-navy-satchel', 'womens-navy-satchel.jpg', 'Navy satchel bag', 'RNZ-SAT', 'Navy', 'satchel', 3990),
+          bag(ctx, bags, 'Mini blush backpack', 'womens-mini-backpack', 'womens-mini-backpack.jpg', 'Mini backpack', 'RNZ-BKP', 'Blush', 'backpack', 3290),
+          bag(ctx, bags, 'Ivory shoulder bag', 'womens-ivory-shoulder', 'womens-ivory-shoulder.jpg', 'Ivory shoulder bag', 'RNZ-SHL', 'Ivory', 'shoulder', 3590),
+          bag(ctx, bags, 'Market tote sample', 'womens-market-tote', 'womens-sage-tote.jpg', 'Sage market tote', 'RNZ-MKT', 'Olive', 'tote', 3190),
+          bag(ctx, bags, 'City sling sample', 'womens-city-sling', 'womens-coral-crossbody.jpg', 'Coral city sling', 'RNZ-SLG', 'Coral', 'crossbody', 2790),
+          bag(ctx, bags, 'Foldover clutch sample', 'womens-foldover-clutch', 'womens-blush-clutch.jpg', 'Blush foldover clutch', 'RNZ-FLD', 'Blush', 'clutch', 2190),
         ]
       : [],
     beauty: beauty
@@ -186,9 +186,15 @@ export function extraSamplesByCategory(ctx: SampleCtx): Record<string, Sample[]>
       : [],
     perfumes: perfume
       ? [
-          perfumeItem(ctx, perfume, 'Floral eau de parfum', 'womens-floral-edp', 'womens-serum.jpg', 'Floral perfume bottle', 'RNZ-EDP', 'Eau de Parfum', 'Floral', 3490),
-          perfumeItem(ctx, perfume, 'Citrus body mist', 'womens-citrus-mist', 'womens-cleanser.jpg', 'Citrus body mist', 'RNZ-MST', 'Body Mist', 'Citrus', 1490),
-          perfumeItem(ctx, perfume, 'Amber perfume oil', 'womens-amber-oil', 'womens-face-cream.jpg', 'Amber perfume oil', 'RNZ-OIL', 'Perfume Oil', 'Amber', 1990),
+          perfumeItem(ctx, perfume, 'Floral eau de parfum', 'womens-floral-edp', 'womens-floral-edp.jpg', 'Floral perfume bottle', 'RNZ-EDP', 'Eau de Parfum', 'Floral', 3490),
+          perfumeItem(ctx, perfume, 'Citrus body mist', 'womens-citrus-mist', 'womens-citrus-mist.jpg', 'Citrus body mist', 'RNZ-MST', 'Body Mist', 'Citrus', 1490),
+          perfumeItem(ctx, perfume, 'Amber perfume oil', 'womens-amber-oil', 'womens-amber-oil.jpg', 'Amber perfume oil', 'RNZ-OIL', 'Perfume Oil', 'Amber', 1990),
+          perfumeItem(ctx, perfume, 'Woody eau de toilette', 'womens-woody-edt', 'womens-woody-edt.jpg', 'Woody eau de toilette', 'RNZ-EDT', 'Eau de Toilette', 'Woody', 2790),
+          perfumeItem(ctx, perfume, 'Musk eau de parfum', 'womens-musk-edp', 'womens-musk-edp.jpg', 'Musk perfume bottle', 'RNZ-MSK', 'Eau de Parfum', 'Musky', 3290),
+          perfumeItem(ctx, perfume, 'Rose body mist', 'womens-rose-mist', 'womens-rose-mist.jpg', 'Rose body mist', 'RNZ-RSE', 'Body Mist', 'Floral', 1590),
+          perfumeItem(ctx, perfume, 'Fresh cologne sample', 'womens-fresh-edc', 'womens-citrus-mist.jpg', 'Fresh cologne spray', 'RNZ-EDC', 'Eau de Cologne', 'Fresh', 1890),
+          perfumeItem(ctx, perfume, 'Gourmand perfume oil', 'womens-gourmand-oil', 'womens-amber-oil.jpg', 'Gourmand perfume oil', 'RNZ-GRM', 'Perfume Oil', 'Gourmand', 2190),
+          perfumeItem(ctx, perfume, 'Fragrance set sample', 'womens-fragrance-set', 'womens-floral-edp.jpg', 'Fragrance gift set', 'RNZ-SET', 'Fragrance Sets', 'Floral', 4490),
         ]
       : [],
   }
