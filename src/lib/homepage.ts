@@ -121,7 +121,11 @@ export function homepageCollections(settings: HomepageSettings | null) {
   const rows = settings?.homeCollections?.filter((item) => item.title) || []
   const source = rows.length > 0 ? rows : DEFAULT_HOME_COLLECTIONS
   return source
-    .filter((item) => !isUnisexPublicItem({ title: item.title, href: collectionHref(item), slug: typeof item.category === 'object' ? item.category?.slug : undefined }))
+    .filter((item) => {
+      const category = 'category' in item ? item.category : undefined
+      const slug = typeof category === 'object' && category ? category.slug : undefined
+      return !isUnisexPublicItem({ title: item.title, href: collectionHref(item), slug })
+    })
     .map((item) => ({
       title: item.title,
       copy: item.copy || '',
