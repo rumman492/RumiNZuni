@@ -20,6 +20,7 @@ export default async function DashboardStats({ payload, user }: ServerProps) {
   const products = formatAdminURL({ adminRoute, path: '/collections/products' })
   const newProduct = formatAdminURL({ adminRoute, path: '/collections/products/create' })
   const settings = formatAdminURL({ adminRoute, path: '/globals/site-settings' })
+  const staffGuide = formatAdminURL({ adminRoute, path: '/staff-guide' })
 
   const cards = [
     {
@@ -92,6 +93,9 @@ export default async function DashboardStats({ payload, user }: ServerProps) {
           </Link>
           <Link className="rnz-dashboard__btn" href={settings}>
             Store settings
+          </Link>
+          <Link className="rnz-dashboard__btn" href={staffGuide}>
+            Staff guide
           </Link>
           <Link className="rnz-dashboard__btn" href="/" target="_blank" rel="noreferrer">
             View shop
@@ -190,11 +194,12 @@ export default async function DashboardStats({ payload, user }: ServerProps) {
         </div>
         <ol className="rnz-dashboard__empty" style={{ display: 'grid', gap: '0.5rem', paddingLeft: '1.25rem' }}>
           <li>Orders: Pending → confirm on WhatsApp → Confirmed → Packed → Shipped → Delivered. Mark cash collected when the rider is paid.</li>
-          <li>Products: Add product → photos → department/category → variants (size, colour, PKR, stock) → Publish. Tick Featured to pin it.</li>
-          <li>Store settings: WhatsApp number, homepage, shipping fees, header/footer links.</li>
-          <li>Pages: slug shipping, returns, or contact to replace those policy pages.</li>
-          <li>Age groups: tick Active to show Pre-Teen or Teen later. No developer needed.</li>
-          <li>Staff: Admin → Users. Role Staff for day-to-day. Do not share the owner password.</li>
+          <li>Kids product: photos → Kids Wear + Boys/Girls/Newborn → age → variants (size code, colour, PKR, stock) → Publish.</li>
+          <li>Women’s product: photos → Women’s Handbags / Beauty / Skincare / Perfumes + matching category. Leave age and Boys/Girls empty. Makeup shades go in variant colour; perfume volume in variant size.</li>
+          <li>Catalog options: add brands, bag types, skin types, fragrance families. Type the same wording on the product.</li>
+          <li>Categories: tick Active to show Hair Care, Body Care, or Beauty Tools later.</li>
+          <li>Store settings: WhatsApp, homepage, shipping fees, header/footer. Pages: slugs shipping, returns, contact.</li>
+          <li>Staff: Users → role Staff. Open Staff guide in the left menu. Do not share the owner password.</li>
         </ol>
       </div>
     </section>

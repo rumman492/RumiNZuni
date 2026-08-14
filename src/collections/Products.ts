@@ -10,7 +10,7 @@ export const Products: CollectionConfig = {
     defaultColumns: ['title', 'category', 'sortPriority', 'gender', '_status', 'updatedAt'],
     listSearchableFields: ['title', 'slug'],
     description:
-      'Add a product: pick Department + Category, upload photos, add size/colour/price/stock variants, then Publish. Leave Gender empty for bibs and bags. Tick Featured to pin it on the shop. Staff do not need a developer for new products.',
+      'Add a product: photos, department + category, variants (SKU, size or volume, colour or shade, PKR, stock), then Publish. Kids: age + Boys/Girls for clothing. Women’s: leave age and gender empty. Open Staff guide in the left menu for step-by-step.',
   },
   defaultSort: '-sortPriority',
   hooks: {
@@ -124,13 +124,19 @@ export const Products: CollectionConfig = {
         {
           label: 'Details',
           admin: {
-            description: 'Fabric, care, tags, and size guide. All optional so older products keep working.',
+            description:
+              'Open only the block you need. Kids: fabric and size guide. Women’s: handbags, makeup, skincare, or perfume. Leave unused fields empty.',
           },
           fields: [
             {
+              type: 'collapsible',
+              label: 'Kids — fabric & care',
+              admin: { initCollapsed: true },
+              fields: [
+            {
               name: 'material',
               type: 'text',
-              admin: { description: 'e.g. 100% cotton jersey, lawn with lining' },
+              admin: { description: 'e.g. 100% cotton jersey, lawn with lining. Also used for handbags.' },
             },
             {
               name: 'careInstructions',
@@ -138,141 +144,167 @@ export const Products: CollectionConfig = {
               admin: { description: 'e.g. Machine wash cold. Do not bleach. Dry in shade.' },
             },
             {
+              name: 'sizeGuide',
+              type: 'relationship',
+              relationTo: 'size-guides',
+              admin: { description: 'Kids clothing charts. Leave empty for Women’s products.' },
+            },
+              ],
+            },
+            {
+              type: 'collapsible',
+              label: 'Women’s — brand & type',
+              admin: { initCollapsed: false },
+              fields: [
+            {
               name: 'brand',
               type: 'text',
-              admin: { description: 'Women’s beauty/skincare. Optional elsewhere.' },
+              admin: { description: 'Match Catalog options if you added the brand there.' },
             },
             {
               name: 'productKind',
               type: 'text',
-              admin: { description: 'e.g. lipstick, cleanser, serum' },
+              admin: { description: 'e.g. lipstick, cleanser, Eau de Parfum. Catalog options → Product type.' },
             },
+              ],
+            },
+            {
+              type: 'collapsible',
+              label: 'Handbags',
+              admin: { initCollapsed: true },
+              fields: [
             {
               name: 'bagType',
               type: 'text',
-              admin: { description: 'e.g. tote, crossbody, clutch' },
-            },
-            {
-              name: 'skinType',
-              type: 'text',
-              admin: { description: 'e.g. dry, oily, combination' },
-            },
-            {
-              name: 'ingredients',
-              type: 'textarea',
-            },
-            {
-              name: 'volume',
-              type: 'text',
-              admin: { description: 'e.g. 50 ml' },
+              admin: { description: 'e.g. tote, crossbody, clutch. Catalog options → Bag type.' },
             },
             {
               name: 'dimensions',
               type: 'text',
-              admin: { description: 'Bag size, e.g. 30 × 20 × 12 cm' },
+              admin: { description: 'e.g. 30 × 20 × 12 cm' },
             },
             {
               name: 'pattern',
               type: 'text',
-              admin: { description: 'Handbags. e.g. plain, printed' },
+              admin: { description: 'e.g. plain, printed' },
             },
             {
               name: 'strapType',
               type: 'text',
-              admin: { description: 'Handbags. e.g. chain, adjustable' },
+              admin: { description: 'e.g. chain, adjustable' },
             },
             {
               name: 'closureType',
               type: 'text',
-              admin: { description: 'Handbags. e.g. zip, magnetic' },
+              admin: { description: 'e.g. zip, magnetic' },
             },
             {
               name: 'compartments',
               type: 'text',
-              admin: { description: 'Handbags. Number of pockets/compartments' },
+              admin: { description: 'Number of pockets/compartments' },
             },
+              ],
+            },
+            {
+              type: 'collapsible',
+              label: 'Makeup',
+              admin: { initCollapsed: true },
+              fields: [
             {
               name: 'shade',
               type: 'text',
-              admin: { description: 'Makeup shade name. Variant colour can also be the shade.' },
+              admin: { description: 'Default shade name. Also put shades on variants as Colour.' },
             },
             {
               name: 'finish',
               type: 'text',
-              admin: { description: 'Makeup. e.g. matte, dewy. Add values in Catalog options.' },
+              admin: { description: 'e.g. matte, dewy. Catalog options → Finish.' },
             },
             {
               name: 'skinTone',
               type: 'text',
-              admin: { description: 'Makeup. e.g. fair, medium, deep' },
+              admin: { description: 'e.g. fair, medium, deep' },
             },
             {
               name: 'formulation',
               type: 'text',
-              admin: { description: 'Makeup. e.g. liquid, cream, powder' },
+              admin: { description: 'e.g. liquid, cream, powder' },
+            },
+              ],
+            },
+            {
+              type: 'collapsible',
+              label: 'Skincare',
+              admin: { initCollapsed: true },
+              fields: [
+            {
+              name: 'skinType',
+              type: 'text',
+              admin: { description: 'e.g. dry, oily. Catalog options → Skin type.' },
             },
             {
               name: 'skinConcern',
               type: 'text',
-              admin: { description: 'Skincare. e.g. acne, hydration. Catalog options → Skin concern.' },
+              admin: { description: 'e.g. acne, hydration. Catalog options → Skin concern.' },
             },
             {
               name: 'keyIngredients',
               type: 'text',
-              admin: { description: 'Skincare. e.g. niacinamide, hyaluronic acid' },
+              admin: { description: 'e.g. niacinamide, hyaluronic acid' },
             },
             {
               name: 'spf',
               type: 'text',
-              admin: { description: 'Skincare. e.g. SPF 50' },
+              admin: { description: 'e.g. SPF 50' },
             },
+            {
+              name: 'volume',
+              type: 'text',
+              admin: { description: 'e.g. 50 ml. Perfume volume can live here or on the variant size.' },
+            },
+              ],
+            },
+            {
+              type: 'collapsible',
+              label: 'Perfumes',
+              admin: { initCollapsed: true },
+              fields: [
             {
               name: 'fragranceType',
               type: 'text',
-              admin: { description: 'Perfumes. e.g. Eau de Parfum' },
+              admin: { description: 'e.g. Eau de Parfum. Catalog options → Fragrance type.' },
             },
             {
               name: 'fragranceFamily',
               type: 'text',
-              admin: { description: 'Perfumes. e.g. Floral. Catalog options → Fragrance family.' },
+              admin: { description: 'e.g. Floral. Catalog options → Fragrance family.' },
             },
-            {
-              name: 'topNotes',
-              type: 'text',
-            },
-            {
-              name: 'middleNotes',
-              type: 'text',
-            },
-            {
-              name: 'baseNotes',
-              type: 'text',
-            },
+            { name: 'topNotes', type: 'text' },
+            { name: 'middleNotes', type: 'text', admin: { description: 'Heart notes' } },
+            { name: 'baseNotes', type: 'text' },
             {
               name: 'longevity',
               type: 'text',
-              admin: { description: 'Perfumes. e.g. 6–8 hours' },
+              admin: { description: 'e.g. 6–8 hours' },
+            },
+              ],
             },
             {
-              name: 'usageInstructions',
-              type: 'textarea',
-            },
-            {
-              name: 'warnings',
-              type: 'textarea',
-            },
-            {
-              name: 'manufacturer',
-              type: 'text',
-            },
-            {
-              name: 'countryOfOrigin',
-              type: 'text',
-            },
+              type: 'collapsible',
+              label: 'Ingredients & safety (beauty / skincare / perfume)',
+              admin: { initCollapsed: true },
+              fields: [
+            { name: 'ingredients', type: 'textarea' },
+            { name: 'usageInstructions', type: 'textarea' },
+            { name: 'warnings', type: 'textarea' },
+            { name: 'manufacturer', type: 'text' },
+            { name: 'countryOfOrigin', type: 'text' },
             {
               name: 'batchExpiry',
               type: 'text',
               admin: { description: 'Optional batch or expiry note. Do not invent claims.' },
+            },
+              ],
             },
             {
               name: 'tags',
@@ -281,12 +313,6 @@ export const Products: CollectionConfig = {
               hasMany: true,
               filterOptions: { active: { equals: true } },
               admin: { description: 'Configurable in Admin → Tags' },
-            },
-            {
-              name: 'sizeGuide',
-              type: 'relationship',
-              relationTo: 'size-guides',
-              admin: { description: 'Configurable in Admin → Size guides' },
             },
           ],
         },

@@ -15,6 +15,8 @@ export const Categories: CollectionConfig = {
     useAsTitle: 'name',
     group: 'Catalog',
     defaultColumns: ['name', 'slug', 'department', 'showInNavigation', 'sortOrder', 'active'],
+    description:
+      'Shop sections. Tick Active to show a category (e.g. Hair Care). Turn Active off to hide it. Set parent for Makeup under Beauty & Personal Care. Staff can add categories without a developer.',
   },
   access: {
     read: () => true,

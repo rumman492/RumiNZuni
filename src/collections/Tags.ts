@@ -12,7 +12,7 @@ export const Tags: CollectionConfig = {
     useAsTitle: 'name',
     group: 'Catalog',
     defaultColumns: ['name', 'slug', 'active', 'updatedAt'],
-    description: 'Reusable product tags such as Cotton, Eid, or Newborn essentials.',
+    description: 'Reusable labels such as Cotton, Eid, or Newborn essentials. Add tags here, then attach them on products. No developer needed.',
   },
   access: {
     read: () => true,

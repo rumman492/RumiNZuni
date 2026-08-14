@@ -16,6 +16,8 @@ export const Media: CollectionConfig = {
   },
   admin: {
     group: 'Catalog',
+    description:
+      'Upload product photos here (JPG/PNG/WebP, 5 MB or smaller). Then attach them on the product. Staff can replace sample photos anytime.',
   },
   hooks: {
     beforeValidate: [

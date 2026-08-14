@@ -21,7 +21,7 @@ export const CatalogOptions: CollectionConfig = {
     group: 'Catalog',
     defaultColumns: ['name', 'kind', 'active', 'sortOrder'],
     description:
-      'Reusable Women’s values (skin type, fragrance family, bag type). Type the same wording on the product so shop filters group. Add new brands and types here without a developer.',
+      'Reusable values for Women’s filters (skin type, fragrance family, bag type, product type). Add a new brand wording or bag type here, then type the same text on the product. No developer needed.',
   },
   access: {
     read: () => true,
