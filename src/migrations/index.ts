@@ -5,6 +5,7 @@ import * as migration_20260814_120000_height_sizing from './20260814_120000_heig
 import * as migration_20260814_180000_catalog_taxonomy from './20260814_180000_catalog_taxonomy';
 import * as migration_20260814_193000_storefront_nav from './20260814_193000_storefront_nav';
 import * as migration_20260814_200000_womens_catalog from './20260814_200000_womens_catalog';
+import * as migration_20260814_220000_womens_sample_products from './20260814_220000_womens_sample_products';
 
 export const migrations = [
   {
@@ -41,5 +42,10 @@ export const migrations = [
     up: migration_20260814_200000_womens_catalog.up,
     down: migration_20260814_200000_womens_catalog.down,
     name: '20260814_200000_womens_catalog'
+  },
+  {
+    up: migration_20260814_220000_womens_sample_products.up,
+    down: migration_20260814_220000_womens_sample_products.down,
+    name: '20260814_220000_womens_sample_products'
   },
 ];

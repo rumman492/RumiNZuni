@@ -84,7 +84,7 @@ export function productCardData(
   variant?: NonNullable<ProductDoc['variants']>[number],
 ) {
   const firstImage = product.images?.[0]?.image
-  const image = (typeof firstImage === 'object' ? mediaUrl(firstImage) : null) || samplePhotoForSlug(product.slug)
+  const image = samplePhotoForSlug(product.slug) || (typeof firstImage === 'object' ? mediaUrl(firstImage) : null)
   const chosen = variant || product.variants?.[0]
   const soldOut = (product.variants || []).every((item) => item.stock < 1)
   return {
