@@ -96,28 +96,34 @@ export default buildConfig({
   sharp,
   plugins: [...mediaStoragePlugins()],
   onInit: async (payload) => {
-    try {
-      await seedSizingAndAccessories(payload)
-    } catch (error) {
-      payload.logger.error(
-        error instanceof Error ? error.message : 'Could not load size chart / age groups. Add them in Admin → Sizes.',
-      )
-    }
-    try {
-      await seedWomensPicturedSamples(payload)
-    } catch (error) {
-      payload.logger.error(
-        error instanceof Error ? error.message : 'Women’s sample products could not be loaded. Add them in Admin → Products.',
-      )
-    }
-    if (process.env.SEED_CATALOG !== 'true') return
-    try {
-      await seedCatalogIfEmpty(payload)
-    } catch (error) {
-      payload.logger.error(
-        error instanceof Error ? error.message : 'Sample catalog seed failed. The shop will stay empty until you add products in /admin.',
-      )
-    }
+    // Do not block /admin or the shop on seed work. Long seed after a rebuild was causing
+    // Next.js "Application error" timeouts on the first admin load.
+    void (async () => {
+      try {
+        await seedSizingAndAccessories(payload)
+      } catch (error) {
+        payload.logger.error(
+          error instanceof Error ? error.message : 'Could not load size chart / age groups. Add them in Admin → Sizes.',
+        )
+      }
+      try {
+        await seedWomensPicturedSamples(payload)
+      } catch (error) {
+        payload.logger.error(
+          error instanceof Error ? error.message : 'Women’s sample products could not be loaded. Add them in Admin → Products.',
+        )
+      }
+      if (process.env.SEED_CATALOG !== 'true') return
+      try {
+        await seedCatalogIfEmpty(payload)
+      } catch (error) {
+        payload.logger.error(
+          error instanceof Error
+            ? error.message
+            : 'Sample catalog seed failed. The shop will stay empty until you add products in /admin.',
+        )
+      }
+    })()
   },
   endpoints: [
     {
