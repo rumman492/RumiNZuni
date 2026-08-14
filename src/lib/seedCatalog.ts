@@ -2,6 +2,7 @@ import fs from 'fs'
 import path from 'path'
 import type { Payload } from 'payload'
 import { seedSizingAndAccessories } from '@/lib/seedSizing'
+import { extraSamplesByCategory, MIN_SAMPLE_PRODUCTS } from '@/lib/seedSamples'
 
 const seedMediaDir = path.resolve(process.cwd(), 'seed/media')
 
@@ -42,7 +43,15 @@ type SeedProduct = {
   description: string
   category: number
   gender?: 'boys' | 'girls' | 'unisex'
-  ageGroup: number
+  ageGroup?: number
+  department?: number
+  brand?: string
+  bagType?: string
+  productKind?: string
+  skinType?: string
+  ingredients?: string
+  volume?: string
+  dimensions?: string
   featured?: boolean
   material?: string
   careInstructions?: string
@@ -292,7 +301,7 @@ function accessorySampleProducts(
         { sku: 'RNZ-BLM-6Y-CRM', size: '6y', color: 'Cream', price: 790, stock: 12 },
       ],
     },
-  ].filter((product) => Boolean(product.category && product.ageGroup)) as SeedProduct[]
+  ].filter((product) => Boolean(product.category)) as SeedProduct[]
 }
 
 export async function seedMissingAccessoryProducts(payload: Payload) {
@@ -327,6 +336,89 @@ export async function seedMissingAccessoryProducts(payload: Payload) {
   payload.logger.info(`Accessory samples ready. ${productIds.length} products in extras, footwear, bags, and beauty.`)
 }
 
+async function loadSeedContext(payload: Payload) {
+  const ageGroupIds = await seedSizingAndAccessories(payload)
+  const slugs = [
+    'boys',
+    'girls',
+    'newborn',
+    'baby-kids-accessories',
+    'kids-footwear',
+    'handbags',
+    'beauty',
+    'skincare',
+  ]
+  const categories: Record<string, number> = {}
+  for (const slug of slugs) {
+    const found = await payload.find({
+      collection: 'categories',
+      where: { slug: { equals: slug } },
+      limit: 1,
+      overrideAccess: true,
+    })
+    if (found.docs[0]) categories[slug] = numericId(found.docs[0].id)
+  }
+  const tags: Record<string, number> = {}
+  const foundTag = await payload.find({
+    collection: 'tags',
+    where: { slug: { equals: 'everyday' } },
+    limit: 1,
+    overrideAccess: true,
+  })
+  if (foundTag.docs[0]) tags.everyday = numericId(foundTag.docs[0].id)
+  const departments: Record<string, number> = {}
+  const foundDepartments = await payload.find({
+    collection: 'departments',
+    limit: 20,
+    overrideAccess: true,
+  })
+  for (const doc of foundDepartments.docs) {
+    departments[doc.slug] = numericId(doc.id)
+  }
+  return { categories, ageGroupIds, tags, departments }
+}
+
+export async function seedMissingCategorySamples(payload: Payload) {
+  if (!fs.existsSync(seedMediaDir)) {
+    throw new Error(`Seed photos folder is missing: ${seedMediaDir}`)
+  }
+  const ctx = await loadSeedContext(payload)
+  const pools = extraSamplesByCategory(ctx)
+  for (const [slug, extras] of Object.entries(pools)) {
+    const categoryId = ctx.categories[slug]
+    if (!categoryId) continue
+    const existing = await payload.find({
+      collection: 'products',
+      where: { category: { equals: categoryId } },
+      limit: 0,
+      overrideAccess: true,
+    })
+    if (existing.totalDocs >= MIN_SAMPLE_PRODUCTS) {
+      payload.logger.info(`${slug} already has ${existing.totalDocs} products — skipping samples.`)
+      continue
+    }
+    let need = MIN_SAMPLE_PRODUCTS - existing.totalDocs
+    const toCreate = []
+    for (const item of extras) {
+      if (need <= 0) break
+      if (!item.category) continue
+      const found = await payload.find({
+        collection: 'products',
+        where: { slug: { equals: item.slug } },
+        limit: 1,
+        overrideAccess: true,
+        draft: true,
+      })
+      if (found.totalDocs > 0) continue
+      toCreate.push(item)
+      need -= 1
+    }
+    if (toCreate.length === 0) continue
+    await upsertSeedProducts(payload, toCreate as SeedProduct[])
+    payload.logger.info(`Added ${toCreate.length} sample products to ${slug}.`)
+  }
+}
+
 export async function seedCatalogIfEmpty(payload: Payload) {
   await seedSizingAndAccessories(payload)
   const existing = await payload.find({
@@ -335,11 +427,13 @@ export async function seedCatalogIfEmpty(payload: Payload) {
     overrideAccess: true,
   })
   if (existing.totalDocs > 0) {
-    payload.logger.info('Catalog already has products — adding missing accessory samples only.')
+    payload.logger.info('Catalog already has products — filling shop categories that have fewer than 9 items.')
     await seedMissingAccessoryProducts(payload)
+    await seedMissingCategorySamples(payload)
     return
   }
   await seedCatalog(payload)
+  await seedMissingCategorySamples(payload)
 }
 
 export async function seedCatalog(payload: Payload) {

@@ -50,6 +50,7 @@ async function seed() {
   }
 
   await seedCatalog(payload)
+  await seedMissingCategorySamples(payload)
   payload.logger.info('Create or use an admin user at /admin — credentials are never logged.')
   process.exit(0)
 }
