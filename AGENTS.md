@@ -14,7 +14,7 @@ Kids wear store for **Pakistan**, **cash on delivery only**. Shoppers pay the ri
 - Storefront: `src/app/(storefront)/`
 - Admin + Payload API: `src/app/(payload)/`
 - Admin dashboard stats: `src/components/admin/DashboardStats.tsx` (`beforeDashboard` — today's COD orders/sales, pipeline counts, low stock)
-- Collections: `src/collections/` (Users, Media, Categories, Products, Tags, Size guides, Orders, Couriers, Pages)
+- Collections: `src/collections/` (Users, Media, Departments, Categories, Products, Tags, Age groups, Sizes, Size guides, Orders, Couriers, Pages)
 - Store settings global: `src/globals/SiteSettings.ts` (Homepage tab drives hero, collections, featured products, promos, and story copy)
 - COD checkout (server-verified prices/stock): `src/endpoints/checkout.ts`
 - Order notifications: `src/lib/notifications/` (WhatsApp confirm action + env-configured email/SMS providers)
@@ -22,7 +22,7 @@ Kids wear store for **Pakistan**, **cash on delivery only**. Shoppers pay the ri
 - Media storage: local disk by default; S3-compatible object storage via `MEDIA_STORAGE=s3` (`src/lib/storage.ts`). Keep `/api/media/file/:filename` URLs.
 - Cart is client-side (`localStorage`), guest checkout
 - SEO: `src/lib/site.ts` (canonical origin), `src/lib/seo.ts`, `src/app/sitemap.ts`, `src/app/robots.ts`
-- Tests: `tests/` (Vitest). `npm test` runs cart, phone, shipping/COD, checkout, stock, orders, tracking, access, and the COD purchase flow.
+- Tests: `tests/` (Vitest). `npm test` runs cart, phone, shipping/COD, checkout, stock, orders, tracking, access, taxonomy, and the COD purchase flow.
 
 ## Commands
 
@@ -44,7 +44,7 @@ Live site uses **PostgreSQL** + Docker on a VPS (`ruminzuni.com`). Follow `DEPLO
 
 - Currency is **PKR**. Format with `formatPkr()` from `src/lib/pakistan.ts`.
 - Phone must be Pakistani mobile (`03XXXXXXXXX`). Cities come from `PAKISTAN_CITIES`.
-- Product variants have size **code**, color, SKU, price, stock. Size codes and height bands live in Admin → **Sizes** (height in cm is the source of truth). Age bands live in Admin → **Age groups**. Tick storefront to add Pre-Teen / Teen later.
+- Product variants have size **code**, color, SKU, price, stock. Clothing and footwear sizes are separate in Admin → **Sizes**. Age bands live in Admin → **Age groups**. Tick storefront to add Pre-Teen or Teen later. Shop gender is Boys/Girls only; leave gender empty for extras. Legacy Unisex stays in the database and still appears under Boys and Girls.
 - Optional catalog fields: tags (`tags`), size guides (`size-guides`), material, care, SEO title/description, sortPriority (higher first), related products. Leave them empty on older products.
 - Shop search/filters use URL query params (`q`, `category`, `gender`, `age`, `size`, `color`, `min`, `max`, `heightMin`, `heightMax`, `inStock`, `sort`, `page`) so results are shareable. Pretty paths like `/shop/boys` stay indexed; extra facets are `noindex,follow`. Find-my-size is `/size-finder`.
 - Canonical domain is `NEXT_PUBLIC_SERVER_URL` (`https://ruminzuni.com` in production). Sitemap `/sitemap.xml`, robots `/robots.txt`. Cart, checkout, track, order, admin, and API are noindex.

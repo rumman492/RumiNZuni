@@ -12,6 +12,7 @@ import { Tags } from './collections/Tags'
 import { SizeGuides } from './collections/SizeGuides'
 import { AgeGroups } from './collections/AgeGroups'
 import { Sizes } from './collections/Sizes'
+import { Departments } from './collections/Departments'
 import { Orders } from './collections/Orders'
 import { Couriers } from './collections/Couriers'
 import { Pages } from './collections/Pages'
@@ -64,7 +65,7 @@ export default buildConfig({
       beforeDashboard: ['/components/admin/DashboardStats'],
     },
   },
-  collections: [Users, Media, Categories, Products, Tags, AgeGroups, Sizes, SizeGuides, Orders, Couriers, Pages],
+  collections: [Users, Media, Departments, Categories, Products, Tags, AgeGroups, Sizes, SizeGuides, Orders, Couriers, Pages],
   globals: [SiteSettings],
   editor: lexicalEditor(),
   secret: payloadSecret,

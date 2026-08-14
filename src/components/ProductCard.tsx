@@ -43,7 +43,9 @@ export function ProductCard({ title, slug, image, price, compareAtPrice, gender,
         </span>
       </div>
       <div className="px-2 pb-2 pt-3">
-        {gender ? <p className="text-xs font-bold uppercase tracking-wide text-sage">{gender}</p> : null}
+        {gender === 'boys' || gender === 'girls' ? (
+          <p className="text-xs font-bold uppercase tracking-wide text-sage">{gender === 'boys' ? 'Boys' : 'Girls'}</p>
+        ) : null}
         <h3 className="mt-1 font-semibold leading-snug">{title}</h3>
         <p className="mt-1 text-sm">
           <span className="font-bold text-coral">{formatPkr(price)}</span>

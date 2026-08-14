@@ -26,7 +26,13 @@ export const AgeGroups: CollectionConfig = {
       name: 'storefrontVisible',
       type: 'checkbox',
       defaultValue: true,
-      admin: { description: 'Unchecked groups stay in the CMS until you are ready to sell them.' },
+      admin: { description: 'Active in shop filters. Uncheck Pre-Teen / Teen until you stock them.' },
+    },
+    {
+      name: 'showInNavigation',
+      type: 'checkbox',
+      defaultValue: false,
+      admin: { description: 'Optional extra nav link. Main shop nav uses Boys/Girls and departments, not age groups.' },
     },
     {
       name: 'sortOrder',
@@ -58,6 +64,16 @@ export const AgeGroups: CollectionConfig = {
       fields: [
         { name: 'ageMinMonths', type: 'number', min: 0, admin: { description: 'Optional age hint (months)' } },
         { name: 'ageMaxMonths', type: 'number', min: 0, admin: { description: 'Optional age hint (months)' } },
+      ],
+    },
+    {
+      type: 'group',
+      name: 'seo',
+      fields: [
+        { name: 'title', type: 'text' },
+        { name: 'description', type: 'textarea' },
+        { name: 'noindex', type: 'checkbox', defaultValue: false },
+        { name: 'ogImage', type: 'upload', relationTo: 'media' },
       ],
     },
   ],

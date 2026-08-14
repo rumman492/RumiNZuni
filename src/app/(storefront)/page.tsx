@@ -17,7 +17,7 @@ import { getSettings } from '@/lib/products'
 import { pageMeta } from '@/lib/seo'
 import { absoluteMediaUrl, STORE_NAME } from '@/lib/site'
 
-const PLAY_TICKER = ['Play all day', 'Soft cotton', 'Cash on delivery', 'Ages newborn – 12', 'Boys · Girls · Unisex']
+const PLAY_TICKER = ['Play all day', 'Soft cotton', 'Cash on delivery', 'Ages newborn – 12', 'Boys · Girls']
 
 export async function generateMetadata(): Promise<Metadata> {
   let storeName = STORE_NAME

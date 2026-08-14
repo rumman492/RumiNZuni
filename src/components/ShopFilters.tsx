@@ -11,6 +11,7 @@ import {
   type CatalogLock,
   type CatalogQuery,
 } from '@/lib/catalog-params'
+import { DEFAULT_KIDS_FILTERS } from '@/lib/taxonomy'
 
 type Props = {
   basePath: string
@@ -24,8 +25,36 @@ const selectClass =
 const inputClass =
   'mt-1 w-full rounded-2xl border border-ink/10 bg-cream px-3 py-2 text-sm outline-none focus:border-coral'
 
+function FacetSelect({
+  label,
+  name,
+  value,
+  options,
+}: {
+  label: string
+  name: string
+  value?: string
+  options: Array<{ label: string; value: string }>
+}) {
+  if (options.length === 0) return null
+  return (
+    <label className="text-sm font-semibold">
+      {label}
+      <select className={selectClass} name={name} defaultValue={value || ''}>
+        <option value="">All</option>
+        {options.map((item) => (
+          <option key={item.value} value={item.value}>
+            {item.label}
+          </option>
+        ))}
+      </select>
+    </label>
+  )
+}
+
 export function ShopFilters({ basePath, query, facets, locked }: Props) {
   const router = useRouter()
+  const filters = facets.filters || DEFAULT_KIDS_FILTERS
   const chips = catalogFilterChips(query, facets).filter((chip) => {
     if (chip.key === 'gender' && locked?.gender) return false
     if (chip.key === 'age' && locked?.age) return false
@@ -39,10 +68,16 @@ export function ShopFilters({ basePath, query, facets, locked }: Props) {
       sort: query.sort,
       q: String(data.get('q') || '').trim() || undefined,
       category: locked?.category || String(data.get('category') || '').trim() || undefined,
+      department: locked?.department || query.department,
+      audience: locked?.audience || query.audience,
       gender: locked?.gender || String(data.get('gender') || '').trim() || undefined,
       age: locked?.age || String(data.get('age') || '').trim() || undefined,
       size: String(data.get('size') || '').trim() || undefined,
       color: String(data.get('color') || '').trim() || undefined,
+      brand: String(data.get('brand') || '').trim() || undefined,
+      bagType: String(data.get('bagType') || '').trim() || undefined,
+      productKind: String(data.get('productKind') || '').trim() || undefined,
+      skinType: String(data.get('skinType') || '').trim() || undefined,
       min: Number.isFinite(Number(data.get('min'))) && String(data.get('min')).trim() ? Number(data.get('min')) : undefined,
       max: Number.isFinite(Number(data.get('max'))) && String(data.get('max')).trim() ? Number(data.get('max')) : undefined,
       heightMin:
@@ -107,7 +142,7 @@ export function ShopFilters({ basePath, query, facets, locked }: Props) {
           </label>
         ) : null}
 
-        {!locked?.gender ? (
+        {filters.gender && !locked?.gender ? (
           <label className="text-sm font-semibold">
             Gender
             <select className={selectClass} name="gender" defaultValue={query.gender || ''}>
@@ -121,7 +156,7 @@ export function ShopFilters({ basePath, query, facets, locked }: Props) {
           </label>
         ) : null}
 
-        {!locked?.age ? (
+        {filters.age && !locked?.age ? (
           <label className="text-sm font-semibold">
             Age group
             <select className={selectClass} name="age" defaultValue={query.age || ''}>
@@ -135,18 +170,21 @@ export function ShopFilters({ basePath, query, facets, locked }: Props) {
           </label>
         ) : null}
 
-        <label className="text-sm font-semibold">
-          Size
-          <select className={selectClass} name="size" defaultValue={query.size || ''}>
-            <option value="">All sizes</option>
-            {facets.sizes.map((item) => (
-              <option key={item.value} value={item.value}>
-                {item.label} · {item.height}
-              </option>
-            ))}
-          </select>
-        </label>
+        {filters.size ? (
+          <label className="text-sm font-semibold">
+            Size
+            <select className={selectClass} name="size" defaultValue={query.size || ''}>
+              <option value="">All sizes</option>
+              {facets.sizes.map((item) => (
+                <option key={item.value} value={item.value}>
+                  {item.height ? `${item.label} · ${item.height}` : item.label}
+                </option>
+              ))}
+            </select>
+          </label>
+        ) : null}
 
+        {filters.height ? (
         <div>
           <p className="text-sm font-semibold">Height (cm)</p>
           <div className="mt-1 grid grid-cols-2 gap-2">
@@ -172,7 +210,9 @@ export function ShopFilters({ basePath, query, facets, locked }: Props) {
             />
           </div>
         </div>
+        ) : null}
 
+        {filters.color ? (
         <label className="text-sm font-semibold">
           Colour
           <select className={selectClass} name="color" defaultValue={query.color || ''}>
@@ -184,6 +224,40 @@ export function ShopFilters({ basePath, query, facets, locked }: Props) {
             ))}
           </select>
         </label>
+        ) : null}
+
+        {filters.brand ? (
+          <FacetSelect
+            label="Brand"
+            name="brand"
+            value={query.brand}
+            options={facets.brands.map((item) => ({ label: item, value: item }))}
+          />
+        ) : null}
+        {filters.bagType ? (
+          <FacetSelect
+            label="Bag type"
+            name="bagType"
+            value={query.bagType}
+            options={facets.bagTypes.map((item) => ({ label: item, value: item }))}
+          />
+        ) : null}
+        {filters.productKind ? (
+          <FacetSelect
+            label="Product type"
+            name="productKind"
+            value={query.productKind}
+            options={facets.productKinds.map((item) => ({ label: item, value: item }))}
+          />
+        ) : null}
+        {filters.skinType ? (
+          <FacetSelect
+            label="Skin type"
+            name="skinType"
+            value={query.skinType}
+            options={facets.skinTypes.map((item) => ({ label: item, value: item }))}
+          />
+        ) : null}
 
         <div>
           <p className="text-sm font-semibold">Price (PKR)</p>

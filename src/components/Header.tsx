@@ -5,17 +5,24 @@ import { Search, ShoppingBag } from 'lucide-react'
 import { BrandMark } from '@/components/BrandMark'
 import { useCart } from '@/components/CartProvider'
 
-const nav = [
+const navFallback = [
   { href: '/shop', label: 'Shop' },
   { href: '/shop/boys', label: 'Boys' },
   { href: '/shop/girls', label: 'Girls' },
-  { href: '/shop/newborn', label: 'Newborn' },
-  { href: '/shop/unisex', label: 'Unisex' },
+  { href: '/shop/baby-kids-accessories', label: 'Accessories' },
+  { href: '/shop/kids-footwear', label: 'Footwear' },
+  { href: '/shop/womens', label: "Women's" },
   { href: '/size-finder', label: 'Find size' },
   { href: '/track', label: 'Track order' },
 ]
 
-export function Header({ announcement }: { announcement?: string | null }) {
+export function Header({
+  announcement,
+  nav = navFallback,
+}: {
+  announcement?: string | null
+  nav?: Array<{ href: string; label: string }>
+}) {
   const { count } = useCart()
 
   return (

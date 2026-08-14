@@ -69,6 +69,7 @@ export interface Config {
   collections: {
     users: User;
     media: Media;
+    departments: Department;
     categories: Category;
     products: Product;
     tags: Tag;
@@ -86,9 +87,12 @@ export interface Config {
   collectionsSelect: {
     users: UsersSelect<false> | UsersSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
+    departments: DepartmentsSelect<false> | DepartmentsSelect<true>;
     categories: CategoriesSelect<false> | CategoriesSelect<true>;
     products: ProductsSelect<false> | ProductsSelect<true>;
     tags: TagsSelect<false> | TagsSelect<true>;
+    'age-groups': AgeGroupsSelect<false> | AgeGroupsSelect<true>;
+    sizes: SizesSelect<false> | SizesSelect<true>;
     'size-guides': SizeGuidesSelect<false> | SizeGuidesSelect<true>;
     orders: OrdersSelect<false> | OrdersSelect<true>;
     couriers: CouriersSelect<false> | CouriersSelect<true>;
@@ -182,15 +186,52 @@ export interface Media {
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "categories".
  */
+export interface Department {
+  id: number
+  name: string
+  slug: string
+  description?: string | null
+  audience: 'kids' | 'women'
+  sizeKind: 'clothing' | 'footwear' | 'none'
+  usesGender?: boolean | null
+  usesAge?: boolean | null
+  usesSize?: boolean | null
+  usesHeight?: boolean | null
+  usesColor?: boolean | null
+  usesBrand?: boolean | null
+  usesBagType?: boolean | null
+  usesProductKind?: boolean | null
+  usesSkinType?: boolean | null
+  showInNavigation?: boolean | null
+  storefrontVisible?: boolean | null
+  sortOrder?: number | null
+  seo?: {
+    title?: string | null
+    description?: string | null
+    noindex?: boolean | null
+    ogImage?: (number | null) | Media
+  }
+  updatedAt: string
+  createdAt: string
+}
+
 export interface Category {
   id: number;
   name: string;
-  /**
-   * Used in /shop/slug URLs
-   */
   slug: string;
   description?: string | null;
   image?: (number | null) | Media;
+  department?: (number | null) | Department;
+  parent?: (number | null) | Category;
+  active?: boolean | null;
+  showInNavigation?: boolean | null;
+  sortOrder?: number | null;
+  seo?: {
+    title?: string | null
+    description?: string | null
+    noindex?: boolean | null
+    ogImage?: (number | null) | Media
+  }
   updatedAt: string;
   createdAt: string;
 }
@@ -227,8 +268,16 @@ export interface Product {
       }[]
     | null;
   category: number | Category;
-  gender: 'boys' | 'girls' | 'unisex';
-  ageGroup: number | AgeGroup;
+  department?: (number | null) | Department;
+  gender?: ('boys' | 'girls' | 'unisex') | null;
+  ageGroup?: (number | null) | AgeGroup;
+  brand?: string | null;
+  productKind?: string | null;
+  bagType?: string | null;
+  skinType?: string | null;
+  ingredients?: string | null;
+  volume?: string | null;
+  dimensions?: string | null;
   /**
    * e.g. 100% cotton jersey, lawn with lining
    */
@@ -309,11 +358,18 @@ export interface AgeGroup {
   slug: string
   blurb?: string | null
   storefrontVisible?: boolean | null
+  showInNavigation?: boolean | null
   sortOrder?: number | null
   heightMinCm: number
   heightMaxCm: number
   ageMinMonths?: number | null
   ageMaxMonths?: number | null
+  seo?: {
+    title?: string | null
+    description?: string | null
+    noindex?: boolean | null
+    ogImage?: (number | null) | Media
+  }
   updatedAt: string
   createdAt: string
 }
@@ -325,8 +381,10 @@ export interface Size {
   ageLabel?: string | null
   storefrontVisible?: boolean | null
   sortOrder?: number | null
-  heightMinCm: number
-  heightMaxCm: number
+  kind?: ('clothing' | 'footwear' | 'none') | null
+  heightMinCm?: number | null
+  heightMaxCm?: number | null
+  footLengthCm?: number | null
   chestMinCm?: number | null
   chestMaxCm?: number | null
   waistMinCm?: number | null
@@ -336,6 +394,7 @@ export interface Size {
   eu?: string | null
   uk?: string | null
   us?: string | null
+  pk?: string | null
   ageGroups?: (number | AgeGroup)[] | null
   updatedAt: string
   createdAt: string
@@ -742,6 +801,50 @@ export interface MediaSelect<T extends boolean = true> {
   focalX?: T;
   focalY?: T;
 }
+export interface AgeGroupsSelect<T extends boolean = true> {
+  name?: T
+  slug?: T
+  blurb?: T
+  storefrontVisible?: T
+  showInNavigation?: T
+  sortOrder?: T
+  updatedAt?: T
+  createdAt?: T
+}
+
+export interface SizesSelect<T extends boolean = true> {
+  code?: T
+  label?: T
+  kind?: T
+  storefrontVisible?: T
+  sortOrder?: T
+  updatedAt?: T
+  createdAt?: T
+}
+
+export interface DepartmentsSelect<T extends boolean = true> {
+  name?: T
+  slug?: T
+  description?: T
+  audience?: T
+  sizeKind?: T
+  usesGender?: T
+  usesAge?: T
+  usesSize?: T
+  usesHeight?: T
+  usesColor?: T
+  usesBrand?: T
+  usesBagType?: T
+  usesProductKind?: T
+  usesSkinType?: T
+  showInNavigation?: T
+  storefrontVisible?: T
+  sortOrder?: T
+  seo?: T
+  updatedAt?: T
+  createdAt?: T
+}
+
 /**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "categories_select".

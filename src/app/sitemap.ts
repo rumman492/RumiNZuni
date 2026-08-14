@@ -44,6 +44,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       }),
       payload.find({
         collection: 'categories',
+        where: { active: { not_equals: false } },
         limit: 50,
         depth: 0,
         select: { slug: true, updatedAt: true },

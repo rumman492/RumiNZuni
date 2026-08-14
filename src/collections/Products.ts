@@ -8,7 +8,7 @@ export const Products: CollectionConfig = {
     group: 'Catalog',
     defaultColumns: ['title', 'category', 'sortPriority', 'gender', '_status', 'updatedAt'],
     listSearchableFields: ['title', 'slug'],
-    description: 'Kids-wear catalog. Existing products stay valid — new merchandising fields are optional.',
+    description: 'Catalog. Department controls which filters apply. Gender is Boys/Girls only — leave blank for accessories that do not need it. Legacy Unisex stays in the database but is never shown in the shop.',
   },
   defaultSort: '-sortPriority',
   access: {
@@ -73,30 +73,43 @@ export const Products: CollectionConfig = {
               type: 'row',
               fields: [
                 {
+                  name: 'department',
+                  type: 'relationship',
+                  relationTo: 'departments',
+                  admin: {
+                    description: 'Kids Wear, Accessories, Footwear, or Women’s. Drives shop filters.',
+                  },
+                },
+                {
                   name: 'category',
                   type: 'relationship',
                   relationTo: 'categories',
                   required: true,
                 },
+              ],
+            },
+            {
+              type: 'row',
+              fields: [
                 {
                   name: 'gender',
                   type: 'select',
-                  required: true,
-                  defaultValue: 'unisex',
                   options: [
                     { label: 'Boys', value: 'boys' },
                     { label: 'Girls', value: 'girls' },
-                    { label: 'Unisex', value: 'unisex' },
                   ],
+                  admin: {
+                    description:
+                      'Required for clothing when it is boys or girls only. Leave empty for bibs, bags, and other extras. Do not use Unisex — it is removed from the shop.',
+                  },
                 },
                 {
                   name: 'ageGroup',
                   type: 'relationship',
                   relationTo: 'age-groups',
-                  required: true,
                   admin: {
                     description:
-                      'Primary merchandising band. Shop filters also match by variant height, so mixed-size products still appear in the right groups.',
+                      'Kids products only. Leave empty for Women’s handbags, beauty, and skincare.',
                   },
                 },
               ],
@@ -118,6 +131,40 @@ export const Products: CollectionConfig = {
               name: 'careInstructions',
               type: 'textarea',
               admin: { description: 'e.g. Machine wash cold. Do not bleach. Dry in shade.' },
+            },
+            {
+              name: 'brand',
+              type: 'text',
+              admin: { description: 'Women’s beauty/skincare. Optional elsewhere.' },
+            },
+            {
+              name: 'productKind',
+              type: 'text',
+              admin: { description: 'e.g. lipstick, cleanser, serum' },
+            },
+            {
+              name: 'bagType',
+              type: 'text',
+              admin: { description: 'e.g. tote, crossbody, clutch' },
+            },
+            {
+              name: 'skinType',
+              type: 'text',
+              admin: { description: 'e.g. dry, oily, combination' },
+            },
+            {
+              name: 'ingredients',
+              type: 'textarea',
+            },
+            {
+              name: 'volume',
+              type: 'text',
+              admin: { description: 'e.g. 50 ml' },
+            },
+            {
+              name: 'dimensions',
+              type: 'text',
+              admin: { description: 'Bag size, e.g. 30 × 20 × 12 cm' },
             },
             {
               name: 'tags',
@@ -209,7 +256,7 @@ export const Products: CollectionConfig = {
                       required: true,
                       admin: {
                         description:
-                          'Size code from Admin → Sizes (e.g. 6y). Height bands live on that size — add 13-14y later without changing this field.',
+                          'Size code from Admin → Sizes. Clothing uses 6y; footwear uses shoe codes (e.g. eu-28). Handbags/beauty can use onesize.',
                       },
                     },
                     {

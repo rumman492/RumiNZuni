@@ -11,6 +11,13 @@ export type ProductDoc = {
   createdAt?: string | null
   description?: string | null
   gender?: string | null
+  brand?: string | null
+  bagType?: string | null
+  productKind?: string | null
+  skinType?: string | null
+  ingredients?: string | null
+  volume?: string | null
+  dimensions?: string | null
   ageGroup?: { name?: string | null; slug?: string | null } | string | number | null
   featured?: boolean | null
   material?: string | null
@@ -62,7 +69,7 @@ export function productCardData(
     image,
     price: chosen?.price || 0,
     compareAtPrice: chosen?.compareAtPrice || null,
-    gender: product.gender || null,
+    gender: product.gender === 'boys' || product.gender === 'girls' ? product.gender : null,
     soldOut,
   }
 }

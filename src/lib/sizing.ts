@@ -18,8 +18,10 @@ export type SizeRecord = {
   ageLabel: string
   sortOrder: number
   storefrontVisible: boolean
-  heightMinCm: number
-  heightMaxCm: number
+  kind?: 'clothing' | 'footwear' | 'none'
+  heightMinCm?: number
+  heightMaxCm?: number
+  footLengthCm?: number
   chestMinCm?: number
   chestMaxCm?: number
   waistMinCm?: number
@@ -29,6 +31,7 @@ export type SizeRecord = {
   eu?: string
   uk?: string
   us?: string
+  pk?: string
   ageGroupSlugs: string[]
 }
 
@@ -144,12 +147,33 @@ export const DEFAULT_SIZES: SizeRecord[] = [
 ]
 
 export const ACCESSORY_CATEGORIES = [
-  { name: 'Baby accessories', slug: 'baby-accessories', description: 'Bibs, hats, and everyday baby extras. Cash on delivery across Pakistan.' },
-  { name: 'Kids accessories', slug: 'kids-accessories', description: 'Hair, hats, and play extras for kids. Cash on delivery across Pakistan.' },
-  { name: 'Footwear', slug: 'footwear', description: 'Soft shoes and sandals for little feet. Cash on delivery across Pakistan.' },
-  { name: 'Bags', slug: 'bags', description: 'School bags and little carry-alls. Cash on delivery across Pakistan.' },
-  { name: 'Beauty', slug: 'beauty', description: 'Gentle kids and baby care. Cash on delivery across Pakistan.' },
+  { name: 'Baby & Kids Accessories', slug: 'baby-kids-accessories', description: 'Caps, hats, socks, hair extras, bibs, and little bags. Cash on delivery across Pakistan.' },
+  { name: 'Kids Footwear', slug: 'kids-footwear', description: 'Soft shoes and sandals for little feet. Cash on delivery across Pakistan.' },
 ]
+
+export const DEFAULT_FOOTWEAR_SIZES: SizeRecord[] = [
+  { code: 'eu-16', label: 'EU 16', ageLabel: 'Newborn–3 months', sortOrder: 200, storefrontVisible: true, kind: 'footwear', footLengthCm: 9.5, ageMinMonths: 0, ageMaxMonths: 3, eu: '16', uk: '0', us: '1', pk: '16', ageGroupSlugs: ['newborn'] },
+  { code: 'eu-18', label: 'EU 18', ageLabel: '3–12 months', sortOrder: 210, storefrontVisible: true, kind: 'footwear', footLengthCm: 11, ageMinMonths: 3, ageMaxMonths: 12, eu: '18', uk: '2', us: '3', pk: '18', ageGroupSlugs: ['baby'] },
+  { code: 'eu-20', label: 'EU 20', ageLabel: '1–2 years', sortOrder: 220, storefrontVisible: true, kind: 'footwear', footLengthCm: 12.5, ageMinMonths: 12, ageMaxMonths: 24, eu: '20', uk: '4', us: '5', pk: '20', ageGroupSlugs: ['toddler'] },
+  { code: 'eu-22', label: 'EU 22', ageLabel: '2–3 years', sortOrder: 230, storefrontVisible: true, kind: 'footwear', footLengthCm: 13.5, ageMinMonths: 24, ageMaxMonths: 36, eu: '22', uk: '5', us: '6', pk: '22', ageGroupSlugs: ['toddler'] },
+  { code: 'eu-24', label: 'EU 24', ageLabel: '3–5 years', sortOrder: 240, storefrontVisible: true, kind: 'footwear', footLengthCm: 15, ageMinMonths: 36, ageMaxMonths: 60, eu: '24', uk: '7', us: '8', pk: '24', ageGroupSlugs: ['little-kids'] },
+  { code: 'eu-26', label: 'EU 26', ageLabel: '5–7 years', sortOrder: 250, storefrontVisible: true, kind: 'footwear', footLengthCm: 16.5, ageMinMonths: 60, ageMaxMonths: 84, eu: '26', uk: '8.5', us: '9.5', pk: '26', ageGroupSlugs: ['kids'] },
+  { code: 'eu-28', label: 'EU 28', ageLabel: '6–8 years', sortOrder: 260, storefrontVisible: true, kind: 'footwear', footLengthCm: 17.5, ageMinMonths: 72, ageMaxMonths: 96, eu: '28', uk: '10', us: '11', pk: '28', ageGroupSlugs: ['kids'] },
+  { code: 'eu-30', label: 'EU 30', ageLabel: '8–10 years', sortOrder: 270, storefrontVisible: true, kind: 'footwear', footLengthCm: 19, ageMinMonths: 96, ageMaxMonths: 120, eu: '30', uk: '11.5', us: '12.5', pk: '30', ageGroupSlugs: ['big-kids'] },
+  { code: 'eu-32', label: 'EU 32', ageLabel: '10–12 years', sortOrder: 280, storefrontVisible: true, kind: 'footwear', footLengthCm: 20.5, ageMinMonths: 120, ageMaxMonths: 144, eu: '32', uk: '13', us: '1Y', pk: '32', ageGroupSlugs: ['big-kids'] },
+]
+
+export const DEFAULT_ONESIZE: SizeRecord = {
+  code: 'onesize',
+  label: 'One size',
+  ageLabel: '',
+  sortOrder: 900,
+  storefrontVisible: true,
+  kind: 'none',
+  ageMinMonths: 0,
+  ageMaxMonths: 192,
+  ageGroupSlugs: [],
+}
 
 const LEGACY_AGE_SLUG: Record<string, string> = {
   newborn: 'newborn',
@@ -190,10 +214,14 @@ export function rangesOverlap(aMin: number, aMax: number, bMin: number, bMax: nu
 }
 
 export function sizeFitsHeight(size: SizeRecord, heightCm: number) {
+  if (size.kind === 'footwear' || size.kind === 'none') return false
+  if (size.heightMinCm == null || size.heightMaxCm == null) return false
   return heightCm >= size.heightMinCm && heightCm <= size.heightMaxCm
 }
 
 export function sizeOverlapsHeightRange(size: SizeRecord, minCm: number, maxCm: number) {
+  if (size.kind === 'footwear' || size.kind === 'none') return false
+  if (size.heightMinCm == null || size.heightMaxCm == null) return false
   return rangesOverlap(size.heightMinCm, size.heightMaxCm, minCm, maxCm)
 }
 
@@ -232,7 +260,8 @@ export function recommendSize(input: {
   const byHeight = sizes.filter((size) => sizeFitsHeight(size, heightCm))
   const pool = byHeight.length > 0 ? byHeight : sizes
   const scored = pool.map((size) => {
-    const mid = (size.heightMinCm + size.heightMaxCm) / 2
+    const mid =
+      size.heightMinCm != null && size.heightMaxCm != null ? (size.heightMinCm + size.heightMaxCm) / 2 : heightCm
     const heightScore = Math.abs(heightCm - mid)
     const ageScore =
       ageMonths == null
@@ -256,11 +285,20 @@ export function recommendSize(input: {
   return { size: winner.size, reason }
 }
 
-export function shopSizeOptions(sizes: SizeRecord[] = DEFAULT_SIZES) {
+export function shopSizeOptions(sizes: SizeRecord[] = DEFAULT_SIZES, kind?: SizeRecord['kind']) {
   return sizes
     .filter((size) => size.storefrontVisible)
+    .filter((size) => !kind || (size.kind || 'clothing') === kind)
     .sort((a, b) => a.sortOrder - b.sortOrder)
-    .map((size) => ({ label: size.label, value: size.code, height: `${size.heightMinCm}–${size.heightMaxCm} cm` }))
+    .map((size) => ({
+      label: size.label,
+      value: size.code,
+      height: size.footLengthCm
+        ? `${size.footLengthCm} cm foot`
+        : size.heightMinCm != null && size.heightMaxCm != null
+          ? `${size.heightMinCm}–${size.heightMaxCm} cm`
+          : '',
+    }))
 }
 
 export function shopAgeOptions(groups: AgeGroupRecord[] = DEFAULT_AGE_GROUPS) {

@@ -1,10 +1,7 @@
 import { shopAgeOptions, shopSizeOptions, formatProductSize } from '@/lib/sizing'
+import { CUSTOMER_GENDER_OPTIONS, type FilterFlags } from '@/lib/taxonomy'
 
-export const GENDER_OPTIONS = [
-  { label: 'Boys', value: 'boys' },
-  { label: 'Girls', value: 'girls' },
-  { label: 'Unisex', value: 'unisex' },
-] as const
+export const GENDER_OPTIONS = CUSTOMER_GENDER_OPTIONS
 
 /** Fallback labels when CMS is unavailable. Shop UI should pass live age groups. */
 export const AGE_OPTIONS = shopAgeOptions()
@@ -21,37 +18,47 @@ export type CatalogSort = (typeof SORT_OPTIONS)[number]['value']
 
 export const SHOP_PRESETS: Record<
   string,
-  { title: string; gender?: string; age?: string; description: string }
+  { title: string; gender?: string; age?: string; department?: string; audience?: 'kids' | 'women'; description: string }
 > = {
   boys: {
     title: 'Boys',
     gender: 'boys',
+    audience: 'kids',
     description: 'Everyday boys wear with cash on delivery across Pakistan.',
   },
   girls: {
     title: 'Girls',
     gender: 'girls',
+    audience: 'kids',
     description: 'Frocks, sets, and everyday girls outfits. Cash on delivery across Pakistan.',
   },
   newborn: {
     title: 'Newborn',
     age: 'newborn',
+    audience: 'kids',
     description: 'First outfits and sleepsuits for newborns. Cash on delivery across Pakistan.',
   },
-  unisex: {
-    title: 'Unisex',
-    gender: 'unisex',
-    description: 'Soft unisex basics for everyday play. Cash on delivery across Pakistan.',
+  womens: {
+    title: "Women's",
+    audience: 'women',
+    department: 'womens',
+    description: 'Handbags, beauty, and skincare. Cash on delivery across Pakistan.',
   },
 }
 
 export type CatalogQuery = {
   q?: string
   category?: string
+  department?: string
+  audience?: 'kids' | 'women'
   gender?: string
   age?: string
   size?: string
   color?: string
+  brand?: string
+  bagType?: string
+  productKind?: string
+  skinType?: string
   min?: number
   max?: number
   heightMin?: number
@@ -66,12 +73,19 @@ export type CatalogSearchParams = Record<string, string | string[] | undefined>
 export type CatalogFacets = {
   categories: Array<{ name: string; slug: string }>
   colors: string[]
+  brands: string[]
+  bagTypes: string[]
+  productKinds: string[]
+  skinTypes: string[]
   ageGroups: Array<{ label: string; value: string }>
   sizes: Array<{ label: string; value: string; height: string }>
+  filters: FilterFlags
 }
 
 export type CatalogLock = {
   category?: string
+  department?: string
+  audience?: 'kids' | 'women'
   gender?: string
   age?: string
 }
@@ -108,7 +122,13 @@ function cleanInt(value: string | undefined) {
 export function parseCatalogSearchParams(params: CatalogSearchParams): CatalogQuery {
   const q = cleanText(firstParam(params.q), 80)
   const category = cleanSlug(firstParam(params.category))
+  const department = cleanSlug(firstParam(params.department))
+  const audienceRaw = firstParam(params.audience)?.trim().toLowerCase()
   const genderRaw = firstParam(params.gender)?.trim().toLowerCase()
+  const brand = cleanText(firstParam(params.brand), 40)
+  const bagType = cleanText(firstParam(params.bagType), 40)
+  const productKind = cleanText(firstParam(params.productKind), 40)
+  const skinType = cleanText(firstParam(params.skinType), 40)
   const ageRaw = LEGACY_AGE[firstParam(params.age)?.trim().toLowerCase() || ''] || firstParam(params.age)?.trim().toLowerCase()
   const sizeRaw = cleanSizeCode(firstParam(params.size))
   const color = cleanText(firstParam(params.color), 40)
@@ -125,10 +145,16 @@ export function parseCatalogSearchParams(params: CatalogSearchParams): CatalogQu
   return {
     q,
     category,
+    department,
+    audience: audienceRaw === 'women' || audienceRaw === 'kids' ? audienceRaw : undefined,
     gender: genderRaw && GENDER_VALUES.has(genderRaw as never) ? genderRaw : undefined,
     age: cleanSlug(ageRaw),
     size: sizeRaw,
     color,
+    brand,
+    bagType,
+    productKind,
+    skinType,
     min,
     max,
     heightMin,
@@ -143,10 +169,16 @@ export function catalogQueryString(query: CatalogQuery) {
   const params = new URLSearchParams()
   if (query.q) params.set('q', query.q)
   if (query.category) params.set('category', query.category)
+  if (query.department) params.set('department', query.department)
+  if (query.audience) params.set('audience', query.audience)
   if (query.gender) params.set('gender', query.gender)
   if (query.age) params.set('age', query.age)
   if (query.size) params.set('size', query.size)
   if (query.color) params.set('color', query.color)
+  if (query.brand) params.set('brand', query.brand)
+  if (query.bagType) params.set('bagType', query.bagType)
+  if (query.productKind) params.set('productKind', query.productKind)
+  if (query.skinType) params.set('skinType', query.skinType)
   if (query.min != null && Number.isFinite(query.min)) params.set('min', String(query.min))
   if (query.max != null && Number.isFinite(query.max)) params.set('max', String(query.max))
   if (query.heightMin != null && Number.isFinite(query.heightMin)) params.set('heightMin', String(query.heightMin))
@@ -166,6 +198,8 @@ export function extraCatalogQuery(query: CatalogQuery, locked?: CatalogLock): Ca
   return {
     ...query,
     category: query.category && query.category !== locked?.category ? query.category : undefined,
+    department: query.department && query.department !== locked?.department ? query.department : undefined,
+    audience: query.audience && query.audience !== locked?.audience ? query.audience : undefined,
     gender: query.gender && query.gender !== locked?.gender ? query.gender : undefined,
     age: query.age && query.age !== locked?.age ? query.age : undefined,
   }
@@ -185,8 +219,14 @@ export function hasFacetParams(query: CatalogQuery, locked?: CatalogLock) {
       (extra.sort && extra.sort !== 'featured') ||
       (extra.page && extra.page > 1) ||
       extra.category ||
+      extra.department ||
+      extra.audience ||
       extra.gender ||
-      extra.age,
+      extra.age ||
+      extra.brand ||
+      extra.bagType ||
+      extra.productKind ||
+      extra.skinType,
   )
 }
 
@@ -216,6 +256,10 @@ export function catalogFilterChips(query: CatalogQuery, facets: CatalogFacets) {
     })
   }
   if (query.color) chips.push({ key: 'color', label: query.color })
+  if (query.brand) chips.push({ key: 'brand', label: query.brand })
+  if (query.bagType) chips.push({ key: 'bagType', label: query.bagType })
+  if (query.productKind) chips.push({ key: 'productKind', label: query.productKind })
+  if (query.skinType) chips.push({ key: 'skinType', label: query.skinType })
   if (query.min != null) chips.push({ key: 'min', label: `From Rs ${query.min}` })
   if (query.max != null) chips.push({ key: 'max', label: `Up to Rs ${query.max}` })
   if (query.heightMin != null) chips.push({ key: 'heightMin', label: `From ${query.heightMin} cm` })

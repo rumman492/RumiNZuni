@@ -27,8 +27,20 @@ export const Sizes: CollectionConfig = {
       index: true,
       admin: { description: 'Stable code stored on variants, e.g. 6y or 0-3m. Do not rename after products use it.' },
     },
-    { name: 'label', type: 'text', required: true, admin: { description: 'Shop label, e.g. 6–7 years' } },
+    { name: 'label', type: 'text', required: true, admin: { description: 'Shop label, e.g. 6–7 years or EU 28' } },
     { name: 'ageLabel', type: 'text', admin: { description: 'Friendly age band shown on Find my size' } },
+    {
+      name: 'kind',
+      type: 'select',
+      required: true,
+      defaultValue: 'clothing',
+      options: [
+        { label: 'Clothing', value: 'clothing' },
+        { label: 'Footwear', value: 'footwear' },
+        { label: 'One size / none', value: 'none' },
+      ],
+      admin: { description: 'Footwear sizes are separate from clothing. Do not reuse clothing codes on shoes.' },
+    },
     {
       name: 'storefrontVisible',
       type: 'checkbox',
@@ -39,8 +51,24 @@ export const Sizes: CollectionConfig = {
     {
       type: 'row',
       fields: [
-        { name: 'heightMinCm', type: 'number', required: true, min: 30, admin: { description: 'Min height cm' } },
-        { name: 'heightMaxCm', type: 'number', required: true, min: 30, admin: { description: 'Max height cm' } },
+        {
+          name: 'heightMinCm',
+          type: 'number',
+          min: 0,
+          admin: { description: 'Min height cm (clothing). Optional for footwear.' },
+        },
+        {
+          name: 'heightMaxCm',
+          type: 'number',
+          min: 0,
+          admin: { description: 'Max height cm (clothing). Optional for footwear.' },
+        },
+        {
+          name: 'footLengthCm',
+          type: 'number',
+          min: 0,
+          admin: { description: 'Foot length in cm for footwear' },
+        },
       ],
     },
     {
@@ -62,9 +90,10 @@ export const Sizes: CollectionConfig = {
     {
       type: 'row',
       fields: [
-        { name: 'eu', type: 'text', admin: { description: 'EU / height size, e.g. 116' } },
+        { name: 'eu', type: 'text', admin: { description: 'EU size (clothing height or shoe EU)' } },
         { name: 'uk', type: 'text', admin: { description: 'UK label' } },
         { name: 'us', type: 'text', admin: { description: 'US label' } },
+        { name: 'pk', type: 'text', admin: { description: 'Pakistan / local size label' } },
       ],
     },
     {

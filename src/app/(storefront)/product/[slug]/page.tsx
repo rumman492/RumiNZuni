@@ -6,6 +6,7 @@ import { JsonLd } from '@/components/JsonLd'
 import { ProductCard } from '@/components/ProductCard'
 import { mediaUrl } from '@/lib/media'
 import { formatProductSize } from '@/lib/sizing'
+import { publicGenderLabel } from '@/lib/taxonomy'
 import { getProductBySlug, productCardData, type ProductDoc } from '@/lib/products'
 import { pageMeta, productJsonLd } from '@/lib/seo'
 import { absoluteMediaUrl } from '@/lib/site'
@@ -89,8 +90,9 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
         </div>
         <div>
           <p className="text-sm uppercase tracking-wide text-ink-soft">
-            {product.gender}
-            {typeof product.ageGroup === 'object' && product.ageGroup?.name ? ` · ${product.ageGroup.name}` : ''}
+            {[publicGenderLabel(product.gender), typeof product.ageGroup === 'object' && product.ageGroup?.name]
+              .filter(Boolean)
+              .join(' · ')}
           </p>
           <h1 className="display mt-2 text-5xl">{product.title}</h1>
           {tags.length > 0 ? (

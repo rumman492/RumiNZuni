@@ -51,8 +51,8 @@ export type HomepageSettings = {
 export const DEFAULT_HOME_COLLECTIONS = [
   { title: 'Boys', copy: 'Polos, sets, and play tees for running around', href: '/shop/boys' },
   { title: 'Girls', copy: 'Frocks, two-piece sets, twirl-ready knits', href: '/shop/girls' },
-  { title: 'Newborn', copy: 'Rompers, sleepsuits, first cuddly outfits', href: '/shop/newborn' },
-  { title: 'Unisex', copy: 'Soft colourful basics for everyone', href: '/shop/unisex' },
+  { title: 'Accessories', copy: 'Hats, bibs, bags, and everyday extras', href: '/shop/baby-kids-accessories' },
+  { title: 'Footwear', copy: 'Soft shoes and sandals for little feet', href: '/shop/kids-footwear' },
 ]
 
 export const DEFAULT_HOME_PROMOS = [
@@ -102,7 +102,7 @@ export function homepageHero(settings: HomepageSettings | null) {
     secondaryCta: settings?.heroSecondaryCta || 'How COD works',
     secondaryCtaLink: storefrontHref(settings?.heroSecondaryCtaLink, '/shipping'),
     overlayTitle: settings?.heroOverlayTitle || 'Ages newborn – 12',
-    overlaySubtitle: settings?.heroOverlaySubtitle || 'Boys · Girls · Unisex',
+    overlaySubtitle: settings?.heroOverlaySubtitle || 'Boys · Girls',
   }
 }
 

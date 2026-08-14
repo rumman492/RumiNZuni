@@ -32,8 +32,23 @@ export async function ShopListing({
   let facets: Awaited<ReturnType<typeof getCatalogFacets>> = {
     categories: [],
     colors: [],
+    brands: [],
+    bagTypes: [],
+    productKinds: [],
+    skinTypes: [],
     ageGroups: shopAgeOptions(),
     sizes: shopSizeOptions(),
+    filters: {
+      gender: true,
+      age: true,
+      size: true,
+      height: true,
+      color: true,
+      brand: false,
+      bagType: false,
+      productKind: false,
+      skinType: false,
+    },
   }
   let result: Awaited<ReturnType<typeof searchCatalog>> = {
     products: [],
@@ -44,7 +59,7 @@ export async function ShopListing({
   }
 
   try {
-    ;[facets, result] = await Promise.all([getCatalogFacets(), searchCatalog(query)])
+    ;[facets, result] = await Promise.all([getCatalogFacets(query), searchCatalog(query)])
   } catch {
     result = { products: [], cards: [], total: 0, page: 1, pageCount: 1 }
   }
@@ -56,7 +71,7 @@ export async function ShopListing({
     <div>
       {breadcrumbs && breadcrumbs.length > 0 ? <Breadcrumbs items={breadcrumbs} /> : null}
       <p className="inline-flex rounded-full bg-lemon px-3 py-1 text-sm font-bold uppercase tracking-wide text-ink">
-        Kids wear
+        Kids wear & more
       </p>
       <h1 className="display mt-3 text-5xl">{title}</h1>
       {description ? <p className="mt-3 max-w-2xl text-ink-soft">{description}</p> : null}

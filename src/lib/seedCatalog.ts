@@ -41,7 +41,7 @@ type SeedProduct = {
   slug: string
   description: string
   category: number
-  gender: 'boys' | 'girls' | 'unisex'
+  gender?: 'boys' | 'girls' | 'unisex'
   ageGroup: number
   featured?: boolean
   material?: string
@@ -131,8 +131,7 @@ function accessorySampleProducts(
       title: 'Cotton bib & hat set',
       slug: 'cotton-bib-hat-set',
       description: `Soft cotton bib with a matching knotted hat for milky days and sunny walks. ${PLACEHOLDER}`,
-      category: categories['baby-accessories'],
-      gender: 'unisex',
+      category: categories['baby-kids-accessories'],
       ageGroup: ageGroupIds.baby,
       material: 'Cotton jersey',
       careInstructions: 'Machine wash cold. Do not bleach. Dry in shade.',
@@ -154,8 +153,7 @@ function accessorySampleProducts(
       title: 'Mitts & burp cloth',
       slug: 'mitts-burp-cloth',
       description: `Scratch mitts plus a muslin burp cloth for newborn days. ${PLACEHOLDER}`,
-      category: categories['baby-accessories'],
-      gender: 'unisex' as const,
+      category: categories['baby-kids-accessories'],
       ageGroup: ageGroupIds.newborn,
       material: 'Cotton muslin',
       sortPriority: 8,
@@ -171,7 +169,7 @@ function accessorySampleProducts(
       title: 'Hair bow set',
       slug: 'kids-hair-bow-set',
       description: `Soft fabric bows and a scrunchie for school and Eid. ${PLACEHOLDER}`,
-      category: categories['kids-accessories'],
+      category: categories['baby-kids-accessories'],
       gender: 'girls',
       ageGroup: ageGroupIds['little-kids'],
       sortPriority: 10,
@@ -187,8 +185,7 @@ function accessorySampleProducts(
       title: 'Kids sun hat',
       slug: 'kids-sun-hat',
       description: `Light brim hat for park days and school pickup. ${PLACEHOLDER}`,
-      category: categories['kids-accessories'],
-      gender: 'unisex',
+      category: categories['baby-kids-accessories'],
       ageGroup: ageGroupIds.kids,
       sortPriority: 8,
       tags: extras,
@@ -204,42 +201,39 @@ function accessorySampleProducts(
       title: 'Canvas sneakers',
       slug: 'kids-canvas-sneakers',
       description: `Everyday canvas shoes with an easy strap. ${PLACEHOLDER}`,
-      category: categories.footwear,
-      gender: 'unisex',
+      category: categories['kids-footwear'],
       ageGroup: ageGroupIds['little-kids'],
       sortPriority: 10,
       tags: extras,
       imageFile: 'kids-canvas-sneakers.jpg',
       imageAlt: 'Coral and cream kids canvas sneakers',
       variants: [
-        { sku: 'RNZ-SNK-4Y-CRL', size: '4y', color: 'Coral', price: 2190, stock: 8 },
-        { sku: 'RNZ-SNK-5Y-CRM', size: '5y', color: 'Cream', price: 2190, stock: 8 },
-        { sku: 'RNZ-SNK-6Y-CRL', size: '6y', color: 'Coral', price: 2290, stock: 6 },
+        { sku: 'RNZ-SNK-4Y-CRL', size: 'eu-24', color: 'Coral', price: 2190, stock: 8 },
+        { sku: 'RNZ-SNK-5Y-CRM', size: 'eu-26', color: 'Cream', price: 2190, stock: 8 },
+        { sku: 'RNZ-SNK-6Y-CRL', size: 'eu-28', color: 'Coral', price: 2290, stock: 6 },
       ],
     },
     {
       title: 'Soft sandals',
       slug: 'kids-soft-sandals',
       description: `Breathable sandals for warm Pakistani weather. ${PLACEHOLDER}`,
-      category: categories.footwear,
-      gender: 'unisex' as const,
+      category: categories['kids-footwear'],
       ageGroup: ageGroupIds.toddler,
       sortPriority: 8,
       tags: extras,
       imageFile: 'kids-soft-sandals.jpg',
       imageAlt: 'Sage kids sandals on a cream background',
       variants: [
-        { sku: 'RNZ-SND-2Y-SGE', size: '2y', color: 'Sage', price: 1890, stock: 10 },
-        { sku: 'RNZ-SND-3Y-SGE', size: '3y', color: 'Sage', price: 1890, stock: 9 },
-        { sku: 'RNZ-SND-4Y-CRM', size: '4y', color: 'Cream', price: 1990, stock: 7 },
+        { sku: 'RNZ-SND-2Y-SGE', size: 'eu-20', color: 'Sage', price: 1890, stock: 10 },
+        { sku: 'RNZ-SND-3Y-SGE', size: 'eu-22', color: 'Sage', price: 1890, stock: 9 },
+        { sku: 'RNZ-SND-4Y-CRM', size: 'eu-24', color: 'Cream', price: 1990, stock: 7 },
       ],
     },
     {
       title: 'School backpack',
       slug: 'kids-school-backpack',
       description: `Small backpack for books, water, and snacks. ${PLACEHOLDER}`,
-      category: categories.bags,
-      gender: 'unisex',
+      category: categories['baby-kids-accessories'],
       ageGroup: ageGroupIds.kids,
       sortPriority: 10,
       tags: extras,
@@ -254,7 +248,7 @@ function accessorySampleProducts(
       title: 'Canvas tote',
       slug: 'kids-canvas-tote',
       description: `Little tote for daycare extras and weekend outings. ${PLACEHOLDER}`,
-      category: categories.bags,
+      category: categories['baby-kids-accessories'],
       gender: 'girls',
       ageGroup: ageGroupIds['little-kids'],
       sortPriority: 8,
@@ -270,8 +264,7 @@ function accessorySampleProducts(
       title: 'Gentle baby lotion set',
       slug: 'gentle-baby-lotion-set',
       description: `Mild lotion and soap for after-bath care. ${PLACEHOLDER}`,
-      category: categories.beauty,
-      gender: 'unisex',
+      category: categories['baby-kids-accessories'],
       ageGroup: ageGroupIds.baby,
       material: 'Fragrance-light care (sample)',
       careInstructions: 'For external use. Patch-test first. Keep out of eyes.',
@@ -288,8 +281,7 @@ function accessorySampleProducts(
       title: 'Kids lip balm & brush',
       slug: 'kids-lip-balm-brush',
       description: `A small lip balm tin and a soft hairbrush. ${PLACEHOLDER}`,
-      category: categories.beauty,
-      gender: 'unisex',
+      category: categories['baby-kids-accessories'],
       ageGroup: ageGroupIds['little-kids'],
       sortPriority: 8,
       tags: extras,
@@ -309,13 +301,7 @@ export async function seedMissingAccessoryProducts(payload: Payload) {
   }
 
   const ageGroupIds = await seedSizingAndAccessories(payload)
-  const accessorySlugs = [
-    'baby-accessories',
-    'kids-accessories',
-    'footwear',
-    'bags',
-    'beauty',
-  ]
+  const accessorySlugs = ['baby-kids-accessories', 'kids-footwear']
   const categories: Record<string, number> = {}
   for (const slug of accessorySlugs) {
     const found = await payload.find({
@@ -367,12 +353,7 @@ export async function seedCatalog(payload: Payload) {
     { name: 'Boys', slug: 'boys', description: 'Everyday wear for boys' },
     { name: 'Girls', slug: 'girls', description: 'Frocks, sets, and play outfits' },
     { name: 'Newborn', slug: 'newborn', description: 'First outfits and sleepsuits' },
-    { name: 'Unisex', slug: 'unisex', description: 'Soft basics for everyone' },
-    { name: 'Baby accessories', slug: 'baby-accessories', description: 'Bibs, hats, and everyday baby extras. Cash on delivery across Pakistan.' },
-    { name: 'Kids accessories', slug: 'kids-accessories', description: 'Hair, hats, and play extras for kids. Cash on delivery across Pakistan.' },
-    { name: 'Footwear', slug: 'footwear', description: 'Soft shoes and sandals for little feet. Cash on delivery across Pakistan.' },
-    { name: 'Bags', slug: 'bags', description: 'School bags and little carry-alls. Cash on delivery across Pakistan.' },
-    { name: 'Beauty', slug: 'beauty', description: 'Gentle kids and baby care. Cash on delivery across Pakistan.' },
+    { name: 'Unisex', slug: 'unisex', description: 'Legacy category — hidden from the shop. Existing products stay here until you recategorise them.' },
   ]
 
   const categories: Record<string, number> = {}
@@ -391,6 +372,15 @@ export async function seedCatalog(payload: Payload) {
         overrideAccess: true,
       }))
     categories[item.slug] = numericId(doc.id)
+  }
+  for (const slug of ['baby-kids-accessories', 'kids-footwear', 'womens', 'handbags', 'beauty', 'skincare']) {
+    const found = await payload.find({
+      collection: 'categories',
+      where: { slug: { equals: slug } },
+      limit: 1,
+      overrideAccess: true,
+    })
+    if (found.docs[0]) categories[slug] = numericId(found.docs[0].id)
   }
 
   const courierData = [
@@ -475,7 +465,6 @@ export async function seedCatalog(payload: Payload) {
       slug: 'cotton-romper-set',
       description: 'Two-piece cotton romper with envelope neck — easy changes for newborns.',
       category: categories.newborn,
-      gender: 'unisex' as const,
       ageGroup: ageGroupIds.newborn,
       featured: true,
       material: '100% cotton jersey',
@@ -534,7 +523,6 @@ export async function seedCatalog(payload: Payload) {
       slug: 'knit-hoodie',
       description: 'Light hoodie for AC rooms and winter mornings. Soft fleece inside.',
       category: categories.unisex,
-      gender: 'unisex' as const,
       ageGroup: ageGroupIds.kids,
       imageFile: 'knit-hoodie.jpg',
       imageAlt: 'Heather grey kids knit hoodie',
@@ -564,7 +552,6 @@ export async function seedCatalog(payload: Payload) {
       slug: 'zip-sleepsuit',
       description: 'Full-zip sleepsuit so you are not fumbling with snaps at 3am.',
       category: categories.newborn,
-      gender: 'unisex' as const,
       ageGroup: ageGroupIds.baby,
       featured: false,
       imageFile: 'zip-sleepsuit.jpg',
@@ -599,7 +586,6 @@ export async function seedCatalog(payload: Payload) {
       slug: 'cotton-jersey-tee',
       description: 'Everyday crew-neck tee in breathable cotton. Sample placeholder — replace with your own unisex basics later.',
       category: categories.unisex,
-      gender: 'unisex' as const,
       ageGroup: ageGroupIds['little-kids'],
       sortPriority: 12,
       tags: [tags.cotton, tags.everyday],
@@ -638,14 +624,12 @@ export async function seedCatalog(payload: Payload) {
     heroSecondaryCta: 'How COD works',
     heroSecondaryCtaLink: '/shipping',
     heroOverlayTitle: 'Ages newborn – 12',
-    heroOverlaySubtitle: 'Boys · Girls · Unisex',
+    heroOverlaySubtitle: 'Boys · Girls',
     homeCollections: [
       { title: 'Boys', copy: 'Polos, sets, and play tees', href: '/shop/boys', category: categories.boys },
       { title: 'Girls', copy: 'Frocks, two-piece sets, everyday knits', href: '/shop/girls', category: categories.girls },
-      { title: 'Newborn', copy: 'Rompers, sleepsuits, first outfits', href: '/shop/newborn', category: categories.newborn },
-      { title: 'Unisex', copy: 'Soft basics for everyone', href: '/shop/unisex', category: categories.unisex },
-      { title: 'Footwear', copy: 'Soft shoes and sandals', href: '/shop/footwear', category: categories.footwear },
-      { title: 'Bags', copy: 'School bags and little totes', href: '/shop/bags', category: categories.bags },
+      { title: 'Accessories', copy: 'Hats, bibs, bags, and extras', href: '/shop/baby-kids-accessories', category: categories['baby-kids-accessories'] },
+      { title: 'Footwear', copy: 'Soft shoes and sandals', href: '/shop/kids-footwear', category: categories['kids-footwear'] },
     ],
     featuredEyebrow: 'Featured',
     featuredHeading: 'Little bestsellers',
