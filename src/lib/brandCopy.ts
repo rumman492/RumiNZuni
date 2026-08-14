@@ -16,15 +16,15 @@ export const BRAND = {
 
 export const HERO = {
   eyebrow: 'Pakistan · Family shop · COD',
-  title: 'Little Looks. Big Moments.',
+  title: 'Little outfits, made for everyday adventures.',
   subtitle:
     'Kids wear from newborn to 12 years — and a quieter corner for her, with handbags, makeup, skincare, and perfumes. Pay cash on delivery when it arrives.',
   cta: 'Shop Kidswear',
   ctaLink: '/shop/kids-wear',
   secondaryCta: "Shop Women's",
   secondaryCtaLink: '/shop/womens',
-  overlayTitle: 'Family style, simply chosen',
-  overlaySubtitle: 'Kids · Handbags · Beauty',
+  overlayTitle: 'Kidswear first — plus a little for her',
+  overlaySubtitle: 'Handbags · Makeup · Skincare · Perfumes',
 }
 
 export const FEATURED = {

@@ -8,6 +8,7 @@ import * as migration_20260814_200000_womens_catalog from './20260814_200000_wom
 import * as migration_20260814_220000_womens_sample_products from './20260814_220000_womens_sample_products';
 import * as migration_20260814_231500_makeup_category_copy from './20260814_231500_makeup_category_copy';
 import * as migration_20260815_004800_locked_documents_rels from './20260815_004800_locked_documents_rels';
+import * as migration_20260815_005000_hero_adventures_copy from './20260815_005000_hero_adventures_copy';
 
 export const migrations = [
   {
@@ -59,5 +60,10 @@ export const migrations = [
     up: migration_20260815_004800_locked_documents_rels.up,
     down: migration_20260815_004800_locked_documents_rels.down,
     name: '20260815_004800_locked_documents_rels'
+  },
+  {
+    up: migration_20260815_005000_hero_adventures_copy.up,
+    down: migration_20260815_005000_hero_adventures_copy.down,
+    name: '20260815_005000_hero_adventures_copy'
   },
 ];
