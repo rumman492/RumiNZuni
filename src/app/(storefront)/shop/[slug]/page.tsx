@@ -7,6 +7,7 @@ import {
   getAgeGroupBySlug,
   getCategoryBySlug,
   getDepartmentBySlug,
+  getWomenHubs,
   parseCatalogSearchParams,
   type CatalogLock,
   type CatalogSearchParams,
@@ -110,6 +111,11 @@ export default async function ShopSlugPage({ params, searchParams }: Props) {
     audience: locked.audience || parsed.audience,
   }
 
+  const hubs =
+    (preset?.department === 'womens' || department?.slug === 'womens') && !locked.category
+      ? await getWomenHubs().catch(() => [])
+      : undefined
+
   const title = preset?.title || department?.name || category?.name || ageGroup?.name || slug
   const description =
     preset?.description ||
@@ -125,6 +131,7 @@ export default async function ShopSlugPage({ params, searchParams }: Props) {
       basePath={`/shop/${slug}`}
       query={query}
       locked={locked}
+      hubs={hubs}
       breadcrumbs={[
         { name: 'Home', href: '/' },
         { name: 'Shop', href: '/shop' },

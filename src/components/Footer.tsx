@@ -29,9 +29,12 @@ export function Footer({
             <Link href="/shop">All products</Link>
             <Link href="/shop/boys">Boys</Link>
             <Link href="/shop/girls">Girls</Link>
-            <Link href="/shop/baby-kids-accessories">Baby & Kids Accessories</Link>
-            <Link href="/shop/kids-footwear">Kids Footwear</Link>
+            <Link href="/shop/baby-kids-accessories">Kids accessories</Link>
+            <Link href="/shop/kids-footwear">Kids footwear</Link>
             <Link href="/shop/womens">Women&apos;s</Link>
+            <Link href="/shop/handbags">Bags</Link>
+            <Link href="/shop/beauty">Beauty</Link>
+            <Link href="/shop/skincare">Skincare</Link>
           </div>
         </div>
         <div>

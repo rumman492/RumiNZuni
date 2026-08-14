@@ -32,6 +32,12 @@ export const SHOP_GENDER_NAV = [
   { href: '/shop/girls', label: 'Girls' },
 ]
 
+export const WOMEN_SHOP_LINKS = [
+  { href: '/shop/handbags', slug: 'handbags', label: 'Bags', copy: 'Handbags and everyday carry-alls' },
+  { href: '/shop/beauty', slug: 'beauty', label: 'Beauty', copy: 'Makeup and everyday beauty' },
+  { href: '/shop/skincare', slug: 'skincare', label: 'Skincare', copy: 'Cleansers, creams, and serums' },
+]
+
 export const SHOP_ALIASES: Record<string, string> = {
   unisex: '/shop',
   footwear: '/shop/kids-footwear',

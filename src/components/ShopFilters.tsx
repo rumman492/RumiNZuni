@@ -128,7 +128,7 @@ export function ShopFilters({ basePath, query, facets, locked }: Props) {
           />
         </label>
 
-        {!locked?.category ? (
+        {!locked?.category && !locked?.gender && facets.categories.length > 1 ? (
           <label className="text-sm font-semibold">
             Category
             <select className={selectClass} name="category" defaultValue={query.category || ''}>

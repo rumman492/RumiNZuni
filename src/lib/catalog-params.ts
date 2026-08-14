@@ -24,18 +24,21 @@ export const SHOP_PRESETS: Record<
     title: 'Boys',
     gender: 'boys',
     audience: 'kids',
-    description: 'Everyday boys wear with cash on delivery across Pakistan.',
+    department: 'kids-wear',
+    description: 'Boys clothing with cash on delivery across Pakistan.',
   },
   girls: {
     title: 'Girls',
     gender: 'girls',
     audience: 'kids',
-    description: 'Frocks, sets, and everyday girls outfits. Cash on delivery across Pakistan.',
+    department: 'kids-wear',
+    description: 'Girls clothing with cash on delivery across Pakistan.',
   },
   newborn: {
     title: 'Newborn',
     age: 'newborn',
     audience: 'kids',
+    department: 'kids-wear',
     description: 'First outfits and sleepsuits for newborns. Cash on delivery across Pakistan.',
   },
   womens: {

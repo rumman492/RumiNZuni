@@ -16,7 +16,7 @@ import {
   type AgeGroupRecord,
   type SizeRecord,
 } from '@/lib/sizing'
-import { flagsFromDepartment, isUnisexPublicItem, SHOP_GENDER_NAV } from '@/lib/taxonomy'
+import { flagsFromDepartment, isUnisexPublicItem, SHOP_GENDER_NAV, WOMEN_SHOP_LINKS } from '@/lib/taxonomy'
 import {
   AGE_OPTIONS,
   GENDER_OPTIONS,
@@ -167,10 +167,23 @@ export async function getCatalogFacets(query?: CatalogQuery): Promise<CatalogFac
   const flags = flagsFromDepartment(department || null)
   const sizeKind = (department?.sizeKind as SizeRecord['kind'] | undefined) || undefined
 
-  const hiddenSlugs = new Set(['unisex', 'boys', 'girls', 'newborn'])
-  const visibleCats = categories.docs.filter(
-    (doc) => doc.slug && !hiddenSlugs.has(doc.slug) && !isUnisexPublicItem({ name: doc.name, slug: doc.slug }),
-  )
+  const hiddenSlugs = new Set(['unisex', 'boys', 'girls', 'newborn', 'womens'])
+  const visibleCats = categories.docs.filter((doc) => {
+    if (!doc.slug || hiddenSlugs.has(doc.slug) || isUnisexPublicItem({ name: doc.name, slug: doc.slug })) return false
+    const dep = typeof doc.department === 'object' && doc.department ? doc.department.slug : ''
+    if (query?.department === 'kids-wear' || (query?.gender && query?.audience === 'kids')) {
+      return dep === 'kids-wear'
+    }
+    if (query?.department === 'baby-kids-accessories') return dep === 'baby-kids-accessories'
+    if (query?.department === 'kids-footwear') return dep === 'kids-footwear'
+    if (query?.department === 'womens' || query?.audience === 'women') {
+      return ['handbags', 'beauty', 'skincare'].includes(doc.slug)
+    }
+    if (query?.audience === 'kids' && !query.department) {
+      return dep === 'kids-wear' || dep === 'baby-kids-accessories' || dep === 'kids-footwear'
+    }
+    return ['baby-kids-accessories', 'kids-footwear', 'handbags', 'beauty', 'skincare'].includes(doc.slug)
+  })
 
   const colors = new Map<string, string>()
   const brands = new Set<string>()
@@ -266,6 +279,30 @@ export async function getCategoryBySlug(slug: string) {
     depth: 0,
   })
   return result.docs[0] || null
+}
+
+export async function getWomenHubs() {
+  const payload = await getPayloadClient()
+  const hubs: Array<{ href: string; title: string; copy: string; image: string | null }> = []
+  for (const item of WOMEN_SHOP_LINKS) {
+    const products = await payload.find({
+      collection: 'products',
+      where: {
+        and: [{ _status: { equals: 'published' } }, { 'category.slug': { equals: item.slug } }],
+      },
+      limit: 1,
+      depth: 1,
+      sort: '-sortPriority',
+    })
+    const product = products.docs[0] as unknown as ProductDoc | undefined
+    hubs.push({
+      href: item.href,
+      title: item.label,
+      copy: item.copy,
+      image: product ? productCardData(product).image || null : null,
+    })
+  }
+  return hubs
 }
 
 export async function getDepartmentBySlug(slug: string) {
@@ -376,6 +413,18 @@ export async function searchCatalog(query: CatalogQuery) {
 
   if (query.department === 'womens' || query.audience === 'women') {
     and.push({ 'department.audience': { equals: 'women' } })
+  } else if (query.department === 'kids-wear') {
+    and.push({
+      or: [
+        { 'department.slug': { equals: 'kids-wear' } },
+        {
+          and: [
+            { department: { exists: false } },
+            { 'category.slug': { in: ['boys', 'girls', 'newborn', 'unisex'] } },
+          ],
+        },
+      ],
+    })
   } else if (query.department) {
     and.push({ 'department.slug': { equals: query.department } })
   } else if (query.audience === 'kids') {

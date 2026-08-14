@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { genderMatchesQuery, publicGenderLabel, SHOP_ALIASES, flagsFromDepartment, isUnisexPublicItem, stripUnisexCopy } from '@/lib/taxonomy'
-import { parseCatalogSearchParams } from '@/lib/catalog-params'
+import { SHOP_PRESETS, parseCatalogSearchParams } from '@/lib/catalog-params'
 
 describe('catalog taxonomy', () => {
   it('hides unisex from customer-facing labels', () => {
@@ -49,5 +49,11 @@ describe('catalog taxonomy', () => {
     expect(flags.age).toBe(false)
     expect(flags.gender).toBe(false)
     expect(flags.brand).toBe(true)
+  })
+
+  it('keeps boys and girls pages on kids wear only', () => {
+    expect(SHOP_PRESETS.boys.department).toBe('kids-wear')
+    expect(SHOP_PRESETS.girls.department).toBe('kids-wear')
+    expect(SHOP_PRESETS.womens.department).toBe('womens')
   })
 })

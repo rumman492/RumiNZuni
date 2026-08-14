@@ -50,10 +50,13 @@ export type HomepageSettings = {
 }
 
 export const DEFAULT_HOME_COLLECTIONS = [
-  { title: 'Boys', copy: 'Polos, sets, and play tees for running around', href: '/shop/boys' },
-  { title: 'Girls', copy: 'Frocks, two-piece sets, twirl-ready knits', href: '/shop/girls' },
-  { title: 'Accessories', copy: 'Hats, bibs, bags, and everyday extras', href: '/shop/baby-kids-accessories' },
+  { title: 'Boys', copy: 'Boys clothing for everyday play', href: '/shop/boys' },
+  { title: 'Girls', copy: 'Girls clothing, frocks, and sets', href: '/shop/girls' },
+  { title: 'Accessories', copy: 'Hats, bibs, bags, and extras for boys and girls', href: '/shop/baby-kids-accessories' },
   { title: 'Footwear', copy: 'Soft shoes and sandals for little feet', href: '/shop/kids-footwear' },
+  { title: 'Bags', copy: 'Handbags for women', href: '/shop/handbags' },
+  { title: 'Beauty', copy: 'Makeup and everyday beauty', href: '/shop/beauty' },
+  { title: 'Skincare', copy: 'Cleansers, creams, and serums', href: '/shop/skincare' },
 ]
 
 export const DEFAULT_HOME_PROMOS = [

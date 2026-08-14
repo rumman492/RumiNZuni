@@ -417,6 +417,53 @@ export async function seedMissingCategorySamples(payload: Payload) {
     await upsertSeedProducts(payload, toCreate as SeedProduct[])
     payload.logger.info(`Added ${toCreate.length} sample products to ${slug}.`)
   }
+  await attachMissingCategoryImages(payload, ctx.categories)
+}
+
+const CATEGORY_PLACEHOLDER_IMAGES: Record<string, Array<{ file: string; alt: string }>> = {
+  handbags: [
+    { file: 'womens-sage-tote.jpg', alt: 'Sage tote bag' },
+    { file: 'womens-coral-crossbody.jpg', alt: 'Coral crossbody bag' },
+    { file: 'womens-blush-clutch.jpg', alt: 'Blush clutch bag' },
+  ],
+  beauty: [
+    { file: 'womens-lipstick-compact.jpg', alt: 'Lipstick and compact' },
+    { file: 'womens-mascara-brush.jpg', alt: 'Mascara and brush' },
+    { file: 'womens-kohl-gloss.jpg', alt: 'Kohl and lip gloss' },
+  ],
+  skincare: [
+    { file: 'womens-face-cream.jpg', alt: 'Face cream' },
+    { file: 'womens-cleanser.jpg', alt: 'Cleanser bottle' },
+    { file: 'womens-serum.jpg', alt: 'Serum bottle' },
+  ],
+}
+
+async function attachMissingCategoryImages(payload: Payload, categories: Record<string, number>) {
+  for (const [slug, files] of Object.entries(CATEGORY_PLACEHOLDER_IMAGES)) {
+    const categoryId = categories[slug]
+    if (!categoryId) continue
+    const products = await payload.find({
+      collection: 'products',
+      where: { category: { equals: categoryId } },
+      limit: 50,
+      overrideAccess: true,
+      draft: true,
+    })
+    let index = 0
+    for (const product of products.docs) {
+      if (hasImages(product)) continue
+      const pick = files[index % files.length]
+      const imageId = await upsertMedia(payload, pick.file, pick.alt)
+      await payload.update({
+        collection: 'products',
+        id: product.id,
+        data: { images: [{ image: imageId }] },
+        overrideAccess: true,
+      })
+      payload.logger.info(`Added sample photo to ${product.title}`)
+      index += 1
+    }
+  }
 }
 
 export async function seedCatalogIfEmpty(payload: Payload) {
