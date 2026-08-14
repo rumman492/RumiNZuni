@@ -1,5 +1,6 @@
 import type { CollectionConfig } from 'payload'
 import { isAdmin } from '@/access/isAdmin'
+import { assignSlug } from '@/lib/slug'
 
 export const Tags: CollectionConfig = {
   slug: 'tags',
@@ -18,6 +19,9 @@ export const Tags: CollectionConfig = {
     create: isAdmin,
     update: isAdmin,
     delete: isAdmin,
+  },
+  hooks: {
+    beforeValidate: [({ data }) => assignSlug(data)],
   },
   fields: [
     {

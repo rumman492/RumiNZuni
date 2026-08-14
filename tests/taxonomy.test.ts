@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { flagsForShopQuery, genderMatchesQuery, publicGenderLabel, SHOP_ALIASES, flagsFromDepartment, isUnisexPublicItem, shopFacetSlugsForQuery, stripUnisexCopy, catalogSectionIndex } from '@/lib/taxonomy'
 import { SHOP_PRESETS, parseCatalogSearchParams } from '@/lib/catalog-params'
+import { slugify } from '@/lib/slug'
 
 describe('catalog taxonomy', () => {
   it('hides unisex from customer-facing labels', () => {
@@ -132,5 +133,9 @@ describe('catalog taxonomy', () => {
       audience: 'women',
     })
     expect(parseCatalogSearchParams({ search: 'blue shirt' }).q).toBe('blue shirt')
+  })
+
+  it('builds product slugs from titles for staff', () => {
+    expect(slugify('Boys Navy Polo')).toBe('boys-navy-polo')
   })
 })

@@ -1,4 +1,6 @@
 import { Breadcrumbs } from '@/components/Breadcrumbs'
+import { CmsRichText } from '@/components/CmsRichText'
+import { getCmsPage } from '@/lib/pages'
 import { getSettings } from '@/lib/products'
 import { toWhatsAppNumber } from '@/lib/pakistan'
 import { pageMeta } from '@/lib/seo'
@@ -21,12 +23,17 @@ export default async function ContactPage() {
   } catch {
     // Store settings unavailable
   }
+  const page = await getCmsPage('contact')
 
   return (
     <article className="mx-auto max-w-2xl space-y-4">
       <Breadcrumbs items={[{ name: 'Home', href: '/' }, { name: 'Contact', href: '/contact' }]} />
-      <h1 className="display text-5xl">Contact</h1>
-      <p>Questions about size, stock, or an order? WhatsApp is the fastest way once the shop number is published.</p>
+      <h1 className="display text-5xl">{page?.title || 'Contact'}</h1>
+      {page?.content ? (
+        <CmsRichText content={page.content} />
+      ) : (
+        <p>Questions about size, stock, or an order? WhatsApp is the fastest way once the shop number is published.</p>
+      )}
       {whatsapp ? <p>WhatsApp: {whatsapp}</p> : null}
       {phone ? <p>Phone: {phone}</p> : null}
       {email ? <p>Email: {email}</p> : null}

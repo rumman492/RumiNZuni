@@ -6,11 +6,27 @@ export function Footer({
   whatsapp,
   phone,
   email,
+  shopLinks,
 }: {
   whatsapp?: string | null
   phone?: string | null
   email?: string | null
+  shopLinks?: Array<{ href: string; label: string }>
 }) {
+  const links = shopLinks?.length
+    ? shopLinks
+    : [
+        { href: '/shop', label: 'All products' },
+        { href: '/shop/kids-wear', label: 'Kids Wear' },
+        { href: '/shop/boys', label: 'Boys' },
+        { href: '/shop/girls', label: 'Girls' },
+        { href: '/shop/baby-kids-accessories', label: 'Kids accessories' },
+        { href: '/shop/kids-footwear', label: 'Kids footwear' },
+        { href: '/shop/womens', label: "Women's" },
+        { href: '/shop/handbags', label: 'Bags' },
+        { href: '/shop/beauty', label: 'Beauty' },
+        { href: '/shop/skincare', label: 'Skincare' },
+      ]
   return (
     <footer className="mt-20 border-t-8 border-coral bg-sand/70">
       <div className="mx-auto grid max-w-6xl gap-10 px-4 py-12 md:grid-cols-4">
@@ -26,16 +42,11 @@ export function Footer({
         <div>
           <p className="text-sm font-bold uppercase tracking-wide">Shop</p>
           <div className="mt-3 grid gap-2 text-sm text-ink-soft">
-            <Link href="/shop">All products</Link>
-            <Link href="/shop/kids-wear">Kids Wear</Link>
-            <Link href="/shop/boys">Boys</Link>
-            <Link href="/shop/girls">Girls</Link>
-            <Link href="/shop/baby-kids-accessories">Kids accessories</Link>
-            <Link href="/shop/kids-footwear">Kids footwear</Link>
-            <Link href="/shop/womens">Women&apos;s</Link>
-            <Link href="/shop/handbags">Bags</Link>
-            <Link href="/shop/beauty">Beauty</Link>
-            <Link href="/shop/skincare">Skincare</Link>
+            {links.map((item) => (
+              <Link key={`${item.href}-${item.label}`} href={item.href}>
+                {item.label}
+              </Link>
+            ))}
           </div>
         </div>
         <div>

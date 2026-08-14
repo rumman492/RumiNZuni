@@ -1,5 +1,6 @@
 import type { CollectionConfig } from 'payload'
 import { isAdmin } from '@/access/isAdmin'
+import { assignSlug } from '@/lib/slug'
 
 export const Products: CollectionConfig = {
   slug: 'products',
@@ -8,9 +9,13 @@ export const Products: CollectionConfig = {
     group: 'Catalog',
     defaultColumns: ['title', 'category', 'sortPriority', 'gender', '_status', 'updatedAt'],
     listSearchableFields: ['title', 'slug'],
-    description: 'Catalog. Department controls which filters apply. Gender is Boys/Girls only — leave blank for accessories that do not need it. Legacy Unisex stays in the database but is never shown in the shop.',
+    description:
+      'Add a product: pick Department + Category, upload photos, add size/colour/price/stock variants, then Publish. Leave Gender empty for bibs and bags. Tick Featured to pin it on the shop. Staff do not need a developer for new products.',
   },
   defaultSort: '-sortPriority',
+  hooks: {
+    beforeValidate: [({ data }) => assignSlug(data)],
+  },
   access: {
     read: ({ req: { user } }) => {
       if (user) return true
@@ -42,9 +47,9 @@ export const Products: CollectionConfig = {
             {
               name: 'slug',
               type: 'text',
-              required: true,
               unique: true,
               index: true,
+              admin: { description: 'Leave empty — it is filled from the title. Used in /product/… URLs.' },
             },
             {
               name: 'description',

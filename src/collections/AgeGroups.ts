@@ -1,5 +1,6 @@
 import type { CollectionConfig } from 'payload'
 import { isAdmin } from '@/access/isAdmin'
+import { assignSlug } from '@/lib/slug'
 
 export const AgeGroups: CollectionConfig = {
   slug: 'age-groups',
@@ -18,6 +19,9 @@ export const AgeGroups: CollectionConfig = {
     delete: isAdmin,
   },
   defaultSort: 'sortOrder',
+  hooks: {
+    beforeValidate: [({ data }) => assignSlug(data)],
+  },
   fields: [
     { name: 'name', type: 'text', required: true },
     { name: 'slug', type: 'text', required: true, unique: true, index: true },

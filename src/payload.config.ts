@@ -60,6 +60,7 @@ export default buildConfig({
     },
     meta: {
       titleSuffix: ' — Rumi & Zuni',
+      description: 'Manage products, COD orders, and store settings.',
     },
     components: {
       beforeDashboard: ['/components/admin/DashboardStats'],

@@ -5,7 +5,7 @@ import { Footer } from '@/components/Footer'
 import { Header } from '@/components/Header'
 import { JsonLd } from '@/components/JsonLd'
 import { mediaUrl } from '@/lib/media'
-import { getStorefrontNav } from '@/lib/catalog'
+import { getFooterShopLinks, getStorefrontNav } from '@/lib/catalog'
 import { getSettings } from '@/lib/products'
 import { DEFAULT_DESCRIPTION, DEFAULT_TITLE, organizationJsonLd, websiteJsonLd } from '@/lib/seo'
 import { absoluteMediaUrl, siteOrigin, STORE_NAME } from '@/lib/site'
@@ -77,6 +77,7 @@ export default async function StorefrontLayout({ children }: { children: React.R
   let settings: Awaited<ReturnType<typeof getSettings>> | null = null
 
   let nav: Array<{ href: string; label: string }> | undefined
+  let shopLinks: Array<{ href: string; label: string }> | undefined
   try {
     settings = await getSettings()
     announcement = settings.announcement || null
@@ -84,6 +85,7 @@ export default async function StorefrontLayout({ children }: { children: React.R
     phone = settings.phone || null
     email = settings.email || null
     nav = await getStorefrontNav()
+    shopLinks = await getFooterShopLinks()
   } catch {
     announcement = 'Cash on delivery across Pakistan'
   }
@@ -96,7 +98,7 @@ export default async function StorefrontLayout({ children }: { children: React.R
         <CartProvider>
           <Header announcement={announcement} nav={nav} />
           <main className="mx-auto max-w-6xl px-4 py-8 md:py-10">{children}</main>
-          <Footer whatsapp={whatsapp} phone={phone} email={email} />
+          <Footer whatsapp={whatsapp} phone={phone} email={email} shopLinks={shopLinks} />
         </CartProvider>
       </body>
     </html>

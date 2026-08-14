@@ -1,5 +1,6 @@
 import type { CollectionConfig } from 'payload'
 import { isAdmin } from '@/access/isAdmin'
+import { assignSlug } from '@/lib/slug'
 
 export const Departments: CollectionConfig = {
   slug: 'departments',
@@ -8,7 +9,7 @@ export const Departments: CollectionConfig = {
     group: 'Catalog',
     defaultColumns: ['name', 'slug', 'showInNavigation', 'sortOrder'],
     description:
-      'Product types that drive shop filters. Add a department here instead of hard-coding new catalog behaviour.',
+      'Kids Wear, Accessories, Footwear, Women’s. Tick the filter boxes (age, size, colour…) — those switches control the shop. Staff can add a department without a developer.',
   },
   access: {
     read: () => true,
@@ -17,6 +18,9 @@ export const Departments: CollectionConfig = {
     delete: isAdmin,
   },
   defaultSort: 'sortOrder',
+  hooks: {
+    beforeValidate: [({ data }) => assignSlug(data)],
+  },
   fields: [
     { name: 'name', type: 'text', required: true },
     { name: 'slug', type: 'text', required: true, unique: true, index: true },

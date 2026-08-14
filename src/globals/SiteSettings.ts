@@ -93,6 +93,34 @@ export const SiteSettings: GlobalConfig = {
           ],
         },
         {
+          label: 'Navigation',
+          admin: {
+            description: 'Empty uses the built-in Shop / Kids Wear / Boys / Girls / Accessories / Footwear / Women’s links.',
+          },
+          fields: [
+            {
+              name: 'navLinks',
+              type: 'array',
+              labels: { singular: 'Nav link', plural: 'Header links' },
+              admin: { description: 'Header menu. Path examples: /shop, /shop/boys, /track' },
+              fields: [
+                { name: 'label', type: 'text', required: true },
+                { name: 'href', type: 'text', required: true },
+              ],
+            },
+            {
+              name: 'footerShopLinks',
+              type: 'array',
+              labels: { singular: 'Footer link', plural: 'Footer shop links' },
+              admin: { description: 'Shop column in the footer. Empty keeps the built-in list.' },
+              fields: [
+                { name: 'label', type: 'text', required: true },
+                { name: 'href', type: 'text', required: true },
+              ],
+            },
+          ],
+        },
+        {
           label: 'Homepage',
           admin: {
             description:

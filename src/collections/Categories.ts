@@ -1,5 +1,6 @@
 import type { CollectionConfig } from 'payload'
 import { isAdmin } from '@/access/isAdmin'
+import { assignSlug } from '@/lib/slug'
 
 const seoFields = [
   { name: 'title', type: 'text' as const, admin: { description: 'Defaults to the category name' } },
@@ -22,6 +23,9 @@ export const Categories: CollectionConfig = {
     delete: isAdmin,
   },
   defaultSort: 'sortOrder',
+  hooks: {
+    beforeValidate: [({ data }) => assignSlug(data)],
+  },
   fields: [
     { name: 'name', type: 'text', required: true },
     {

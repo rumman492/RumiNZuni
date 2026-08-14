@@ -1,5 +1,5 @@
 import { APIError, type CollectionBeforeValidateHook, type CollectionConfig } from 'payload'
-import { isAdmin } from '@/access/isAdmin'
+import { isOwner } from '@/access/isAdmin'
 import { assertStrongPassword } from '@/lib/env'
 
 const isProduction = process.env.NODE_ENV === 'production'
@@ -20,7 +20,8 @@ export const Users: CollectionConfig = {
   admin: {
     useAsTitle: 'email',
     group: 'Staff',
-    description: 'Create the first admin on this screen. Use a unique 12+ character password.',
+    description:
+      'Owner (Admin) can add Staff accounts here. Staff log in at /admin to manage products, orders, and store settings. Use a unique 12+ character password. Do not share the owner login.',
   },
   auth: {
     tokenExpiration: 60 * 60 * 8,
@@ -37,10 +38,18 @@ export const Users: CollectionConfig = {
   },
   access: {
     admin: ({ req: { user } }) => Boolean(user),
-    create: () => false,
-    read: isAdmin,
-    update: isAdmin,
-    delete: isAdmin,
+    create: isOwner,
+    read: ({ req: { user } }) => {
+      if (!user) return false
+      if ((user as { role?: string }).role === 'admin') return true
+      return { id: { equals: user.id } }
+    },
+    update: ({ req: { user } }) => {
+      if (!user) return false
+      if ((user as { role?: string }).role === 'admin') return true
+      return { id: { equals: user.id } }
+    },
+    delete: isOwner,
   },
   fields: [
     {
@@ -54,9 +63,15 @@ export const Users: CollectionConfig = {
       required: true,
       defaultValue: 'admin',
       options: [
-        { label: 'Admin', value: 'admin' },
-        { label: 'Staff', value: 'staff' },
+        { label: 'Admin (owner — can add staff)', value: 'admin' },
+        { label: 'Staff (shop day-to-day)', value: 'staff' },
       ],
+      access: {
+        update: ({ req: { user } }) => (user as { role?: string } | null)?.role === 'admin',
+      },
+      admin: {
+        description: 'Staff can run the shop. Only Admin can create users or change roles.',
+      },
     },
   ],
 }

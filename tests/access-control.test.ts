@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it } from 'vitest'
 import type { AccessArgs } from 'payload'
-import { isAdmin, anyone } from '@/access/isAdmin'
+import { isAdmin, isOwner, anyone } from '@/access/isAdmin'
 import { Orders } from '@/collections/Orders'
 import { Products } from '@/collections/Products'
 import { Users } from '@/collections/Users'
@@ -8,7 +8,7 @@ import { canViewOrderConfirmation, checkoutAccessToken } from '@/lib/checkout'
 import { createOrderAccessToken, verifyOrderAccessToken } from '@/lib/order-access'
 import { isSameOrigin, publicHttpUrl, RATE_LIMITS, rateLimit, resetRateLimits } from '@/lib/security'
 
-function accessArgs(user: { id: number; email?: string } | null) {
+function accessArgs(user: { id: number; email?: string; role?: string } | null) {
   return { req: { user } } as AccessArgs
 }
 
@@ -34,6 +34,10 @@ describe('access control', () => {
     expect(Orders.access.read(accessArgs({ id: 1 }))).toBe(true)
     expect(Orders.access.delete(accessArgs(null))).toBe(false)
     expect(Users.access.create(accessArgs(null))).toBe(false)
+    expect(Users.access.create(accessArgs({ id: 1, role: 'staff' }))).toBe(false)
+    expect(Users.access.create(accessArgs({ id: 1, role: 'admin' }))).toBe(true)
+    expect(isOwner(accessArgs({ id: 1, role: 'admin' }))).toBe(true)
+    expect(isOwner(accessArgs({ id: 2, role: 'staff' }))).toBe(false)
     expect(Products.access.read(accessArgs(null))).toEqual({ _status: { equals: 'published' } })
     expect(Products.access.read(accessArgs({ id: 1 }))).toBe(true)
     expect(Products.access.create(accessArgs(null))).toBe(false)

@@ -183,6 +183,20 @@ export default async function DashboardStats({ payload, user }: ServerProps) {
           )}
         </div>
       </div>
+
+      <div className="rnz-dashboard__panel" style={{ marginTop: '1.25rem' }}>
+        <div className="rnz-dashboard__panel-head">
+          <h2>Run the shop from here</h2>
+        </div>
+        <ol className="rnz-dashboard__empty" style={{ display: 'grid', gap: '0.5rem', paddingLeft: '1.25rem' }}>
+          <li>Orders: Pending → confirm on WhatsApp → Confirmed → Packed → Shipped → Delivered. Mark cash collected when the rider is paid.</li>
+          <li>Products: Add product → photos → department/category → variants (size, colour, PKR, stock) → Publish. Tick Featured to pin it.</li>
+          <li>Store settings: WhatsApp number, homepage, shipping fees, header/footer links.</li>
+          <li>Pages: slug shipping, returns, or contact to replace those policy pages.</li>
+          <li>Age groups: tick Active to show Pre-Teen or Teen later. No developer needed.</li>
+          <li>Staff: Admin → Users. Role Staff for day-to-day. Do not share the owner password.</li>
+        </ol>
+      </div>
     </section>
   )
 }

@@ -19,6 +19,7 @@ import {
 import {
   catalogSectionIndex,
   flagsForShopQuery,
+  flagsFromDepartment,
   isUnisexPublicItem,
   shopFacetLabel,
   shopFacetSlugsForQuery,
@@ -229,7 +230,22 @@ export async function getCatalogFacets(query?: CatalogQuery): Promise<CatalogFac
     departments.docs.find((doc) => doc.slug === departmentSlug) ||
     (query?.audience === 'women' ? departments.docs.find((doc) => doc.slug === 'womens') : undefined) ||
     null
-  const flags = flagsForShopQuery(query)
+  const flags =
+    !query?.department && !query?.category && !query?.gender && query?.audience !== 'women'
+      ? flagsForShopQuery(query)
+      : department
+        ? {
+            ...flagsFromDepartment(department),
+            material: query?.category === 'handbags' || department.slug === 'womens-handbags',
+            gender:
+              query?.category === 'boys' ||
+              query?.category === 'girls' ||
+              query?.gender === 'boys' ||
+              query?.gender === 'girls'
+                ? false
+                : Boolean(department.usesGender),
+          }
+        : flagsForShopQuery(query)
   const sizeKind: SizeRecord['kind'] | undefined =
     query?.department === 'kids-footwear' || query?.category === 'kids-footwear'
       ? 'footwear'
@@ -409,7 +425,46 @@ export async function getDepartmentBySlug(slug: string) {
 }
 
 export async function getStorefrontNav() {
+  try {
+    const payload = await getPayloadClient()
+    const settings = await payload.findGlobal({ slug: 'site-settings', depth: 0 })
+    const links = (settings as { navLinks?: Array<{ label?: string | null; href?: string | null }> }).navLinks
+    if (links && links.length > 0) {
+      return links
+        .filter((item) => item.label && item.href && !isUnisexPublicItem({ label: item.label, href: item.href }))
+        .map((item) => ({ href: String(item.href), label: String(item.label) }))
+    }
+  } catch {
+    // fallback
+  }
   return STOREFRONT_NAV.filter((item) => !isUnisexPublicItem(item))
+}
+
+export async function getFooterShopLinks() {
+  try {
+    const payload = await getPayloadClient()
+    const settings = await payload.findGlobal({ slug: 'site-settings', depth: 0 })
+    const links = (settings as { footerShopLinks?: Array<{ label?: string | null; href?: string | null }> }).footerShopLinks
+    if (links && links.length > 0) {
+      return links
+        .filter((item) => item.label && item.href && !isUnisexPublicItem({ label: item.label, href: item.href }))
+        .map((item) => ({ href: String(item.href), label: String(item.label) }))
+    }
+  } catch {
+    // fallback
+  }
+  return [
+    { href: '/shop', label: 'All products' },
+    { href: '/shop/kids-wear', label: 'Kids Wear' },
+    { href: '/shop/boys', label: 'Boys' },
+    { href: '/shop/girls', label: 'Girls' },
+    { href: '/shop/baby-kids-accessories', label: 'Kids accessories' },
+    { href: '/shop/kids-footwear', label: 'Kids footwear' },
+    { href: '/shop/womens', label: "Women's" },
+    { href: '/shop/handbags', label: 'Bags' },
+    { href: '/shop/beauty', label: 'Beauty' },
+    { href: '/shop/skincare', label: 'Skincare' },
+  ]
 }
 
 export async function searchCatalog(query: CatalogQuery) {
