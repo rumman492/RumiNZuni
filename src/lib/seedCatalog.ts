@@ -4,7 +4,14 @@ import type { Payload } from 'payload'
 import { seedSizingAndAccessories } from '@/lib/seedSizing'
 import { extraSamplesByCategory, MIN_SAMPLE_PRODUCTS } from '@/lib/seedSamples'
 
-const seedMediaDir = path.resolve(process.cwd(), 'seed/media')
+const seedMediaDir = (() => {
+  const candidates = [
+    process.env.SEED_MEDIA_DIR,
+    path.resolve(process.cwd(), 'seed/media'),
+    '/app/seed/media',
+  ].filter((value): value is string => Boolean(value))
+  return candidates.find((dir) => fs.existsSync(dir)) || path.resolve(process.cwd(), 'seed/media')
+})()
 
 function numericId(id: string | number) {
   return typeof id === 'number' ? id : Number(id)

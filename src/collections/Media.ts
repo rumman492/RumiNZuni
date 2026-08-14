@@ -1,9 +1,7 @@
 import path from 'path'
-import { fileURLToPath } from 'url'
 import { APIError, type CollectionConfig } from 'payload'
 import { isAdmin } from '@/access/isAdmin'
 
-const dirname = path.dirname(fileURLToPath(import.meta.url))
 const MAX_IMAGE_BYTES = 5 * 1024 * 1024
 
 export const Media: CollectionConfig = {
@@ -39,7 +37,7 @@ export const Media: CollectionConfig = {
   upload: {
     // Local disk for development (and production until MEDIA_STORAGE=s3).
     // The S3 plugin disables this directory when object storage is enabled.
-    staticDir: path.resolve(dirname, '../../media'),
+    staticDir: process.env.MEDIA_DIR || path.resolve(process.cwd(), 'media'),
     mimeTypes: ['image/jpeg', 'image/png', 'image/webp', 'image/gif', 'image/avif'],
     pasteURL: false,
     modifyResponseHeaders: ({ headers }) => {
