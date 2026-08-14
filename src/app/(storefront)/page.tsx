@@ -10,15 +10,44 @@ import {
   homepageHero,
   homepagePromos,
   homepageStory,
+  splitHomeCollections,
   type HomepageSettings,
 } from '@/lib/homepage'
-import { BRAND } from '@/lib/brandCopy'
+import { BRAND, HOME_WOMEN_INTRO } from '@/lib/brandCopy'
 import { collectionTheme } from '@/lib/play'
 import { getSettings } from '@/lib/products'
 import { pageMeta } from '@/lib/seo'
 import { absoluteMediaUrl, STORE_NAME } from '@/lib/site'
 
 const PLAY_TICKER = BRAND.ticker
+
+function CollectionGrid({
+  items,
+}: {
+  items: Array<{ href: string; title: string; copy: string; image: string | null }>
+}) {
+  return (
+    <section className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      {items.map((item) => (
+        <Link
+          key={`${item.href}-${item.title}`}
+          href={item.href}
+          className={`play-pop overflow-hidden rounded-3xl ${collectionTheme(item.title, item.href)} shadow-sm`}
+        >
+          {item.image ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src={item.image} alt={item.title} className="aspect-[4/3] w-full object-cover" />
+          ) : null}
+          <div className="p-6">
+            <h2 className="display text-3xl">{item.title}</h2>
+            {item.copy ? <p className="mt-2 text-sm text-ink/80">{item.copy}</p> : null}
+            <p className="mt-4 text-sm font-bold">Explore →</p>
+          </div>
+        </Link>
+      ))}
+    </section>
+  )
+}
 
 export async function generateMetadata(): Promise<Metadata> {
   let storeName = STORE_NAME
@@ -81,6 +110,7 @@ export default async function HomePage() {
   }
 
   const ticker = [...PLAY_TICKER, ...PLAY_TICKER]
+  const { kids: kidsCollections, women: womenCollections } = splitHomeCollections(collections)
 
   return (
     <div className="space-y-16">
@@ -153,25 +183,18 @@ export default async function HomePage() {
         </section>
       ) : null}
 
-      <section className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        {collections.map((item) => (
-          <Link
-            key={`${item.href}-${item.title}`}
-            href={item.href}
-            className={`play-pop overflow-hidden rounded-3xl ${collectionTheme(item.title, item.href)} shadow-sm`}
-          >
-            {item.image ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img src={item.image} alt={item.title} className="aspect-[4/3] w-full object-cover" />
-            ) : null}
-            <div className="p-6">
-              <h2 className="display text-3xl">{item.title}</h2>
-              {item.copy ? <p className="mt-2 text-sm text-ink/80">{item.copy}</p> : null}
-              <p className="mt-4 text-sm font-bold">Explore →</p>
-            </div>
-          </Link>
-        ))}
-      </section>
+      {kidsCollections.length > 0 ? <CollectionGrid items={kidsCollections} /> : null}
+
+      {womenCollections.length > 0 ? (
+        <div className="space-y-6">
+          <div>
+            <p className="text-sm font-bold uppercase tracking-wide text-coral">{HOME_WOMEN_INTRO.eyebrow}</p>
+            <h2 className="display mt-2 text-4xl">{HOME_WOMEN_INTRO.heading}</h2>
+            <p className="mt-3 max-w-2xl text-ink-soft">{HOME_WOMEN_INTRO.copy}</p>
+          </div>
+          <CollectionGrid items={womenCollections} />
+        </div>
+      ) : null}
 
       <section>
         <div className="mb-6 flex items-end justify-between">

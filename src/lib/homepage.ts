@@ -1,5 +1,5 @@
 import { HandCoins, RotateCcw, Sparkles, Truck, type LucideIcon } from 'lucide-react'
-import { FEATURED, HERO, HOME_BANNER, HOME_COLLECTIONS, HOME_PROMOS, HOME_STORY } from '@/lib/brandCopy'
+import { FEATURED, HERO, HOME_BANNER, HOME_COLLECTIONS, HOME_PROMOS, HOME_STORY, HOME_WOMEN_COLLECTIONS } from '@/lib/brandCopy'
 import { storefrontHref } from '@/lib/links'
 import { mediaUrl } from '@/lib/media'
 import { getPublishedProducts, productCardData, type ProductDoc } from '@/lib/products'
@@ -94,10 +94,14 @@ export function homepageBanner(settings: HomepageSettings | null) {
   }
 }
 
+function isWomenCollectionHref(href: string) {
+  return /\/shop\/(womens|handbags|beauty-care|beauty|skincare|perfumes)(\?|$)/.test(href)
+}
+
 export function homepageCollections(settings: HomepageSettings | null) {
   const rows = settings?.homeCollections?.filter((item) => item.title) || []
-  const source = rows.length > 0 ? rows : DEFAULT_HOME_COLLECTIONS
-  return source
+  const source = rows.length > 0 ? [...rows] : [...DEFAULT_HOME_COLLECTIONS]
+  const mapped = source
     .filter((item) => {
       const category = 'category' in item ? item.category : undefined
       const slug = typeof category === 'object' && category ? category.slug : undefined
@@ -109,6 +113,29 @@ export function homepageCollections(settings: HomepageSettings | null) {
       href: collectionHref(item),
       image: 'image' in item && typeof item.image === 'object' ? mediaUrl(item.image) : null,
     }))
+
+  const hasWomen = mapped.some((item) => isWomenCollectionHref(item.href))
+  if (!hasWomen) {
+    mapped.push(
+      ...HOME_WOMEN_COLLECTIONS.map((item) => ({
+        title: item.title,
+        copy: item.copy,
+        href: item.href,
+        image: null as string | null,
+      })),
+    )
+  }
+  return mapped
+}
+
+export function splitHomeCollections(items: ReturnType<typeof homepageCollections>) {
+  const kids: typeof items = []
+  const women: typeof items = []
+  for (const item of items) {
+    if (isWomenCollectionHref(item.href)) women.push(item)
+    else kids.push(item)
+  }
+  return { kids, women }
 }
 
 export function homepagePromos(settings: HomepageSettings | null) {

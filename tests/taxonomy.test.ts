@@ -163,6 +163,23 @@ describe('catalog taxonomy', () => {
     expect(women?.children?.[1]?.children?.map((item) => item.label)).toEqual(['Makeup', 'Skincare', 'Perfumes'])
     expect(nav.some((item) => item.href === '/shop/boys')).toBe(false)
   })
+
+  it('keeps kids collections first and adds Women’s handbags and beauty on the home page', async () => {
+    const { homepageCollections, splitHomeCollections } = await import('@/lib/homepage')
+    const { kids, women } = splitHomeCollections(homepageCollections(null))
+    expect(kids.map((item) => item.href)).toEqual([
+      '/shop/boys',
+      '/shop/girls',
+      '/shop/baby-kids-accessories',
+      '/shop/kids-footwear',
+    ])
+    expect(women.map((item) => item.href)).toEqual([
+      '/shop/handbags',
+      '/shop/beauty',
+      '/shop/skincare',
+      '/shop/perfumes',
+    ])
+  })
 })
 
 describe('women’s sample catalog', () => {

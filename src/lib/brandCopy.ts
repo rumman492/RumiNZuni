@@ -1,28 +1,30 @@
 /** Customer-facing copy fallbacks. Store settings and CMS pages override these. */
 
 export const BRAND = {
-  tagline: 'Kids wear from newborn to 12 years',
+  tagline: 'Kids wear, family style, cash on delivery',
   announcement: 'Cash on delivery across Pakistan',
   ticker: [
     'Newborn to 12 years',
     'Cash on delivery',
     'Boys and girls',
+    'Handbags',
+    'Makeup · Skincare · Perfumes',
     'Little looks, big moments',
     'Pay when it arrives',
   ],
 }
 
 export const HERO = {
-  eyebrow: 'Kids wear · Pakistan · COD',
+  eyebrow: 'Pakistan · Family shop · COD',
   title: 'Little Looks. Big Moments.',
   subtitle:
-    'Thoughtfully chosen styles for little ones from newborn to 12 years — comfortable, easy to wear, and ready for everyday play.',
+    'Kids wear from newborn to 12 years — and a quieter corner for her, with handbags, makeup, skincare, and perfumes. Pay cash on delivery when it arrives.',
   cta: 'Shop Kidswear',
   ctaLink: '/shop/kids-wear',
-  secondaryCta: 'Explore New Arrivals',
-  secondaryCtaLink: '/shop?sort=newest',
-  overlayTitle: 'Newborn to 12 years',
-  overlaySubtitle: 'Boys · Girls',
+  secondaryCta: "Shop Women's",
+  secondaryCtaLink: '/shop/womens',
+  overlayTitle: 'Family style, simply chosen',
+  overlaySubtitle: 'Kids · Handbags · Beauty',
 }
 
 export const FEATURED = {
@@ -40,6 +42,19 @@ export const HOME_COLLECTIONS = [
   { title: 'Footwear', copy: 'Soft steps for busy days — made for movement, not fuss.', href: '/shop/kids-footwear' },
 ]
 
+export const HOME_WOMEN_COLLECTIONS = [
+  { title: 'Handbags', copy: 'Everyday bags, chosen to go with real life.', href: '/shop/handbags' },
+  { title: 'Makeup', copy: 'Colour for everyday, and for the nights you dress up.', href: '/shop/beauty' },
+  { title: 'Skincare', copy: 'Simple routines for skin that works hard.', href: '/shop/skincare' },
+  { title: 'Perfumes', copy: 'A finishing note — light, lasting, or in between.', href: '/shop/perfumes' },
+]
+
+export const HOME_WOMEN_INTRO = {
+  eyebrow: "Women's",
+  heading: 'Everyday style, beautifully chosen',
+  copy: 'A quieter corner of the shop — handbags, makeup, skincare, and perfumes. Separate from the kids aisle, same cash on delivery.',
+}
+
 export const HOME_PROMOS = [
   {
     icon: 'cod',
@@ -54,7 +69,7 @@ export const HOME_PROMOS = [
   {
     icon: 'sparkles',
     title: 'Chosen with care',
-    copy: 'Thoughtfully selected styles for little ones — comfort first, then a bit of joy.',
+    copy: 'Thoughtfully selected styles for little ones — and a few beautiful extras for you.',
   },
   {
     icon: 'returns',
@@ -65,21 +80,21 @@ export const HOME_PROMOS = [
 
 export const HOME_STORY = {
   eyebrow: 'About Rumi & Zuni',
-  title: 'Clothes that keep up with growing up',
-  body: 'Little ones grow quickly. Their clothes should keep up.\n\nRumi & Zuni brings together thoughtfully chosen styles for newborns, babies, and growing kids — made for everyday adventures, special moments, and everything in between. Parents can shop with ease, pay cash on delivery, and dress the days that become memories.',
+  title: 'For little moments — and a few of your own',
+  body: 'Little ones grow quickly. Their clothes should keep up.\n\nRumi & Zuni is a family shop: thoughtfully chosen kids wear from newborn to 12 years, plus handbags, makeup, skincare, and perfumes when you want something for yourself. Shop with ease, pay cash on delivery, and dress the days that become memories.',
   cta: 'Get in touch',
   ctaLink: '/contact',
 }
 
 export const HOME_BANNER = {
-  title: 'Find their next favourite',
-  copy: 'New pieces for play, comfort, and the small moments in between.',
-  cta: 'Explore New Arrivals',
-  ctaLink: '/shop?sort=newest',
+  title: 'Find the next favourite',
+  copy: 'New pieces for play, for her, and for the small moments in between.',
+  cta: 'Explore the shop',
+  ctaLink: '/shop',
 }
 
 export const SEO = {
-  title: 'Rumi & Zuni — Kids wear from newborn to 12 years',
+  title: 'Rumi & Zuni — Kids wear and a little for her',
   description:
-    'Shop kids clothing in Pakistan for newborn to 12 years. Boys, girls, accessories, and footwear — cash on delivery, pay when your order arrives.',
+    'Shop kids clothing in Pakistan for newborn to 12 years, plus handbags, makeup, skincare, and perfumes. Cash on delivery — pay when your order arrives.',
 }

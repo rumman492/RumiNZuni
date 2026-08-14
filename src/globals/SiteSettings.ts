@@ -227,7 +227,7 @@ export const SiteSettings: GlobalConfig = {
                   type: 'array',
                   labels: { singular: 'Collection', plural: 'Collections' },
                   admin: {
-                    description: 'Empty uses Boys / Girls / Accessories / Footwear. Fill this to replace those cards.',
+                    description: 'Empty uses Boys, Girls, Accessories, Footwear, then Handbags, Makeup, Skincare, and Perfumes. Fill this to replace the kids cards; Women’s cards are still added if missing.',
                   },
                   fields: [
                     { name: 'title', type: 'text', required: true },
