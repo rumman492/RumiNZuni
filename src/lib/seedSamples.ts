@@ -31,6 +31,8 @@ type Sample = {
   skinType?: string
   ingredients?: string
   volume?: string
+  fragranceType?: string
+  fragranceFamily?: string
   dimensions?: string
   imageFile: string
   imageAlt: string
@@ -83,6 +85,7 @@ export function extraSamplesByCategory(ctx: SampleCtx): Record<string, Sample[]>
   const bags = ctx.categories.handbags
   const beauty = ctx.categories.beauty
   const skin = ctx.categories.skincare
+  const perfume = ctx.categories.perfumes
 
   return {
     boys: [
@@ -181,6 +184,13 @@ export function extraSamplesByCategory(ctx: SampleCtx): Record<string, Sample[]>
           skinItem(ctx, skin, 'Eye serum sample', 'womens-eye-serum', 'womens-serum.jpg', 'Eye serum', 'RNZ-EYE', 'serum', 'all', '15 ml', 2190),
         ]
       : [],
+    perfumes: perfume
+      ? [
+          perfumeItem(ctx, perfume, 'Floral eau de parfum', 'womens-floral-edp', 'womens-serum.jpg', 'Floral perfume bottle', 'RNZ-EDP', 'Eau de Parfum', 'Floral', 3490),
+          perfumeItem(ctx, perfume, 'Citrus body mist', 'womens-citrus-mist', 'womens-cleanser.jpg', 'Citrus body mist', 'RNZ-MST', 'Body Mist', 'Citrus', 1490),
+          perfumeItem(ctx, perfume, 'Amber perfume oil', 'womens-amber-oil', 'womens-face-cream.jpg', 'Amber perfume oil', 'RNZ-OIL', 'Perfume Oil', 'Amber', 1990),
+        ]
+      : [],
   }
 }
 
@@ -264,7 +274,10 @@ function beautyItem(
     productKind,
     imageFile: image,
     imageAlt: alt,
-    variants: [{ sku: `${sku}-OS`, size: 'onesize', color: 'Nude', price, stock: 10 }],
+    variants: [
+      { sku: `${sku}-NDE`, size: 'onesize', color: 'Nude', price, stock: 10 },
+      { sku: `${sku}-RSE`, size: 'onesize', color: 'Rose', price, stock: 8 },
+    ],
   }
 }
 
@@ -295,6 +308,37 @@ function skinItem(
     imageFile: image,
     imageAlt: alt,
     variants: [{ sku: `${sku}-OS`, size: 'onesize', color: 'None', price, stock: 8 }],
+  }
+}
+
+function perfumeItem(
+  ctx: SampleCtx,
+  category: number,
+  title: string,
+  slug: string,
+  image: string,
+  alt: string,
+  sku: string,
+  fragranceType: string,
+  fragranceFamily: string,
+  price: number,
+): Sample {
+  return {
+    title,
+    slug,
+    description: `${title}. ${PLACEHOLDER}`,
+    category,
+    department: ctx.departments['womens-perfumes'],
+    brand: 'Sample',
+    productKind: fragranceType,
+    fragranceType,
+    fragranceFamily,
+    imageFile: image,
+    imageAlt: alt,
+    variants: [
+      { sku: `${sku}-50`, size: '50ml', color: 'None', price, stock: 6 },
+      { sku: `${sku}-100`, size: '100ml', color: 'None', price: price + 800, stock: 4 },
+    ],
   }
 }
 

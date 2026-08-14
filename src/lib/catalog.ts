@@ -19,12 +19,12 @@ import {
 import {
   catalogSectionIndex,
   flagsForShopQuery,
-  flagsFromDepartment,
   isUnisexPublicItem,
   shopFacetLabel,
   shopFacetSlugsForQuery,
   SHOP_DEPARTMENT_OPTIONS,
   STOREFRONT_NAV,
+  WOMEN_BEAUTY_LINKS,
   WOMEN_SHOP_LINKS,
 } from '@/lib/taxonomy'
 import {
@@ -107,14 +107,20 @@ function productInFacetScope(product: ProductDoc, query?: CatalogQuery) {
   const category = relationSlug(product.category)
   const department = relationSlug(product.department)
   if (query?.category) {
-    if (query.category === 'womens') return ['handbags', 'beauty', 'skincare', 'womens'].includes(category)
+    if (query.category === 'womens' || query.category === 'beauty-care') {
+      return ['handbags', 'beauty', 'skincare', 'womens', 'perfumes', 'beauty-care', 'hair-care', 'body-care', 'beauty-tools'].includes(
+        category,
+      )
+    }
     return category === query.category
   }
   if (query?.department === 'womens' || query?.audience === 'women') {
     return (
       department === 'womens' ||
       department.startsWith('womens-') ||
-      ['handbags', 'beauty', 'skincare', 'womens'].includes(category)
+      ['handbags', 'beauty', 'skincare', 'womens', 'perfumes', 'beauty-care', 'hair-care', 'body-care', 'beauty-tools'].includes(
+        category,
+      )
     )
   }
   if (query?.department === 'kids-wear') {
@@ -230,22 +236,7 @@ export async function getCatalogFacets(query?: CatalogQuery): Promise<CatalogFac
     departments.docs.find((doc) => doc.slug === departmentSlug) ||
     (query?.audience === 'women' ? departments.docs.find((doc) => doc.slug === 'womens') : undefined) ||
     null
-  const flags =
-    !query?.department && !query?.category && !query?.gender && query?.audience !== 'women'
-      ? flagsForShopQuery(query)
-      : department
-        ? {
-            ...flagsFromDepartment(department),
-            material: query?.category === 'handbags' || department.slug === 'womens-handbags',
-            gender:
-              query?.category === 'boys' ||
-              query?.category === 'girls' ||
-              query?.gender === 'boys' ||
-              query?.gender === 'girls'
-                ? false
-                : Boolean(department.usesGender),
-          }
-        : flagsForShopQuery(query)
+  const flags = flagsForShopQuery(query)
   const sizeKind: SizeRecord['kind'] | undefined =
     query?.department === 'kids-footwear' || query?.category === 'kids-footwear'
       ? 'footwear'
@@ -270,12 +261,28 @@ export async function getCatalogFacets(query?: CatalogQuery): Promise<CatalogFac
   const productKinds = new Set<string>()
   const skinTypes = new Set<string>()
   const materials = new Set<string>()
+  const patterns = new Set<string>()
+  const finishes = new Set<string>()
+  const skinTones = new Set<string>()
+  const skinConcerns = new Set<string>()
+  const fragranceFamilies = new Set<string>()
+  const fragranceTypes = new Set<string>()
+  const volumes = new Set<string>()
+  const spfs = new Set<string>()
   for (const doc of scopedProducts) {
     if (doc.brand) brands.add(doc.brand)
     if (doc.bagType) bagTypes.add(doc.bagType)
     if (doc.productKind) productKinds.add(doc.productKind)
     if (doc.skinType) skinTypes.add(doc.skinType)
     if (doc.material) materials.add(doc.material)
+    if (doc.pattern) patterns.add(doc.pattern)
+    if (doc.finish) finishes.add(doc.finish)
+    if (doc.skinTone) skinTones.add(doc.skinTone)
+    if (doc.skinConcern) skinConcerns.add(doc.skinConcern)
+    if (doc.fragranceFamily) fragranceFamilies.add(doc.fragranceFamily)
+    if (doc.fragranceType) fragranceTypes.add(doc.fragranceType)
+    if (doc.volume) volumes.add(doc.volume)
+    if (doc.spf) spfs.add(doc.spf)
     for (const variant of doc.variants || []) {
       const key = variant.color.trim().toLowerCase()
       if (key && !colors.has(key)) colors.set(key, variant.color.trim())
@@ -296,6 +303,14 @@ export async function getCatalogFacets(query?: CatalogQuery): Promise<CatalogFac
     productKinds: [...productKinds].sort((a, b) => a.localeCompare(b, 'en')),
     skinTypes: [...skinTypes].sort((a, b) => a.localeCompare(b, 'en')),
     materials: [...materials].sort((a, b) => a.localeCompare(b, 'en')),
+    patterns: [...patterns].sort((a, b) => a.localeCompare(b, 'en')),
+    finishes: [...finishes].sort((a, b) => a.localeCompare(b, 'en')),
+    skinTones: [...skinTones].sort((a, b) => a.localeCompare(b, 'en')),
+    skinConcerns: [...skinConcerns].sort((a, b) => a.localeCompare(b, 'en')),
+    fragranceFamilies: [...fragranceFamilies].sort((a, b) => a.localeCompare(b, 'en')),
+    fragranceTypes: [...fragranceTypes].sort((a, b) => a.localeCompare(b, 'en')),
+    volumes: [...volumes].sort((a, b) => a.localeCompare(b, 'en')),
+    spfs: [...spfs].sort((a, b) => a.localeCompare(b, 'en')),
     ageGroups: shopAgeOptions(sizing.ageGroups),
     sizes: shopSizeOptions(sizing.sizes, sizeKind === 'none' ? undefined : sizeKind),
     filters: flags,
@@ -382,21 +397,29 @@ export async function getCategoryBySlug(slug: string) {
   const payload = await getPayloadClient()
   const result = await payload.find({
     collection: 'categories',
-    where: { slug: { equals: slug } },
+    where: { and: [{ slug: { equals: slug } }, { active: { not_equals: false } }] },
     limit: 1,
     depth: 0,
   })
   return result.docs[0] || null
 }
 
-export async function getWomenHubs() {
+async function hubsFromLinks(links: Array<{ href: string; slug: string; label: string; copy: string }>) {
   const payload = await getPayloadClient()
   const hubs: Array<{ href: string; title: string; copy: string; image: string | null }> = []
-  for (const item of WOMEN_SHOP_LINKS) {
+  for (const item of links) {
+    const category = await payload.find({
+      collection: 'categories',
+      where: { slug: { equals: item.slug } },
+      limit: 1,
+      depth: 0,
+    })
+    if (category.docs[0] && category.docs[0].active === false) continue
+    const lookupSlug = item.slug === 'beauty-care' ? 'beauty' : item.slug
     const products = await payload.find({
       collection: 'products',
       where: {
-        and: [{ _status: { equals: 'published' } }, { 'category.slug': { equals: item.slug } }],
+        and: [{ _status: { equals: 'published' } }, { 'category.slug': { equals: lookupSlug } }],
       },
       limit: 1,
       depth: 1,
@@ -411,6 +434,14 @@ export async function getWomenHubs() {
     })
   }
   return hubs
+}
+
+export async function getWomenHubs() {
+  return hubsFromLinks(WOMEN_SHOP_LINKS)
+}
+
+export async function getBeautyHubs() {
+  return hubsFromLinks(WOMEN_BEAUTY_LINKS)
 }
 
 export async function getDepartmentBySlug(slug: string) {
@@ -553,6 +584,14 @@ export async function searchCatalog(query: CatalogQuery) {
   if (query.productKind) and.push({ productKind: { contains: query.productKind } })
   if (query.skinType) and.push({ skinType: { contains: query.skinType } })
   if (query.material) and.push({ material: { contains: query.material } })
+  if (query.pattern) and.push({ pattern: { contains: query.pattern } })
+  if (query.finish) and.push({ finish: { contains: query.finish } })
+  if (query.skinTone) and.push({ skinTone: { contains: query.skinTone } })
+  if (query.skinConcern) and.push({ skinConcern: { contains: query.skinConcern } })
+  if (query.fragranceFamily) and.push({ fragranceFamily: { contains: query.fragranceFamily } })
+  if (query.fragranceType) and.push({ fragranceType: { contains: query.fragranceType } })
+  if (query.volume) and.push({ volume: { contains: query.volume } })
+  if (query.spf) and.push({ spf: { contains: query.spf } })
   if (query.min != null) and.push({ 'variants.price': { greater_than_equal: query.min } })
   if (query.max != null) and.push({ 'variants.price': { less_than_equal: query.max } })
   if (query.inStock) and.push({ 'variants.stock': { greater_than: 0 } })

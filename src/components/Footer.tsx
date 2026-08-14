@@ -23,9 +23,10 @@ export function Footer({
         { href: '/shop/baby-kids-accessories', label: 'Kids accessories' },
         { href: '/shop/kids-footwear', label: 'Kids footwear' },
         { href: '/shop/womens', label: "Women's" },
-        { href: '/shop/handbags', label: 'Bags' },
-        { href: '/shop/beauty', label: 'Beauty' },
+        { href: '/shop/handbags', label: 'Handbags' },
+        { href: '/shop/beauty', label: 'Makeup' },
         { href: '/shop/skincare', label: 'Skincare' },
+        { href: '/shop/perfumes', label: 'Perfumes' },
       ]
   return (
     <footer className="mt-20 border-t-8 border-coral bg-sand/70">

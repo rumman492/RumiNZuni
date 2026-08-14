@@ -79,6 +79,14 @@ export function ShopFilters({ basePath, query, facets, locked }: Props) {
       productKind: String(data.get('productKind') || ''),
       skinType: String(data.get('skinType') || ''),
       material: String(data.get('material') || ''),
+      pattern: String(data.get('pattern') || ''),
+      finish: String(data.get('finish') || ''),
+      skinTone: String(data.get('skinTone') || ''),
+      skinConcern: String(data.get('skinConcern') || ''),
+      fragranceFamily: String(data.get('fragranceFamily') || ''),
+      fragranceType: String(data.get('fragranceType') || ''),
+      volume: String(data.get('volume') || ''),
+      spf: String(data.get('spf') || ''),
       min: String(data.get('min') || ''),
       max: String(data.get('max') || ''),
       heightMin: String(data.get('heightMin') || ''),
@@ -232,8 +240,8 @@ export function ShopFilters({ basePath, query, facets, locked }: Props) {
         ) : null}
 
         {filters.color ? (
-        <label className="text-sm font-semibold">
-          Colour
+          <label className="text-sm font-semibold">
+          {query.category === 'beauty' ? 'Shade' : 'Colour'}
           <select className={selectClass} name="color" defaultValue={query.color || ''}>
             <option value="">All colours</option>
             {facets.colors.map((color) => (
@@ -283,6 +291,70 @@ export function ShopFilters({ basePath, query, facets, locked }: Props) {
             name="material"
             value={query.material}
             options={facets.materials.map((item) => ({ label: item, value: item }))}
+          />
+        ) : null}
+        {filters.pattern ? (
+          <FacetSelect
+            label="Pattern"
+            name="pattern"
+            value={query.pattern}
+            options={facets.patterns.map((item) => ({ label: item, value: item }))}
+          />
+        ) : null}
+        {filters.finish ? (
+          <FacetSelect
+            label="Finish"
+            name="finish"
+            value={query.finish}
+            options={facets.finishes.map((item) => ({ label: item, value: item }))}
+          />
+        ) : null}
+        {filters.skinTone ? (
+          <FacetSelect
+            label="Skin tone"
+            name="skinTone"
+            value={query.skinTone}
+            options={facets.skinTones.map((item) => ({ label: item, value: item }))}
+          />
+        ) : null}
+        {filters.skinConcern ? (
+          <FacetSelect
+            label="Skin concern"
+            name="skinConcern"
+            value={query.skinConcern}
+            options={facets.skinConcerns.map((item) => ({ label: item, value: item }))}
+          />
+        ) : null}
+        {filters.fragranceType ? (
+          <FacetSelect
+            label="Fragrance type"
+            name="fragranceType"
+            value={query.fragranceType}
+            options={facets.fragranceTypes.map((item) => ({ label: item, value: item }))}
+          />
+        ) : null}
+        {filters.fragranceFamily ? (
+          <FacetSelect
+            label="Fragrance family"
+            name="fragranceFamily"
+            value={query.fragranceFamily}
+            options={facets.fragranceFamilies.map((item) => ({ label: item, value: item }))}
+          />
+        ) : null}
+        {filters.volume ? (
+          <FacetSelect
+            label="Volume"
+            name="volume"
+            value={query.volume}
+            options={facets.volumes.map((item) => ({ label: item, value: item }))}
+          />
+        ) : null}
+        {filters.spf ? (
+          <FacetSelect
+            label="SPF"
+            name="spf"
+            value={query.spf}
+            options={facets.spfs.map((item) => ({ label: item, value: item }))}
           />
         ) : null}
 

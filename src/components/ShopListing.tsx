@@ -13,7 +13,7 @@ import {
   type CatalogQuery,
 } from '@/lib/catalog'
 import { shopAgeOptions, shopSizeOptions } from '@/lib/sizing'
-import { shopFacetLabel } from '@/lib/taxonomy'
+import { GLOBAL_SHOP_FILTERS, shopFacetLabel } from '@/lib/taxonomy'
 
 export async function ShopListing({
   title,
@@ -41,20 +41,17 @@ export async function ShopListing({
     productKinds: [],
     skinTypes: [],
     materials: [],
+    patterns: [],
+    finishes: [],
+    skinTones: [],
+    skinConcerns: [],
+    fragranceFamilies: [],
+    fragranceTypes: [],
+    volumes: [],
+    spfs: [],
     ageGroups: shopAgeOptions(),
     sizes: shopSizeOptions(),
-    filters: {
-      gender: true,
-      age: true,
-      size: true,
-      height: true,
-      color: true,
-      brand: false,
-      bagType: false,
-      productKind: false,
-      skinType: false,
-      material: false,
-    },
+    filters: { ...GLOBAL_SHOP_FILTERS },
   }
   let result: Awaited<ReturnType<typeof searchCatalog>> = {
     products: [],

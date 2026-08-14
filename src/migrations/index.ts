@@ -3,8 +3,8 @@ import * as migration_20260813_184500_clear_placeholder_contacts from './2026081
 import * as migration_20260814_004500_store_name_rumi_and_zuni from './20260814_004500_store_name_rumi_and_zuni';
 import * as migration_20260814_120000_height_sizing from './20260814_120000_height_sizing';
 import * as migration_20260814_180000_catalog_taxonomy from './20260814_180000_catalog_taxonomy';
-
 import * as migration_20260814_193000_storefront_nav from './20260814_193000_storefront_nav';
+import * as migration_20260814_200000_womens_catalog from './20260814_200000_womens_catalog';
 
 export const migrations = [
   {
@@ -36,5 +36,10 @@ export const migrations = [
     up: migration_20260814_193000_storefront_nav.up,
     down: migration_20260814_193000_storefront_nav.down,
     name: '20260814_193000_storefront_nav'
+  },
+  {
+    up: migration_20260814_200000_womens_catalog.up,
+    down: migration_20260814_200000_womens_catalog.down,
+    name: '20260814_200000_womens_catalog'
   },
 ];

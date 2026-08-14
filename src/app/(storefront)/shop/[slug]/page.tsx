@@ -8,6 +8,7 @@ import {
   getCategoryBySlug,
   getDepartmentBySlug,
   getWomenHubs,
+  getBeautyHubs,
   parseCatalogSearchParams,
   type CatalogLock,
   type CatalogSearchParams,
@@ -53,7 +54,22 @@ export async function generateMetadata({ params, searchParams }: Props): Promise
     : department
       ? { department: slug, audience: department.audience === 'women' ? 'women' : 'kids' }
       : category
-        ? { category: slug }
+        ? {
+            category: slug,
+            audience: [
+              'womens',
+              'beauty-care',
+              'handbags',
+              'beauty',
+              'skincare',
+              'perfumes',
+              'hair-care',
+              'body-care',
+              'beauty-tools',
+            ].includes(slug)
+              ? 'women'
+              : undefined,
+          }
         : { age: slug }
 
   const heading = preset?.title || department?.name || category?.name || ageGroup?.name || slug
@@ -99,7 +115,22 @@ export default async function ShopSlugPage({ params, searchParams }: Props) {
     : department
       ? { department: slug, audience: department.audience === 'women' ? 'women' : 'kids' }
       : category
-        ? { category: slug }
+        ? {
+            category: slug,
+            audience: [
+              'womens',
+              'beauty-care',
+              'handbags',
+              'beauty',
+              'skincare',
+              'perfumes',
+              'hair-care',
+              'body-care',
+              'beauty-tools',
+            ].includes(slug)
+              ? 'women'
+              : undefined,
+          }
         : { age: slug }
 
   const query = {
@@ -114,7 +145,9 @@ export default async function ShopSlugPage({ params, searchParams }: Props) {
   const hubs =
     (preset?.department === 'womens' || department?.slug === 'womens') && !locked.category
       ? await getWomenHubs().catch(() => [])
-      : undefined
+      : slug === 'beauty-care' || category?.slug === 'beauty-care'
+        ? await getBeautyHubs().catch(() => [])
+        : undefined
 
   const title = preset?.title || department?.name || category?.name || ageGroup?.name || slug
   const description =

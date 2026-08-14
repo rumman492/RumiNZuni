@@ -436,6 +436,11 @@ const CATEGORY_PLACEHOLDER_IMAGES: Record<string, Array<{ file: string; alt: str
     { file: 'womens-cleanser.jpg', alt: 'Cleanser bottle' },
     { file: 'womens-serum.jpg', alt: 'Serum bottle' },
   ],
+  perfumes: [
+    { file: 'womens-serum.jpg', alt: 'Perfume bottle' },
+    { file: 'womens-cleanser.jpg', alt: 'Fragrance mist' },
+    { file: 'womens-face-cream.jpg', alt: 'Fragrance oil' },
+  ],
 }
 
 async function attachMissingCategoryImages(payload: Payload, categories: Record<string, number>) {
@@ -514,7 +519,7 @@ export async function seedCatalog(payload: Payload) {
       }))
     categories[item.slug] = numericId(doc.id)
   }
-  for (const slug of ['baby-kids-accessories', 'kids-footwear', 'womens', 'handbags', 'beauty', 'skincare']) {
+  for (const slug of ['baby-kids-accessories', 'kids-footwear', 'womens', 'handbags', 'beauty', 'skincare', 'perfumes', 'beauty-care']) {
     const found = await payload.find({
       collection: 'categories',
       where: { slug: { equals: slug } },

@@ -18,6 +18,28 @@ export type ProductDoc = {
   ingredients?: string | null
   volume?: string | null
   dimensions?: string | null
+  pattern?: string | null
+  strapType?: string | null
+  closureType?: string | null
+  compartments?: string | null
+  shade?: string | null
+  finish?: string | null
+  skinTone?: string | null
+  formulation?: string | null
+  skinConcern?: string | null
+  keyIngredients?: string | null
+  spf?: string | null
+  fragranceType?: string | null
+  fragranceFamily?: string | null
+  topNotes?: string | null
+  middleNotes?: string | null
+  baseNotes?: string | null
+  longevity?: string | null
+  usageInstructions?: string | null
+  warnings?: string | null
+  manufacturer?: string | null
+  countryOfOrigin?: string | null
+  batchExpiry?: string | null
   ageGroup?: { name?: string | null; slug?: string | null } | string | number | null
   featured?: boolean | null
   material?: string | null
@@ -50,6 +72,7 @@ export type ProductDoc = {
     price: number
     compareAtPrice?: number | null
     stock: number
+    shadeCode?: string | null
   }> | null
   category?: { slug?: string; name?: string } | string | number | null
   department?: { slug?: string; audience?: string | null } | string | number | null

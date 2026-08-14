@@ -38,6 +38,53 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   }
 }
 
+function WomenSpecs({ product }: { product: ProductDoc }) {
+  const rows: Array<[string, string]> = [
+    ['Brand', product.brand],
+    ['Product type', product.productKind],
+    ['Bag type', product.bagType],
+    ['Material', product.material],
+    ['Pattern', product.pattern],
+    ['Strap', product.strapType],
+    ['Closure', product.closureType],
+    ['Compartments', product.compartments],
+    ['Dimensions', product.dimensions],
+    ['Shade', product.shade],
+    ['Finish', product.finish],
+    ['Skin tone', product.skinTone],
+    ['Formulation', product.formulation],
+    ['Skin type', product.skinType],
+    ['Skin concern', product.skinConcern],
+    ['Key ingredients', product.keyIngredients],
+    ['SPF', product.spf],
+    ['Volume', product.volume],
+    ['Fragrance type', product.fragranceType],
+    ['Fragrance family', product.fragranceFamily],
+    ['Top notes', product.topNotes],
+    ['Heart notes', product.middleNotes],
+    ['Base notes', product.baseNotes],
+    ['Longevity', product.longevity],
+    ['Ingredients', product.ingredients],
+    ['How to use', product.usageInstructions],
+    ['Warnings', product.warnings],
+    ['Manufacturer', product.manufacturer],
+    ['Country of origin', product.countryOfOrigin],
+    ['Batch / expiry', product.batchExpiry],
+  ].flatMap(([label, value]) => (value ? [[label, value] as [string, string]] : []))
+
+  if (rows.length === 0) return null
+  return (
+    <dl className="mt-6 grid gap-2 text-sm">
+      {rows.map(([label, value]) => (
+        <div key={label}>
+          <dt className="font-bold">{label}</dt>
+          <dd className="whitespace-pre-line text-ink-soft">{value}</dd>
+        </div>
+      ))}
+    </dl>
+  )
+}
+
 function relatedCards(product: ProductDoc) {
   return (product.relatedProducts || [])
     .filter((item): item is ProductDoc => typeof item === 'object' && item !== null && 'slug' in item)
@@ -90,9 +137,11 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
         </div>
         <div>
           <p className="text-sm uppercase tracking-wide text-ink-soft">
-            {[publicGenderLabel(product.gender), typeof product.ageGroup === 'object' && product.ageGroup?.name]
-              .filter(Boolean)
-              .join(' · ')}
+            {typeof product.department === 'object' && product.department?.audience === 'women'
+              ? [typeof product.category === 'object' ? product.category?.name : null, product.brand].filter(Boolean).join(' · ')
+              : [publicGenderLabel(product.gender), typeof product.ageGroup === 'object' && product.ageGroup?.name]
+                  .filter(Boolean)
+                  .join(' · ')}
           </p>
           <h1 className="display mt-2 text-5xl">{product.title}</h1>
           {tags.length > 0 ? (
@@ -105,6 +154,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
             </div>
           ) : null}
           <p className="mt-4 max-w-xl text-ink-soft">{product.description}</p>
+          <WomenSpecs product={product} />
           {product.material ? (
             <p className="mt-3 text-sm">
               <span className="font-bold">Material:</span> {product.material}

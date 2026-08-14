@@ -46,7 +46,7 @@ export const SHOP_PRESETS: Record<
     title: "Women's",
     audience: 'women',
     department: 'womens',
-    description: 'Handbags, beauty, and skincare. Cash on delivery across Pakistan.',
+    description: 'Handbags, makeup, skincare, and perfumes. Cash on delivery across Pakistan.',
   },
   'kids-wear': {
     title: 'Kids Wear',
@@ -70,6 +70,14 @@ export type CatalogQuery = {
   productKind?: string
   skinType?: string
   material?: string
+  pattern?: string
+  finish?: string
+  skinTone?: string
+  skinConcern?: string
+  fragranceFamily?: string
+  fragranceType?: string
+  volume?: string
+  spf?: string
   min?: number
   max?: number
   heightMin?: number
@@ -90,6 +98,14 @@ export type CatalogFacets = {
   productKinds: string[]
   skinTypes: string[]
   materials: string[]
+  patterns: string[]
+  finishes: string[]
+  skinTones: string[]
+  skinConcerns: string[]
+  fragranceFamilies: string[]
+  fragranceTypes: string[]
+  volumes: string[]
+  spfs: string[]
   ageGroups: Array<{ label: string; value: string }>
   sizes: Array<{ label: string; value: string; height: string }>
   filters: FilterFlags
@@ -144,6 +160,14 @@ export function parseCatalogSearchParams(params: CatalogSearchParams): CatalogQu
   const productKind = cleanText(firstParam(params.productKind), 40)
   const skinType = cleanText(firstParam(params.skinType), 40)
   const material = cleanText(firstParam(params.material), 40)
+  const pattern = cleanText(firstParam(params.pattern), 40)
+  const finish = cleanText(firstParam(params.finish), 40)
+  const skinTone = cleanText(firstParam(params.skinTone), 40)
+  const skinConcern = cleanText(firstParam(params.skinConcern), 40)
+  const fragranceFamily = cleanText(firstParam(params.fragranceFamily), 40)
+  const fragranceType = cleanText(firstParam(params.fragranceType), 40)
+  const volume = cleanText(firstParam(params.volume), 40)
+  const spf = cleanText(firstParam(params.spf), 20)
   const ageRaw = LEGACY_AGE[firstParam(params.age)?.trim().toLowerCase() || ''] || firstParam(params.age)?.trim().toLowerCase()
   const sizeRaw = cleanSizeCode(firstParam(params.size))
   const color = cleanText(firstParam(params.color), 40)
@@ -170,7 +194,10 @@ export function parseCatalogSearchParams(params: CatalogSearchParams): CatalogQu
     audience:
       audienceRaw === 'women' || audienceRaw === 'kids'
         ? audienceRaw
-        : department === 'womens' || category === 'handbags' || category === 'beauty' || category === 'skincare'
+        : department === 'womens' ||
+            ['handbags', 'beauty', 'beauty-care', 'skincare', 'perfumes', 'hair-care', 'body-care', 'beauty-tools'].includes(
+              category || '',
+            )
           ? 'women'
           : undefined,
     gender: genderRaw && GENDER_VALUES.has(genderRaw as never) ? genderRaw : undefined,
@@ -182,6 +209,14 @@ export function parseCatalogSearchParams(params: CatalogSearchParams): CatalogQu
     productKind,
     skinType,
     material,
+    pattern,
+    finish,
+    skinTone,
+    skinConcern,
+    fragranceFamily,
+    fragranceType,
+    volume,
+    spf,
     min,
     max,
     heightMin,
@@ -210,6 +245,14 @@ export function catalogQueryString(query: CatalogQuery) {
   if (query.productKind) params.set('productKind', query.productKind)
   if (query.skinType) params.set('skinType', query.skinType)
   if (query.material) params.set('material', query.material)
+  if (query.pattern) params.set('pattern', query.pattern)
+  if (query.finish) params.set('finish', query.finish)
+  if (query.skinTone) params.set('skinTone', query.skinTone)
+  if (query.skinConcern) params.set('skinConcern', query.skinConcern)
+  if (query.fragranceFamily) params.set('fragranceFamily', query.fragranceFamily)
+  if (query.fragranceType) params.set('fragranceType', query.fragranceType)
+  if (query.volume) params.set('volume', query.volume)
+  if (query.spf) params.set('spf', query.spf)
   if (query.min != null && Number.isFinite(query.min)) params.set('min', String(query.min))
   if (query.max != null && Number.isFinite(query.max)) params.set('max', String(query.max))
   if (query.heightMin != null && Number.isFinite(query.heightMin)) params.set('heightMin', String(query.heightMin))
@@ -258,7 +301,15 @@ export function hasFacetParams(query: CatalogQuery, locked?: CatalogLock) {
       extra.bagType ||
       extra.productKind ||
       extra.skinType ||
-      extra.material,
+      extra.material ||
+      extra.pattern ||
+      extra.finish ||
+      extra.skinTone ||
+      extra.skinConcern ||
+      extra.fragranceFamily ||
+      extra.fragranceType ||
+      extra.volume ||
+      extra.spf,
   )
 }
 
@@ -298,6 +349,14 @@ export function catalogFilterChips(query: CatalogQuery, facets: CatalogFacets) {
   if (query.productKind) chips.push({ key: 'productKind', label: query.productKind })
   if (query.skinType) chips.push({ key: 'skinType', label: query.skinType })
   if (query.material) chips.push({ key: 'material', label: query.material })
+  if (query.pattern) chips.push({ key: 'pattern', label: query.pattern })
+  if (query.finish) chips.push({ key: 'finish', label: query.finish })
+  if (query.skinTone) chips.push({ key: 'skinTone', label: query.skinTone })
+  if (query.skinConcern) chips.push({ key: 'skinConcern', label: query.skinConcern })
+  if (query.fragranceFamily) chips.push({ key: 'fragranceFamily', label: query.fragranceFamily })
+  if (query.fragranceType) chips.push({ key: 'fragranceType', label: query.fragranceType })
+  if (query.volume) chips.push({ key: 'volume', label: query.volume })
+  if (query.spf) chips.push({ key: 'spf', label: `SPF ${query.spf}` })
   if (query.min != null) chips.push({ key: 'min', label: `From Rs ${query.min}` })
   if (query.max != null) chips.push({ key: 'max', label: `Up to Rs ${query.max}` })
   if (query.heightMin != null) chips.push({ key: 'heightMin', label: `From ${query.heightMin} cm` })

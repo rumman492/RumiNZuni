@@ -15,6 +15,7 @@ import { Sizes } from './collections/Sizes'
 import { Departments } from './collections/Departments'
 import { Orders } from './collections/Orders'
 import { Couriers } from './collections/Couriers'
+import { CatalogOptions } from './collections/CatalogOptions'
 import { Pages } from './collections/Pages'
 import { SiteSettings } from './globals/SiteSettings'
 import { checkoutHandler, trackOrderHandler } from './endpoints/checkout'
@@ -66,7 +67,7 @@ export default buildConfig({
       beforeDashboard: ['/components/admin/DashboardStats'],
     },
   },
-  collections: [Users, Media, Departments, Categories, Products, Tags, AgeGroups, Sizes, SizeGuides, Orders, Couriers, Pages],
+  collections: [Users, Media, Departments, Categories, Products, Tags, CatalogOptions, AgeGroups, Sizes, SizeGuides, Orders, Couriers, Pages],
   globals: [SiteSettings],
   editor: lexicalEditor(),
   secret: payloadSecret,

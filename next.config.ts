@@ -93,8 +93,10 @@ const nextConfig: NextConfig = {
       { source: '/kids-footwear', destination: '/shop/kids-footwear', permanent: true },
       { source: '/womens', destination: '/shop/womens', permanent: true },
       { source: '/womens/handbags', destination: '/shop/handbags', permanent: true },
-      { source: '/womens/beauty', destination: '/shop/beauty', permanent: true },
-      { source: '/womens/skincare', destination: '/shop/skincare', permanent: true },
+      { source: '/womens/beauty', destination: '/shop/beauty-care', permanent: true },
+      { source: '/womens/beauty/makeup', destination: '/shop/beauty', permanent: true },
+      { source: '/womens/beauty/skincare', destination: '/shop/skincare', permanent: true },
+      { source: '/womens/beauty/perfumes', destination: '/shop/perfumes', permanent: true },
     ]
   },
 }

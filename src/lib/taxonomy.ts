@@ -9,6 +9,14 @@ export type FilterFlags = {
   productKind: boolean
   skinType: boolean
   material: boolean
+  pattern: boolean
+  finish: boolean
+  skinTone: boolean
+  skinConcern: boolean
+  fragranceFamily: boolean
+  fragranceType: boolean
+  volume: boolean
+  spf: boolean
 }
 
 export const GLOBAL_SHOP_FILTERS: FilterFlags = {
@@ -22,6 +30,14 @@ export const GLOBAL_SHOP_FILTERS: FilterFlags = {
   productKind: false,
   skinType: false,
   material: false,
+  pattern: false,
+  finish: false,
+  skinTone: false,
+  skinConcern: false,
+  fragranceFamily: false,
+  fragranceType: false,
+  volume: false,
+  spf: false,
 }
 
 export const DEFAULT_KIDS_FILTERS: FilterFlags = {
@@ -35,6 +51,14 @@ export const DEFAULT_KIDS_FILTERS: FilterFlags = {
   productKind: false,
   skinType: false,
   material: false,
+  pattern: false,
+  finish: false,
+  skinTone: false,
+  skinConcern: false,
+  fragranceFamily: false,
+  fragranceType: false,
+  volume: false,
+  spf: false,
 }
 
 export const CUSTOMER_GENDER_OPTIONS = [
@@ -68,10 +92,25 @@ export const SHOP_DEPARTMENT_OPTIONS = [
 export const SHOP_DEPARTMENT_SLUGS = new Set<string>(SHOP_DEPARTMENT_OPTIONS.map((item) => item.slug))
 
 export const WOMEN_SHOP_LINKS = [
-  { href: '/shop/handbags', slug: 'handbags', label: 'Bags', copy: 'Handbags and everyday carry-alls' },
-  { href: '/shop/beauty', slug: 'beauty', label: 'Beauty', copy: 'Makeup and everyday beauty' },
-  { href: '/shop/skincare', slug: 'skincare', label: 'Skincare', copy: 'Cleansers, creams, and serums' },
+  { href: '/shop/handbags', slug: 'handbags', label: 'Handbags', copy: 'Shoulder bags, totes, crossbody, and clutches' },
+  { href: '/shop/beauty-care', slug: 'beauty-care', label: 'Beauty & Personal Care', copy: 'Makeup, skincare, and perfumes' },
 ]
+
+export const WOMEN_BEAUTY_LINKS = [
+  { href: '/shop/beauty', slug: 'beauty', label: 'Makeup', copy: 'Lips, eyes, face, and palettes' },
+  { href: '/shop/skincare', slug: 'skincare', label: 'Skincare', copy: 'Cleansers, serums, and creams' },
+  { href: '/shop/perfumes', slug: 'perfumes', label: 'Perfumes', copy: 'Eau de parfum, mists, and oils' },
+]
+
+export const WOMEN_LEAF_SLUGS = [
+  'handbags',
+  'beauty',
+  'skincare',
+  'perfumes',
+  'hair-care',
+  'body-care',
+  'beauty-tools',
+] as const
 
 /** Saleable shop sections, in merchandising order. Used on /shop and for featured sort. */
 export const SHOP_FACET_CATEGORIES = [
@@ -80,9 +119,11 @@ export const SHOP_FACET_CATEGORIES = [
   { slug: 'newborn', label: 'Newborn', department: 'kids-wear' },
   { slug: 'baby-kids-accessories', label: 'Kids accessories', department: 'baby-kids-accessories' },
   { slug: 'kids-footwear', label: 'Kids footwear', department: 'kids-footwear' },
-  { slug: 'handbags', label: 'Bags', department: 'womens-handbags' },
-  { slug: 'beauty', label: 'Beauty', department: 'womens-beauty' },
+  { slug: 'handbags', label: 'Handbags', department: 'womens-handbags' },
+  { slug: 'beauty-care', label: 'Beauty & Personal Care', department: 'womens' },
+  { slug: 'beauty', label: 'Makeup', department: 'womens-beauty' },
   { slug: 'skincare', label: 'Skincare', department: 'womens-skincare' },
+  { slug: 'perfumes', label: 'Perfumes', department: 'womens-perfumes' },
 ] as const
 
 export function shopFacetLabel(slug: string, fallback?: string) {
@@ -100,8 +141,13 @@ export function shopFacetSlugsForQuery(query?: {
   audience?: 'kids' | 'women'
   gender?: string
 }) {
-  if (query?.department === 'womens' || query?.audience === 'women') {
-    return ['handbags', 'beauty', 'skincare']
+  const womenScope = new Set<string>(['womens', 'beauty-care', ...WOMEN_LEAF_SLUGS])
+  if (
+    query?.department === 'womens' ||
+    query?.audience === 'women' ||
+    (query?.category && womenScope.has(query.category))
+  ) {
+    return [...WOMEN_LEAF_SLUGS]
   }
   if (
     query?.department === 'kids-wear' ||
@@ -128,6 +174,27 @@ export function flagsForShopQuery(query?: {
   if (department) {
     const flags = flagsFromDepartment(department)
     flags.material = query?.category === 'handbags' || department.slug === 'womens-handbags'
+    flags.pattern = flags.material
+    if (query?.category === 'beauty' || department.slug === 'womens-beauty') {
+      flags.finish = true
+      flags.skinTone = true
+      flags.color = true
+      flags.brand = true
+      flags.productKind = true
+    }
+    if (query?.category === 'skincare' || department.slug === 'womens-skincare') {
+      flags.skinConcern = true
+      flags.spf = true
+    }
+    if (query?.category === 'perfumes' || department.slug === 'womens-perfumes') {
+      flags.fragranceFamily = true
+      flags.fragranceType = true
+      flags.volume = true
+      flags.brand = true
+      flags.age = false
+      flags.gender = false
+      flags.size = false
+    }
     if (
       query?.category === 'boys' ||
       query?.category === 'girls' ||
@@ -150,6 +217,7 @@ export const SHOP_ALIASES: Record<string, string> = {
   'baby-accessories': '/shop/baby-kids-accessories',
   'kids-accessories': '/shop/baby-kids-accessories',
   bags: '/shop/baby-kids-accessories',
+  makeup: '/shop/beauty',
 }
 
 export const DEFAULT_DEPARTMENTS = [
@@ -213,7 +281,7 @@ export const DEFAULT_DEPARTMENTS = [
   {
     name: "Women's",
     slug: 'womens',
-    description: 'Handbags, beauty, and skincare for women.',
+    description: 'Handbags, makeup, skincare, and perfumes for women.',
     audience: 'women' as const,
     sizeKind: 'none' as const,
     usesGender: false,
@@ -240,7 +308,7 @@ export const DEFAULT_DEPARTMENTS = [
     usesSize: false,
     usesHeight: false,
     usesColor: true,
-    usesBrand: false,
+    usesBrand: true,
     usesBagType: true,
     usesProductKind: false,
     usesSkinType: false,
@@ -251,14 +319,14 @@ export const DEFAULT_DEPARTMENTS = [
   {
     name: "Women's Beauty",
     slug: 'womens-beauty',
-    description: 'Beauty for women. Cash on delivery across Pakistan.',
+    description: 'Makeup for women. Cash on delivery across Pakistan.',
     audience: 'women' as const,
     sizeKind: 'none' as const,
     usesGender: false,
     usesAge: false,
     usesSize: false,
     usesHeight: false,
-    usesColor: false,
+    usesColor: true,
     usesBrand: true,
     usesBagType: false,
     usesProductKind: true,
@@ -286,13 +354,32 @@ export const DEFAULT_DEPARTMENTS = [
     storefrontVisible: true,
     sortOrder: 60,
   },
+  {
+    name: "Women's Perfumes",
+    slug: 'womens-perfumes',
+    description: 'Perfumes and mists for women. Cash on delivery across Pakistan.',
+    audience: 'women' as const,
+    sizeKind: 'none' as const,
+    usesGender: false,
+    usesAge: false,
+    usesSize: false,
+    usesHeight: false,
+    usesColor: false,
+    usesBrand: true,
+    usesBagType: false,
+    usesProductKind: true,
+    usesSkinType: false,
+    showInNavigation: false,
+    storefrontVisible: true,
+    sortOrder: 70,
+  },
 ]
 
 export const DEFAULT_TAXONOMY_CATEGORIES = [
   {
     name: "Women's",
     slug: 'womens',
-    description: 'Handbags, beauty, and skincare. Cash on delivery across Pakistan.',
+    description: 'Handbags, makeup, skincare, and perfumes. Cash on delivery across Pakistan.',
     department: 'womens',
     showInNavigation: true,
     sortOrder: 40,
@@ -301,7 +388,7 @@ export const DEFAULT_TAXONOMY_CATEGORIES = [
   {
     name: 'Handbags',
     slug: 'handbags',
-    description: 'Handbags for women.',
+    description: 'Handbags, totes, crossbody bags, and clutches for women.',
     department: 'womens-handbags',
     parent: 'womens',
     showInNavigation: false,
@@ -309,13 +396,23 @@ export const DEFAULT_TAXONOMY_CATEGORIES = [
     active: true,
   },
   {
-    name: 'Beauty',
-    slug: 'beauty',
-    description: 'Beauty for women.',
-    department: 'womens-beauty',
+    name: 'Beauty & Personal Care',
+    slug: 'beauty-care',
+    description: 'Makeup, skincare, and perfumes for women.',
+    department: 'womens',
     parent: 'womens',
     showInNavigation: false,
     sortOrder: 42,
+    active: true,
+  },
+  {
+    name: 'Makeup',
+    slug: 'beauty',
+    description: 'Makeup for women. Existing /shop/beauty URLs stay the same.',
+    department: 'womens-beauty',
+    parent: 'beauty-care',
+    showInNavigation: false,
+    sortOrder: 43,
     active: true,
   },
   {
@@ -323,10 +420,50 @@ export const DEFAULT_TAXONOMY_CATEGORIES = [
     slug: 'skincare',
     description: 'Skincare for women.',
     department: 'womens-skincare',
-    parent: 'womens',
+    parent: 'beauty-care',
     showInNavigation: false,
-    sortOrder: 43,
+    sortOrder: 44,
     active: true,
+  },
+  {
+    name: 'Perfumes',
+    slug: 'perfumes',
+    description: 'Perfumes, mists, and fragrance oils for women.',
+    department: 'womens-perfumes',
+    parent: 'beauty-care',
+    showInNavigation: false,
+    sortOrder: 45,
+    active: true,
+  },
+  {
+    name: 'Hair Care',
+    slug: 'hair-care',
+    description: 'Shampoo, oils, and styling. Hidden until you tick Active.',
+    department: 'womens-beauty',
+    parent: 'beauty-care',
+    showInNavigation: false,
+    sortOrder: 46,
+    active: false,
+  },
+  {
+    name: 'Body Care',
+    slug: 'body-care',
+    description: 'Body lotion, wash, and scrubs. Hidden until you tick Active.',
+    department: 'womens-skincare',
+    parent: 'beauty-care',
+    showInNavigation: false,
+    sortOrder: 47,
+    active: false,
+  },
+  {
+    name: 'Beauty Tools',
+    slug: 'beauty-tools',
+    description: 'Brushes and tools. Hidden until you tick Active.',
+    department: 'womens-beauty',
+    parent: 'beauty-care',
+    showInNavigation: false,
+    sortOrder: 48,
+    active: false,
   },
   {
     name: 'Baby & Kids Accessories',
@@ -411,5 +548,13 @@ export function flagsFromDepartment(doc: {
     productKind: Boolean(doc.usesProductKind),
     skinType: Boolean(doc.usesSkinType),
     material: Boolean(doc.usesBagType),
+    pattern: false,
+    finish: false,
+    skinTone: false,
+    skinConcern: false,
+    fragranceFamily: false,
+    fragranceType: false,
+    volume: false,
+    spf: false,
   }
 }

@@ -41,10 +41,18 @@ export function AddToCart({
   const sizeLabel = formatProductSize(selected.size)
   const sizeValue = sizeCode(selected.size)
 
+  const hideColor =
+    colors.length <= 1 && ['', 'none', 'n/a'].includes((colors[0] || '').trim().toLowerCase())
+  const hideSize =
+    sizesForColor.length <= 1 && sizeCode(sizesForColor[0]?.size) === 'onesize'
+  const sizeHeading = sizesForColor.some((item) => /ml|vol/i.test(String(item.size))) ? 'Volume' : 'Size'
+  const colorHeading = colors.some((value) => /nude|rose|shade|beige|ivory/i.test(value)) && !hideColor ? 'Shade / colour' : 'Colour'
+
   return (
     <div className="space-y-5">
+      {hideColor ? null : (
       <div>
-        <p className="text-sm font-bold">Color</p>
+        <p className="text-sm font-bold">{colorHeading}</p>
         <div className="mt-2 flex flex-wrap gap-2">
           {colors.map((value) => (
             <button
@@ -62,8 +70,10 @@ export function AddToCart({
           ))}
         </div>
       </div>
+      )}
+      {hideSize ? null : (
       <div>
-        <p className="text-sm font-bold">Size</p>
+        <p className="text-sm font-bold">{sizeHeading}</p>
         <div className="mt-2 flex flex-wrap gap-2">
           {sizesForColor.map((item) => {
             const label = formatProductSize(item.size)
@@ -84,6 +94,7 @@ export function AddToCart({
           })}
         </div>
       </div>
+      )}
       <p className="display text-3xl">{formatPkr(selected.price)}</p>
       <p className="text-sm text-ink-soft">
         {selected.stock < 1 ? 'Out of stock' : `${selected.stock} in stock · Cash on delivery`}

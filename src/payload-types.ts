@@ -66,13 +66,14 @@ export interface Config {
     users: UserAuthOperations;
   };
   blocks: {};
-  collections: {
+    collections: {
     users: User;
     media: Media;
     departments: Department;
     categories: Category;
     products: Product;
     tags: Tag;
+    'catalog-options': CatalogOption;
     'age-groups': AgeGroup;
     sizes: Size;
     'size-guides': SizeGuide;
@@ -91,6 +92,7 @@ export interface Config {
     categories: CategoriesSelect<false> | CategoriesSelect<true>;
     products: ProductsSelect<false> | ProductsSelect<true>;
     tags: TagsSelect<false> | TagsSelect<true>;
+    'catalog-options': CatalogOptionsSelect<false> | CatalogOptionsSelect<true>;
     'age-groups': AgeGroupsSelect<false> | AgeGroupsSelect<true>;
     sizes: SizesSelect<false> | SizesSelect<true>;
     'size-guides': SizeGuidesSelect<false> | SizeGuidesSelect<true>;
@@ -278,6 +280,28 @@ export interface Product {
   ingredients?: string | null;
   volume?: string | null;
   dimensions?: string | null;
+  pattern?: string | null;
+  strapType?: string | null;
+  closureType?: string | null;
+  compartments?: string | null;
+  shade?: string | null;
+  finish?: string | null;
+  skinTone?: string | null;
+  formulation?: string | null;
+  skinConcern?: string | null;
+  keyIngredients?: string | null;
+  spf?: string | null;
+  fragranceType?: string | null;
+  fragranceFamily?: string | null;
+  topNotes?: string | null;
+  middleNotes?: string | null;
+  baseNotes?: string | null;
+  longevity?: string | null;
+  usageInstructions?: string | null;
+  warnings?: string | null;
+  manufacturer?: string | null;
+  countryOfOrigin?: string | null;
+  batchExpiry?: string | null;
   /**
    * e.g. 100% cotton jersey, lawn with lining
    */
@@ -326,6 +350,7 @@ export interface Product {
      */
     compareAtPrice?: number | null;
     stock: number;
+    shadeCode?: string | null;
     id?: string | null;
   }[];
   updatedAt: string;
@@ -346,6 +371,28 @@ export interface Tag {
   updatedAt: string;
   createdAt: string;
 }
+
+export interface CatalogOption {
+  id: number;
+  name: string;
+  slug?: string | null;
+  kind: 'bag-type' | 'skin-type' | 'skin-concern' | 'fragrance-family' | 'fragrance-type' | 'finish' | 'skin-tone' | 'product-kind';
+  active?: boolean | null;
+  sortOrder?: number | null;
+  updatedAt: string;
+  createdAt: string;
+}
+
+export type CatalogOptionsSelect<T extends boolean = true> = {
+  name?: T;
+  slug?: T;
+  kind?: T;
+  active?: T;
+  sortOrder?: T;
+  updatedAt?: T;
+  createdAt?: T;
+  id?: T;
+};
 /**
  * Measurement charts you can attach to products. Newborn and kids usually need different guides.
  *

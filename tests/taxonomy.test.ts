@@ -70,6 +70,10 @@ describe('catalog taxonomy', () => {
       'handbags',
       'beauty',
       'skincare',
+      'perfumes',
+      'hair-care',
+      'body-care',
+      'beauty-tools',
     ])
     expect(shopFacetSlugsForQuery({ department: 'baby-kids-accessories' })).toEqual([])
     expect(shopFacetSlugsForQuery({ department: 'kids-footwear' })).toEqual([])
@@ -109,10 +113,16 @@ describe('catalog taxonomy', () => {
     expect(bags.material).toBe(true)
     expect(bags.skinType).toBe(false)
 
-    const skin = flagsForShopQuery({ category: 'skincare' })
-    expect(skin.skinType).toBe(true)
-    expect(skin.productKind).toBe(true)
-    expect(skin.age).toBe(false)
+    const makeup = flagsForShopQuery({ category: 'beauty' })
+    expect(makeup.age).toBe(false)
+    expect(makeup.gender).toBe(false)
+    expect(makeup.finish).toBe(true)
+    expect(makeup.productKind).toBe(true)
+
+    const perfume = flagsForShopQuery({ category: 'perfumes' })
+    expect(perfume.age).toBe(false)
+    expect(perfume.fragranceFamily).toBe(true)
+    expect(perfume.volume).toBe(true)
   })
 
   it('orders catalog sections clothing first, then extras, then women’s', () => {

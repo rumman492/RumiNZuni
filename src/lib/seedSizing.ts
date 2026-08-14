@@ -5,7 +5,9 @@ import {
   DEFAULT_ONESIZE,
   DEFAULT_SIZES,
 } from '@/lib/sizing'
+import { slugify } from '@/lib/slug'
 import { DEFAULT_DEPARTMENTS, DEFAULT_TAXONOMY_CATEGORIES, isUnisexPublicItem, stripUnisexCopy } from '@/lib/taxonomy'
+import type { CatalogOption } from '@/payload-types'
 
 function numericId(id: string | number) {
   return typeof id === 'number' ? id : Number(id)
@@ -77,6 +79,18 @@ export async function seedSizingAndAccessories(payload: Payload) {
     const data = { ...rest, department: departmentIds[department] }
     if (found.docs[0]) {
       categoryIds[item.slug] = numericId(found.docs[0].id)
+      await payload.update({
+        collection: 'categories',
+        id: found.docs[0].id,
+        data: {
+          name: rest.name,
+          description: rest.description,
+          showInNavigation: rest.showInNavigation,
+          sortOrder: rest.sortOrder,
+          department: departmentIds[department],
+        },
+        overrideAccess: true,
+      })
     } else {
       categoryIds[item.slug] = await upsertBySlug(payload, 'categories', item.slug, data)
     }
@@ -202,7 +216,6 @@ export async function seedSizingAndAccessories(payload: Payload) {
         parent: item.parent ? categoryIds[item.parent] : null,
         showInNavigation: item.showInNavigation,
         sortOrder: item.sortOrder,
-        active: item.active,
       },
       overrideAccess: true,
     })
@@ -226,6 +239,68 @@ export async function hideUnisexFromStorefront(payload: Payload) {
       data: { showInNavigation: false, active: false },
       overrideAccess: true,
     })
+  }
+
+  const optionSeeds: Array<{ kind: CatalogOption['kind']; name: string }> = [
+    { kind: 'skin-type', name: 'All Skin Types' },
+    { kind: 'skin-type', name: 'Normal' },
+    { kind: 'skin-type', name: 'Dry' },
+    { kind: 'skin-type', name: 'Oily' },
+    { kind: 'skin-type', name: 'Combination' },
+    { kind: 'skin-type', name: 'Sensitive' },
+    { kind: 'skin-concern', name: 'Acne' },
+    { kind: 'skin-concern', name: 'Dryness' },
+    { kind: 'skin-concern', name: 'Oil Control' },
+    { kind: 'skin-concern', name: 'Hydration' },
+    { kind: 'skin-concern', name: 'Dark Spots' },
+    { kind: 'skin-concern', name: 'Uneven Tone' },
+    { kind: 'skin-concern', name: 'Fine Lines' },
+    { kind: 'skin-concern', name: 'Dullness' },
+    { kind: 'skin-concern', name: 'Sun Protection' },
+    { kind: 'fragrance-family', name: 'Floral' },
+    { kind: 'fragrance-family', name: 'Fruity' },
+    { kind: 'fragrance-family', name: 'Fresh' },
+    { kind: 'fragrance-family', name: 'Citrus' },
+    { kind: 'fragrance-family', name: 'Woody' },
+    { kind: 'fragrance-family', name: 'Oriental' },
+    { kind: 'fragrance-family', name: 'Amber' },
+    { kind: 'fragrance-family', name: 'Gourmand' },
+    { kind: 'fragrance-family', name: 'Musky' },
+    { kind: 'fragrance-type', name: 'Eau de Parfum' },
+    { kind: 'fragrance-type', name: 'Eau de Toilette' },
+    { kind: 'fragrance-type', name: 'Eau de Cologne' },
+    { kind: 'fragrance-type', name: 'Body Mist' },
+    { kind: 'fragrance-type', name: 'Perfume Oil' },
+    { kind: 'bag-type', name: 'Shoulder bag' },
+    { kind: 'bag-type', name: 'Crossbody' },
+    { kind: 'bag-type', name: 'Tote' },
+    { kind: 'bag-type', name: 'Clutch' },
+    { kind: 'bag-type', name: 'Mini bag' },
+    { kind: 'finish', name: 'Matte' },
+    { kind: 'finish', name: 'Dewy' },
+    { kind: 'finish', name: 'Satin' },
+  ]
+  try {
+    let order = 10
+    for (const option of optionSeeds) {
+      const slug = `${option.kind}-${slugify(option.name)}`
+      const found = await payload.find({
+        collection: 'catalog-options',
+        where: { slug: { equals: slug } },
+        limit: 1,
+        overrideAccess: true,
+      })
+      if (!found.docs[0]) {
+        await payload.create({
+          collection: 'catalog-options',
+          data: { ...option, slug, active: true, sortOrder: order },
+          overrideAccess: true,
+        })
+      }
+      order += 10
+    }
+  } catch (error) {
+    payload.logger.error(error instanceof Error ? error.message : 'Catalog options seed skipped.')
   }
 
   const settings = await payload.findGlobal({ slug: 'site-settings', overrideAccess: true, depth: 1 })

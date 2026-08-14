@@ -172,6 +172,109 @@ export const Products: CollectionConfig = {
               admin: { description: 'Bag size, e.g. 30 × 20 × 12 cm' },
             },
             {
+              name: 'pattern',
+              type: 'text',
+              admin: { description: 'Handbags. e.g. plain, printed' },
+            },
+            {
+              name: 'strapType',
+              type: 'text',
+              admin: { description: 'Handbags. e.g. chain, adjustable' },
+            },
+            {
+              name: 'closureType',
+              type: 'text',
+              admin: { description: 'Handbags. e.g. zip, magnetic' },
+            },
+            {
+              name: 'compartments',
+              type: 'text',
+              admin: { description: 'Handbags. Number of pockets/compartments' },
+            },
+            {
+              name: 'shade',
+              type: 'text',
+              admin: { description: 'Makeup shade name. Variant colour can also be the shade.' },
+            },
+            {
+              name: 'finish',
+              type: 'text',
+              admin: { description: 'Makeup. e.g. matte, dewy. Add values in Catalog options.' },
+            },
+            {
+              name: 'skinTone',
+              type: 'text',
+              admin: { description: 'Makeup. e.g. fair, medium, deep' },
+            },
+            {
+              name: 'formulation',
+              type: 'text',
+              admin: { description: 'Makeup. e.g. liquid, cream, powder' },
+            },
+            {
+              name: 'skinConcern',
+              type: 'text',
+              admin: { description: 'Skincare. e.g. acne, hydration. Catalog options → Skin concern.' },
+            },
+            {
+              name: 'keyIngredients',
+              type: 'text',
+              admin: { description: 'Skincare. e.g. niacinamide, hyaluronic acid' },
+            },
+            {
+              name: 'spf',
+              type: 'text',
+              admin: { description: 'Skincare. e.g. SPF 50' },
+            },
+            {
+              name: 'fragranceType',
+              type: 'text',
+              admin: { description: 'Perfumes. e.g. Eau de Parfum' },
+            },
+            {
+              name: 'fragranceFamily',
+              type: 'text',
+              admin: { description: 'Perfumes. e.g. Floral. Catalog options → Fragrance family.' },
+            },
+            {
+              name: 'topNotes',
+              type: 'text',
+            },
+            {
+              name: 'middleNotes',
+              type: 'text',
+            },
+            {
+              name: 'baseNotes',
+              type: 'text',
+            },
+            {
+              name: 'longevity',
+              type: 'text',
+              admin: { description: 'Perfumes. e.g. 6–8 hours' },
+            },
+            {
+              name: 'usageInstructions',
+              type: 'textarea',
+            },
+            {
+              name: 'warnings',
+              type: 'textarea',
+            },
+            {
+              name: 'manufacturer',
+              type: 'text',
+            },
+            {
+              name: 'countryOfOrigin',
+              type: 'text',
+            },
+            {
+              name: 'batchExpiry',
+              type: 'text',
+              admin: { description: 'Optional batch or expiry note. Do not invent claims.' },
+            },
+            {
               name: 'tags',
               type: 'relationship',
               relationTo: 'tags',
@@ -261,13 +364,14 @@ export const Products: CollectionConfig = {
                       required: true,
                       admin: {
                         description:
-                          'Size code from Admin → Sizes. Clothing uses 6y; footwear uses shoe codes (e.g. eu-28). Handbags/beauty can use onesize.',
+                          'Kids: size code from Admin → Sizes. Makeup: onesize. Perfume: volume e.g. 50ml. Handbags: onesize.',
                       },
                     },
                     {
                       name: 'color',
                       type: 'text',
                       required: true,
+                      admin: { description: 'Kids colour, bag colour, or makeup shade name.' },
                     },
                   ],
                 },
@@ -295,6 +399,11 @@ export const Products: CollectionConfig = {
                       defaultValue: 0,
                     },
                   ],
+                },
+                {
+                  name: 'shadeCode',
+                  type: 'text',
+                  admin: { description: 'Optional makeup shade code. Leave empty for kids wear.' },
                 },
               ],
             },
