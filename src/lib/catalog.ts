@@ -24,7 +24,7 @@ import {
   shopFacetLabel,
   shopFacetSlugsForQuery,
   SHOP_DEPARTMENT_OPTIONS,
-  STOREFRONT_NAV,
+  buildStorefrontNav,
   WOMEN_BEAUTY_LINKS,
   WOMEN_SHOP_LINKS,
 } from '@/lib/taxonomy'
@@ -462,14 +462,16 @@ export async function getStorefrontNav() {
     const settings = await payload.findGlobal({ slug: 'site-settings', depth: 0 })
     const links = (settings as { navLinks?: Array<{ label?: string | null; href?: string | null }> }).navLinks
     if (links && links.length > 0) {
-      return links
-        .filter((item) => item.label && item.href && !isUnisexPublicItem({ label: item.label, href: item.href }))
-        .map((item) => ({ href: String(item.href), label: String(item.label) }))
+      return buildStorefrontNav(
+        links
+          .filter((item) => item.label && item.href && !isUnisexPublicItem({ label: item.label, href: item.href }))
+          .map((item) => ({ href: String(item.href), label: String(item.label) })),
+      )
     }
   } catch {
     // fallback
   }
-  return STOREFRONT_NAV.filter((item) => !isUnisexPublicItem(item))
+  return buildStorefrontNav()
 }
 
 export async function getFooterShopLinks() {

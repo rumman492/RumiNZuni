@@ -71,16 +71,82 @@ export const SHOP_GENDER_NAV = [
   { href: '/shop/girls', label: 'Girls' },
 ]
 
-export const STOREFRONT_NAV = [
+export type StorefrontNavItem = {
+  href: string
+  label: string
+  children?: StorefrontNavItem[]
+}
+
+export const STOREFRONT_NAV_TREE: StorefrontNavItem[] = [
   { href: '/shop', label: 'Shop' },
-  { href: '/shop/kids-wear', label: 'Kids Wear' },
-  ...SHOP_GENDER_NAV,
-  { href: '/shop/baby-kids-accessories', label: 'Accessories' },
-  { href: '/shop/kids-footwear', label: 'Footwear' },
-  { href: '/shop/womens', label: "Women's" },
+  {
+    href: '/shop/kids-wear',
+    label: 'Kids Wear',
+    children: [
+      { href: '/shop/boys', label: 'Boys' },
+      { href: '/shop/girls', label: 'Girls' },
+      { href: '/shop/baby-kids-accessories', label: 'Accessories' },
+      { href: '/shop/kids-footwear', label: 'Footwear' },
+    ],
+  },
+  {
+    href: '/shop/womens',
+    label: "Women's",
+    children: [
+      { href: '/shop/handbags', label: 'Handbags' },
+      {
+        href: '/shop/beauty-care',
+        label: 'Beauty & Personal Care',
+        children: [
+          { href: '/shop/beauty', label: 'Makeup' },
+          { href: '/shop/skincare', label: 'Skincare' },
+          { href: '/shop/perfumes', label: 'Perfumes' },
+        ],
+      },
+    ],
+  },
   { href: '/size-finder', label: 'Find size' },
   { href: '/track', label: 'Track order' },
 ]
+
+function navHref(href: string) {
+  return href.replace(/\/$/, '') || '/'
+}
+
+function collectNavHrefs(items: StorefrontNavItem[], into = new Set<string>()) {
+  for (const item of items) {
+    into.add(navHref(item.href))
+    if (item.children) collectNavHrefs(item.children, into)
+  }
+  return into
+}
+
+function applyNavLabels(items: StorefrontNavItem[], labels: Map<string, string>): StorefrontNavItem[] {
+  return items.map((item) => ({
+    href: item.href,
+    label: labels.get(navHref(item.href)) || item.label,
+    children: item.children ? applyNavLabels(item.children, labels) : undefined,
+  }))
+}
+
+/** Built-in dropdowns for Kids Wear and Women’s. Extra Store settings links stay as top-level items. */
+export function buildStorefrontNav(custom?: Array<{ href: string; label: string }> | null): StorefrontNavItem[] {
+  const extras = (custom || []).filter((item) => item.href && item.label && !isUnisexPublicItem(item))
+  const tree = extras.length
+    ? applyNavLabels(STOREFRONT_NAV_TREE, new Map(extras.map((item) => [navHref(item.href), item.label])))
+    : STOREFRONT_NAV_TREE
+  if (!extras.length) return tree
+  const known = collectNavHrefs(tree)
+  const extraItems = extras
+    .filter((item) => !known.has(navHref(item.href)))
+    .map((item) => ({ href: item.href, label: item.label }))
+  if (extraItems.length === 0) return tree
+  const trackAt = tree.findIndex((item) => item.href === '/track' || item.href === '/size-finder')
+  const insertAt = trackAt === -1 ? tree.length : trackAt
+  return [...tree.slice(0, insertAt), ...extraItems, ...tree.slice(insertAt)]
+}
+
+export const STOREFRONT_NAV = STOREFRONT_NAV_TREE.map(({ href, label }) => ({ href, label }))
 
 export const SHOP_DEPARTMENT_OPTIONS = [
   { slug: 'kids-wear', label: 'Kids Wear' },

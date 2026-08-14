@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { flagsForShopQuery, genderMatchesQuery, publicGenderLabel, SHOP_ALIASES, flagsFromDepartment, isUnisexPublicItem, shopFacetSlugsForQuery, stripUnisexCopy, catalogSectionIndex } from '@/lib/taxonomy'
+import { flagsForShopQuery, genderMatchesQuery, publicGenderLabel, SHOP_ALIASES, flagsFromDepartment, isUnisexPublicItem, shopFacetSlugsForQuery, stripUnisexCopy, catalogSectionIndex, buildStorefrontNav } from '@/lib/taxonomy'
 import { SHOP_PRESETS, parseCatalogSearchParams } from '@/lib/catalog-params'
 import { slugify } from '@/lib/slug'
 
@@ -147,6 +147,21 @@ describe('catalog taxonomy', () => {
 
   it('builds product slugs from titles for staff', () => {
     expect(slugify('Boys Navy Polo')).toBe('boys-navy-polo')
+  })
+
+  it('nests Kids Wear and Women’s into header dropdowns', () => {
+    const nav = buildStorefrontNav()
+    const kids = nav.find((item) => item.href === '/shop/kids-wear')
+    const women = nav.find((item) => item.href === '/shop/womens')
+    expect(kids?.children?.map((item) => item.href)).toEqual([
+      '/shop/boys',
+      '/shop/girls',
+      '/shop/baby-kids-accessories',
+      '/shop/kids-footwear',
+    ])
+    expect(women?.children?.map((item) => item.href)).toEqual(['/shop/handbags', '/shop/beauty-care'])
+    expect(women?.children?.[1]?.children?.map((item) => item.label)).toEqual(['Makeup', 'Skincare', 'Perfumes'])
+    expect(nav.some((item) => item.href === '/shop/boys')).toBe(false)
   })
 })
 

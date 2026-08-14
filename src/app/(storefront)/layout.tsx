@@ -76,7 +76,7 @@ export default async function StorefrontLayout({ children }: { children: React.R
   let email: string | null = null
   let settings: Awaited<ReturnType<typeof getSettings>> | null = null
 
-  let nav: Array<{ href: string; label: string }> | undefined
+  let nav: Awaited<ReturnType<typeof getStorefrontNav>> | undefined
   let shopLinks: Array<{ href: string; label: string }> | undefined
   try {
     settings = await getSettings()

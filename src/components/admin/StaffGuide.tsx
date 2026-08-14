@@ -98,7 +98,7 @@ export default function StaffGuide({ initPageResult, params, searchParams }: Adm
             </li>
             <li>
               Header/footer: <Link href="/admin/globals/site-settings">Store settings → Navigation</Link>. Empty keeps the built-in
-              menu.
+              menu (Kids Wear and Women’s open as dropdowns).
             </li>
             <li>
               Homepage hero, collections, featured products: Store settings → Homepage.

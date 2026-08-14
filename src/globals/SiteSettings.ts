@@ -95,14 +95,17 @@ export const SiteSettings: GlobalConfig = {
         {
           label: 'Navigation',
           admin: {
-            description: 'Empty uses the built-in Shop / Kids Wear / Boys / Girls / Accessories / Footwear / Women’s links.',
+            description: 'Empty uses the built-in Shop / Kids Wear (dropdown) / Women’s (dropdown) / Find size / Track links.',
           },
           fields: [
             {
               name: 'navLinks',
               type: 'array',
               labels: { singular: 'Nav link', plural: 'Header links' },
-              admin: { description: 'Header menu. Path examples: /shop, /shop/boys, /track' },
+              admin: {
+                description:
+                  'Leave empty for the built-in menu with Kids Wear and Women’s dropdowns. Extra paths are added as top-level links. Examples: /shop, /shop/boys, /track',
+              },
               fields: [
                 { name: 'label', type: 'text', required: true },
                 { name: 'href', type: 'text', required: true },
