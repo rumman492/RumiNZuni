@@ -2,9 +2,7 @@
 
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { PRODUCT_SIZES } from '@/lib/pakistan'
 import {
-  AGE_OPTIONS,
   GENDER_OPTIONS,
   SORT_OPTIONS,
   catalogFilterChips,
@@ -47,6 +45,14 @@ export function ShopFilters({ basePath, query, facets, locked }: Props) {
       color: String(data.get('color') || '').trim() || undefined,
       min: Number.isFinite(Number(data.get('min'))) && String(data.get('min')).trim() ? Number(data.get('min')) : undefined,
       max: Number.isFinite(Number(data.get('max'))) && String(data.get('max')).trim() ? Number(data.get('max')) : undefined,
+      heightMin:
+        Number.isFinite(Number(data.get('heightMin'))) && String(data.get('heightMin')).trim()
+          ? Number(data.get('heightMin'))
+          : undefined,
+      heightMax:
+        Number.isFinite(Number(data.get('heightMax'))) && String(data.get('heightMax')).trim()
+          ? Number(data.get('heightMax'))
+          : undefined,
       inStock: data.get('inStock') === '1',
       page: 1,
     }
@@ -120,7 +126,7 @@ export function ShopFilters({ basePath, query, facets, locked }: Props) {
             Age group
             <select className={selectClass} name="age" defaultValue={query.age || ''}>
               <option value="">All ages</option>
-              {AGE_OPTIONS.map((item) => (
+              {facets.ageGroups.map((item) => (
                 <option key={item.value} value={item.value}>
                   {item.label}
                 </option>
@@ -133,13 +139,39 @@ export function ShopFilters({ basePath, query, facets, locked }: Props) {
           Size
           <select className={selectClass} name="size" defaultValue={query.size || ''}>
             <option value="">All sizes</option>
-            {PRODUCT_SIZES.map((item) => (
+            {facets.sizes.map((item) => (
               <option key={item.value} value={item.value}>
-                {item.label}
+                {item.label} · {item.height}
               </option>
             ))}
           </select>
         </label>
+
+        <div>
+          <p className="text-sm font-semibold">Height (cm)</p>
+          <div className="mt-1 grid grid-cols-2 gap-2">
+            <input
+              className={inputClass}
+              type="number"
+              name="heightMin"
+              min={40}
+              max={200}
+              inputMode="numeric"
+              placeholder="From"
+              defaultValue={query.heightMin ?? ''}
+            />
+            <input
+              className={inputClass}
+              type="number"
+              name="heightMax"
+              min={40}
+              max={200}
+              inputMode="numeric"
+              placeholder="To"
+              defaultValue={query.heightMax ?? ''}
+            />
+          </div>
+        </div>
 
         <label className="text-sm font-semibold">
           Colour
@@ -194,8 +226,8 @@ export function ShopFilters({ basePath, query, facets, locked }: Props) {
           {chips.map((chip) => {
             const next = { ...query, [chip.key]: undefined, page: 1 } as CatalogQuery
             if (chip.key === 'inStock') next.inStock = false
-            if (chip.key === 'min') next.min = undefined
-            if (chip.key === 'max') next.max = undefined
+            if (chip.key === 'heightMin') next.heightMin = undefined
+            if (chip.key === 'heightMax') next.heightMax = undefined
             return (
               <Link
                 key={chip.key}
@@ -231,7 +263,8 @@ export function ShopSort({ basePath, query }: { basePath: string; query: Catalog
       {query.age ? <input type="hidden" name="age" value={query.age} /> : null}
       {query.size ? <input type="hidden" name="size" value={query.size} /> : null}
       {query.color ? <input type="hidden" name="color" value={query.color} /> : null}
-      {query.min != null ? <input type="hidden" name="min" value={query.min} /> : null}
+      {query.heightMin != null ? <input type="hidden" name="heightMin" value={query.heightMin} /> : null}
+      {query.heightMax != null ? <input type="hidden" name="heightMax" value={query.heightMax} /> : null}
       {query.max != null ? <input type="hidden" name="max" value={query.max} /> : null}
       {query.inStock ? <input type="hidden" name="inStock" value="1" /> : null}
       <label className="font-semibold text-ink-soft" htmlFor="catalog-sort">

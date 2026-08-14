@@ -31,11 +31,17 @@ export function Footer({
             <Link href="/shop/girls">Girls</Link>
             <Link href="/shop/newborn">Newborn</Link>
             <Link href="/shop/unisex">Unisex</Link>
+            <Link href="/shop/footwear">Footwear</Link>
+            <Link href="/shop/bags">Bags</Link>
+            <Link href="/shop/baby-accessories">Baby extras</Link>
+            <Link href="/shop/kids-accessories">Kids extras</Link>
+            <Link href="/shop/beauty">Beauty</Link>
           </div>
         </div>
         <div>
           <p className="text-sm font-bold uppercase tracking-wide">Help</p>
           <div className="mt-3 grid gap-2 text-sm text-ink-soft">
+            <Link href="/size-finder">Find my child’s size</Link>
             <Link href="/shipping">Shipping & COD</Link>
             <Link href="/returns">Returns</Link>
             <Link href="/track">Track order</Link>

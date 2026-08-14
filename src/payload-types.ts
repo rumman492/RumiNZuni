@@ -72,6 +72,8 @@ export interface Config {
     categories: Category;
     products: Product;
     tags: Tag;
+    'age-groups': AgeGroup;
+    sizes: Size;
     'size-guides': SizeGuide;
     orders: Order;
     couriers: Courier;
@@ -226,7 +228,7 @@ export interface Product {
     | null;
   category: number | Category;
   gender: 'boys' | 'girls' | 'unisex';
-  ageGroup: 'newborn' | 'infant' | 'toddler' | 'kids';
+  ageGroup: number | AgeGroup;
   /**
    * e.g. 100% cotton jersey, lawn with lining
    */
@@ -264,22 +266,7 @@ export interface Product {
   };
   variants: {
     sku: string;
-    size:
-      | 'newborn'
-      | '0-3m'
-      | '3-6m'
-      | '6-9m'
-      | '9-12m'
-      | '12-18m'
-      | '18-24m'
-      | '2y'
-      | '3y'
-      | '4y'
-      | '5y'
-      | '6y'
-      | '7-8y'
-      | '9-10y'
-      | '11-12y';
+    size: string;
     color: string;
     /**
      * Price in PKR
@@ -316,6 +303,44 @@ export interface Tag {
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "size-guides".
  */
+export interface AgeGroup {
+  id: number
+  name: string
+  slug: string
+  blurb?: string | null
+  storefrontVisible?: boolean | null
+  sortOrder?: number | null
+  heightMinCm: number
+  heightMaxCm: number
+  ageMinMonths?: number | null
+  ageMaxMonths?: number | null
+  updatedAt: string
+  createdAt: string
+}
+
+export interface Size {
+  id: number
+  code: string
+  label: string
+  ageLabel?: string | null
+  storefrontVisible?: boolean | null
+  sortOrder?: number | null
+  heightMinCm: number
+  heightMaxCm: number
+  chestMinCm?: number | null
+  chestMaxCm?: number | null
+  waistMinCm?: number | null
+  waistMaxCm?: number | null
+  ageMinMonths?: number | null
+  ageMaxMonths?: number | null
+  eu?: string | null
+  uk?: string | null
+  us?: string | null
+  ageGroups?: (number | AgeGroup)[] | null
+  updatedAt: string
+  createdAt: string
+}
+
 export interface SizeGuide {
   id: number;
   title: string;
@@ -326,22 +351,7 @@ export interface SizeGuide {
   description?: string | null;
   measurements?:
     | {
-        size:
-          | 'newborn'
-          | '0-3m'
-          | '3-6m'
-          | '6-9m'
-          | '9-12m'
-          | '12-18m'
-          | '18-24m'
-          | '2y'
-          | '3y'
-          | '4y'
-          | '5y'
-          | '6y'
-          | '7-8y'
-          | '9-10y'
-          | '11-12y';
+        size: string;
         /**
          * e.g. 3–4 years
          */

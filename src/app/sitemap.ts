@@ -11,6 +11,7 @@ const STATIC_PATHS = [
   { path: '/shipping', changeFrequency: 'monthly' as const, priority: 0.5 },
   { path: '/returns', changeFrequency: 'monthly' as const, priority: 0.5 },
   { path: '/contact', changeFrequency: 'monthly' as const, priority: 0.5 },
+  { path: '/size-finder', changeFrequency: 'monthly' as const, priority: 0.6 },
 ]
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
@@ -32,7 +33,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   try {
     const payload = await getPayloadClient()
-    const [products, categories] = await Promise.all([
+    const [products, categories, ageGroups] = await Promise.all([
       payload.find({
         collection: 'products',
         where: { _status: { equals: 'published' } },
@@ -48,7 +49,25 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         select: { slug: true, updatedAt: true },
         sort: 'name',
       }),
+      payload.find({
+        collection: 'age-groups',
+        where: { storefrontVisible: { equals: true } },
+        limit: 50,
+        depth: 0,
+        select: { slug: true, updatedAt: true },
+        sort: 'sortOrder',
+      }),
     ])
+
+    for (const group of ageGroups.docs) {
+      if (SHOP_PRESETS[group.slug]) continue
+      entries.push({
+        url: absoluteUrl(`/shop/${group.slug}`),
+        lastModified: new Date(group.updatedAt),
+        changeFrequency: 'weekly',
+        priority: 0.7,
+      })
+    }
 
     for (const category of categories.docs) {
       if (SHOP_PRESETS[category.slug]) continue

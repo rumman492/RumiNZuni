@@ -1,6 +1,5 @@
 import type { CollectionConfig } from 'payload'
 import { isAdmin } from '@/access/isAdmin'
-import { PRODUCT_SIZES } from '@/lib/pakistan'
 
 export const SizeGuides: CollectionConfig = {
   slug: 'size-guides',
@@ -48,9 +47,9 @@ export const SizeGuides: CollectionConfig = {
           fields: [
             {
               name: 'size',
-              type: 'select',
+              type: 'text',
               required: true,
-              options: [...PRODUCT_SIZES],
+              admin: { description: 'Size code from Admin → Sizes, e.g. 6y' },
             },
             { name: 'age', type: 'text', admin: { description: 'e.g. 3–4 years' } },
             { name: 'chest', type: 'text', admin: { description: 'e.g. 56 cm' } },

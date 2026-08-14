@@ -17,6 +17,7 @@ import {
 } from '@/lib/pakistan'
 import { ORDER_NUMBER_PATTERN, SKU_PATTERN } from '@/lib/security'
 import { quoteCodTotals } from '@/lib/shipping'
+import { sizeCode } from '@/lib/sizing'
 
 export type CheckoutItemInput = {
   productId: string | number
@@ -212,7 +213,7 @@ export async function placeCodOrder(store: CheckoutStore, input: CheckoutCustome
 
     const reserved = await store.reserveStock(line)
     if (!reserved.ok) {
-      const label = `${product.title} (${variant.size} / ${variant.color})`
+      const label = `${product.title} (${sizeCode(variant.size) || variant.size} / ${variant.color})`
       if (reserved.reason === 'missing') {
         throw new StockReservationError('A product in your cart is no longer available.')
       }
@@ -225,7 +226,7 @@ export async function placeCodOrder(store: CheckoutStore, input: CheckoutCustome
       product: product.id,
       title: product.title,
       sku: variant.sku,
-      size: variant.size,
+      size: sizeCode(variant.size) || String(variant.size),
       color: variant.color,
       qty: line.qty,
       price: variant.price,

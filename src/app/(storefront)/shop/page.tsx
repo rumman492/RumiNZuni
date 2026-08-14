@@ -10,7 +10,7 @@ export async function generateMetadata({ searchParams }: Props): Promise<Metadat
     basePath: '/shop',
     heading: 'Shop kids wear',
     description:
-      'Shop kids wear at Rumi & Zuni. Filter by category, gender, age, size, colour, and price. Cash on delivery across Pakistan.',
+      'Shop kids wear at Rumi & Zuni. Filter by height, size, age group, and colour. Cash on delivery across Pakistan.',
   })
 }
 
@@ -19,7 +19,7 @@ export default async function ShopPage({ searchParams }: Props) {
   return (
     <ShopListing
       title="Shop kids wear"
-      description="Everyday outfits with cash on delivery. Filter by size, colour, and age — you can confirm on WhatsApp after ordering."
+      description="Everyday outfits with cash on delivery. Filter by height, size, or age group — you can confirm on WhatsApp after ordering."
       basePath="/shop"
       query={query}
       breadcrumbs={[

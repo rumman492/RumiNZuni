@@ -11,6 +11,7 @@ const nav = [
   { href: '/shop/girls', label: 'Girls' },
   { href: '/shop/newborn', label: 'Newborn' },
   { href: '/shop/unisex', label: 'Unisex' },
+  { href: '/size-finder', label: 'Find size' },
   { href: '/track', label: 'Track order' },
 ]
 

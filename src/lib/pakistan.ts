@@ -30,6 +30,9 @@ export const PAKISTAN_CITIES = [
 
 export type PakistanCity = (typeof PAKISTAN_CITIES)[number]
 
+/** @deprecated Prefer Admin → Sizes. Kept as a fallback label list for old codes. */
+export { DEFAULT_SIZES as PRODUCT_SIZE_CHART, formatProductSize, shopSizeOptions } from './sizing'
+
 export const PRODUCT_SIZES = [
   { label: 'Newborn', value: 'newborn' },
   { label: '0-3 months', value: '0-3m' },
@@ -42,15 +45,11 @@ export const PRODUCT_SIZES = [
   { label: '3 years', value: '3y' },
   { label: '4 years', value: '4y' },
   { label: '5 years', value: '5y' },
-  { label: '6 years', value: '6y' },
+  { label: '6–7 years', value: '6y' },
   { label: '7-8 years', value: '7-8y' },
   { label: '9-10 years', value: '9-10y' },
   { label: '11-12 years', value: '11-12y' },
 ] as const
-
-export function formatProductSize(value: string | null | undefined) {
-  return PRODUCT_SIZES.find((size) => size.value === value)?.label || value || ''
-}
 
 export const PK_PHONE_REGEX = /^(\+92|0)?3\d{9}$/
 

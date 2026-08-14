@@ -44,9 +44,9 @@ Live site uses **PostgreSQL** + Docker on a VPS (`ruminzuni.com`). Follow `DEPLO
 
 - Currency is **PKR**. Format with `formatPkr()` from `src/lib/pakistan.ts`.
 - Phone must be Pakistani mobile (`03XXXXXXXXX`). Cities come from `PAKISTAN_CITIES`.
-- Product variants have size, color, SKU, price, stock.
+- Product variants have size **code**, color, SKU, price, stock. Size codes and height bands live in Admin → **Sizes** (height in cm is the source of truth). Age bands live in Admin → **Age groups**. Tick storefront to add Pre-Teen / Teen later.
 - Optional catalog fields: tags (`tags`), size guides (`size-guides`), material, care, SEO title/description, sortPriority (higher first), related products. Leave them empty on older products.
-- Shop search/filters use URL query params (`q`, `category`, `gender`, `age`, `size`, `color`, `min`, `max`, `inStock`, `sort`, `page`) so results are shareable. Pretty paths like `/shop/boys` stay indexed; extra facets are `noindex,follow`.
+- Shop search/filters use URL query params (`q`, `category`, `gender`, `age`, `size`, `color`, `min`, `max`, `heightMin`, `heightMax`, `inStock`, `sort`, `page`) so results are shareable. Pretty paths like `/shop/boys` stay indexed; extra facets are `noindex,follow`. Find-my-size is `/size-finder`.
 - Canonical domain is `NEXT_PUBLIC_SERVER_URL` (`https://ruminzuni.com` in production). Sitemap `/sitemap.xml`, robots `/robots.txt`. Cart, checkout, track, order, admin, and API are noindex.
 - Checkout must trust **server** prices and stock, never the client.
 - Public APIs (`/api/checkout`, `/api/track-order`) validate input, rate-limit by IP, check same-origin, and return generic errors — never database/stack traces. Confirmation pages require a signed `t` token.

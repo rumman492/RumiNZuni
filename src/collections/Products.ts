@@ -1,6 +1,5 @@
 import type { CollectionConfig } from 'payload'
 import { isAdmin } from '@/access/isAdmin'
-import { PRODUCT_SIZES } from '@/lib/pakistan'
 
 export const Products: CollectionConfig = {
   slug: 'products',
@@ -92,15 +91,13 @@ export const Products: CollectionConfig = {
                 },
                 {
                   name: 'ageGroup',
-                  type: 'select',
+                  type: 'relationship',
+                  relationTo: 'age-groups',
                   required: true,
-                  defaultValue: 'kids',
-                  options: [
-                    { label: 'Newborn', value: 'newborn' },
-                    { label: 'Infant', value: 'infant' },
-                    { label: 'Toddler', value: 'toddler' },
-                    { label: 'Kids', value: 'kids' },
-                  ],
+                  admin: {
+                    description:
+                      'Primary merchandising band. Shop filters also match by variant height, so mixed-size products still appear in the right groups.',
+                  },
                 },
               ],
             },
@@ -208,9 +205,12 @@ export const Products: CollectionConfig = {
                     },
                     {
                       name: 'size',
-                      type: 'select',
+                      type: 'text',
                       required: true,
-                      options: [...PRODUCT_SIZES],
+                      admin: {
+                        description:
+                          'Size code from Admin → Sizes (e.g. 6y). Height bands live on that size — add 13-14y later without changing this field.',
+                      },
                     },
                     {
                       name: 'color',

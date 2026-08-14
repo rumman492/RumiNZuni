@@ -11,7 +11,7 @@ export type ProductDoc = {
   createdAt?: string | null
   description?: string | null
   gender?: string | null
-  ageGroup?: string | null
+  ageGroup?: { name?: string | null; slug?: string | null } | string | number | null
   featured?: boolean | null
   material?: string | null
   careInstructions?: string | null
@@ -78,7 +78,7 @@ export async function getPublishedProducts(filters?: {
 
   if (filters?.featured) and.push({ featured: { equals: true } })
   if (filters?.gender) and.push({ gender: { equals: filters.gender } })
-  if (filters?.ageGroup) and.push({ ageGroup: { equals: filters.ageGroup } })
+  if (filters?.ageGroup) and.push({ 'ageGroup.slug': { equals: filters.ageGroup } })
   if (filters?.categorySlug) {
     and.push({ 'category.slug': { equals: filters.categorySlug } })
   }

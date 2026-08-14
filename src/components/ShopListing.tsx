@@ -12,6 +12,7 @@ import {
   type CatalogLock,
   type CatalogQuery,
 } from '@/lib/catalog'
+import { shopAgeOptions, shopSizeOptions } from '@/lib/sizing'
 
 export async function ShopListing({
   title,
@@ -28,7 +29,12 @@ export async function ShopListing({
   locked?: CatalogLock
   breadcrumbs?: BreadcrumbItem[]
 }) {
-  let facets: Awaited<ReturnType<typeof getCatalogFacets>> = { categories: [], colors: [] }
+  let facets: Awaited<ReturnType<typeof getCatalogFacets>> = {
+    categories: [],
+    colors: [],
+    ageGroups: shopAgeOptions(),
+    sizes: shopSizeOptions(),
+  }
   let result: Awaited<ReturnType<typeof searchCatalog>> = {
     products: [],
     cards: [],

@@ -1,9 +1,7 @@
 import fs from 'fs'
 import path from 'path'
 import type { Payload } from 'payload'
-import type { Product } from '@/payload-types'
-
-type ProductCreateData = Omit<Product, 'id' | 'createdAt' | 'updatedAt'>
+import { seedSizingAndAccessories } from '@/lib/seedSizing'
 
 const seedMediaDir = path.resolve(process.cwd(), 'seed/media')
 
@@ -39,6 +37,7 @@ function hasImages(product: { images?: Array<{ image?: unknown }> | null }) {
 }
 
 export async function seedCatalogIfEmpty(payload: Payload) {
+  await seedSizingAndAccessories(payload)
   const existing = await payload.find({
     collection: 'products',
     limit: 1,
@@ -55,6 +54,8 @@ export async function seedCatalog(payload: Payload) {
   if (!fs.existsSync(seedMediaDir)) {
     throw new Error(`Seed photos folder is missing: ${seedMediaDir}`)
   }
+
+  const ageGroupIds = await seedSizingAndAccessories(payload)
 
   const categoryData = [
     { name: 'Boys', slug: 'boys', description: 'Everyday wear for boys' },
@@ -164,7 +165,7 @@ export async function seedCatalog(payload: Payload) {
       description: 'Two-piece cotton romper with envelope neck — easy changes for newborns.',
       category: categories.newborn,
       gender: 'unisex' as const,
-      ageGroup: 'newborn' as const,
+      ageGroup: ageGroupIds.newborn,
       featured: true,
       material: '100% cotton jersey',
       careInstructions: 'Machine wash cold. Do not bleach. Dry in shade.',
@@ -189,9 +190,7 @@ export async function seedCatalog(payload: Payload) {
       description: 'Airy lawn frock with a soft lining. Made for warm days and Eid mornings.',
       category: categories.girls,
       gender: 'girls' as const,
-      ageGroup: 'kids' as const,
-      featured: true,
-      material: 'Printed lawn with cotton lining',
+      ageGroup: ageGroupIds['little-kids'],
       sortPriority: 18,
       tags: [tags.eid, tags.everyday],
       imageFile: 'printed-lawn-frock.jpg',
@@ -208,9 +207,7 @@ export async function seedCatalog(payload: Payload) {
       description: 'Classic polo in breathable pique cotton. Pair with shorts for school and play.',
       category: categories.boys,
       gender: 'boys' as const,
-      ageGroup: 'kids' as const,
-      featured: true,
-      material: 'Cotton pique',
+      ageGroup: ageGroupIds['little-kids'],
       sortPriority: 16,
       tags: [tags.cotton, tags.everyday],
       imageFile: 'pique-polo-shirt.jpg',
@@ -227,9 +224,7 @@ export async function seedCatalog(payload: Payload) {
       description: 'Light hoodie for AC rooms and winter mornings. Soft fleece inside.',
       category: categories.unisex,
       gender: 'unisex' as const,
-      ageGroup: 'kids' as const,
-      featured: true,
-      imageFile: 'knit-hoodie.jpg',
+      ageGroup: ageGroupIds.kids,
       imageAlt: 'Heather grey kids knit hoodie',
       variants: [
         { sku: 'RNZ-HOD-3Y-GRY', size: '3y', color: 'Heather grey', price: 2290, stock: 8 },
@@ -243,9 +238,7 @@ export async function seedCatalog(payload: Payload) {
       description: 'Shirt and trouser set in airy linen-look fabric. Smart enough for family dinners.',
       category: categories.boys,
       gender: 'boys' as const,
-      ageGroup: 'kids' as const,
-      featured: false,
-      imageFile: 'two-piece-linen-suit.jpg',
+      ageGroup: ageGroupIds.toddler,
       imageAlt: 'Beige two-piece linen-look suit for boys',
       variants: [
         { sku: 'RNZ-SUT-2Y-BGE', size: '2y', color: 'Beige', price: 3290, stock: 6 },
@@ -259,7 +252,7 @@ export async function seedCatalog(payload: Payload) {
       description: 'Full-zip sleepsuit so you are not fumbling with snaps at 3am.',
       category: categories.newborn,
       gender: 'unisex' as const,
-      ageGroup: 'infant' as const,
+      ageGroup: ageGroupIds.baby,
       featured: false,
       imageFile: 'zip-sleepsuit.jpg',
       imageAlt: 'Ivory full-zip sleepsuit for infants',
@@ -275,7 +268,7 @@ export async function seedCatalog(payload: Payload) {
       description: 'Matching top and shorts for warm days. Sample placeholder — replace with your own girls styles later.',
       category: categories.girls,
       gender: 'girls' as const,
-      ageGroup: 'toddler' as const,
+      ageGroup: ageGroupIds.toddler,
       featured: false,
       material: 'Cotton jersey',
       sortPriority: 14,
@@ -294,9 +287,7 @@ export async function seedCatalog(payload: Payload) {
       description: 'Everyday crew-neck tee in breathable cotton. Sample placeholder — replace with your own unisex basics later.',
       category: categories.unisex,
       gender: 'unisex' as const,
-      ageGroup: 'kids' as const,
-      featured: false,
-      material: '100% cotton jersey',
+      ageGroup: ageGroupIds['little-kids'],
       sortPriority: 12,
       tags: [tags.cotton, tags.everyday],
       imageFile: 'cotton-jersey-tee.jpg',
@@ -314,7 +305,7 @@ export async function seedCatalog(payload: Payload) {
 
   for (const product of products) {
     const { imageFile, imageAlt, ...data } = product
-    const imageId = await upsertMedia(payload, imageFile, imageAlt)
+    const imageId = await upsertMedia(payload, imageFile as string, imageAlt)
     const images = [{ image: imageId }]
     const found = await payload.find({
       collection: 'products',
@@ -331,7 +322,7 @@ export async function seedCatalog(payload: Payload) {
           ...data,
           images,
           _status: 'published',
-        } as ProductCreateData,
+        } as never,
         draft: false,
         overrideAccess: true,
       })

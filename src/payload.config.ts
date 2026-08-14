@@ -10,6 +10,8 @@ import { Categories } from './collections/Categories'
 import { Products } from './collections/Products'
 import { Tags } from './collections/Tags'
 import { SizeGuides } from './collections/SizeGuides'
+import { AgeGroups } from './collections/AgeGroups'
+import { Sizes } from './collections/Sizes'
 import { Orders } from './collections/Orders'
 import { Couriers } from './collections/Couriers'
 import { Pages } from './collections/Pages'
@@ -24,6 +26,7 @@ import {
   productionPayloadSecret,
 } from './lib/env'
 import { seedCatalogIfEmpty } from './lib/seedCatalog'
+import { seedSizingAndAccessories } from './lib/seedSizing'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -61,7 +64,7 @@ export default buildConfig({
       beforeDashboard: ['/components/admin/DashboardStats'],
     },
   },
-  collections: [Users, Media, Categories, Products, Tags, SizeGuides, Orders, Couriers, Pages],
+  collections: [Users, Media, Categories, Products, Tags, AgeGroups, Sizes, SizeGuides, Orders, Couriers, Pages],
   globals: [SiteSettings],
   editor: lexicalEditor(),
   secret: payloadSecret,
@@ -79,6 +82,13 @@ export default buildConfig({
   sharp,
   plugins: [...mediaStoragePlugins()],
   onInit: async (payload) => {
+    try {
+      await seedSizingAndAccessories(payload)
+    } catch (error) {
+      payload.logger.error(
+        error instanceof Error ? error.message : 'Could not load size chart / age groups. Add them in Admin → Sizes.',
+      )
+    }
     if (process.env.SEED_CATALOG !== 'true') return
     try {
       await seedCatalogIfEmpty(payload)

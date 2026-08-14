@@ -1,5 +1,5 @@
 import type { Payload } from 'payload'
-import { formatProductSize } from '@/lib/pakistan'
+import { formatProductSize } from '@/lib/sizing'
 
 export const LOW_STOCK_THRESHOLD = 5
 

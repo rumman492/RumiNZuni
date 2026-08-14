@@ -1,10 +1,21 @@
 import type { Metadata } from 'next'
 import type { Where } from 'payload'
-import { formatProductSize } from '@/lib/pakistan'
 import { getPayloadClient } from '@/lib/payload'
 import { productCardData, type ProductDoc } from '@/lib/products'
 import { pageMeta } from '@/lib/seo'
 import { absoluteUrl, STORE_NAME } from '@/lib/site'
+import {
+  DEFAULT_AGE_GROUPS,
+  DEFAULT_SIZES,
+  formatProductSize,
+  shopAgeOptions,
+  shopSizeOptions,
+  sizeCode,
+  sizeCodesForAgeGroup,
+  sizeCodesForHeightRange,
+  type AgeGroupRecord,
+  type SizeRecord,
+} from '@/lib/sizing'
 import {
   AGE_OPTIONS,
   GENDER_OPTIONS,
@@ -74,8 +85,10 @@ export function catalogMetadata(
 
 type Variant = NonNullable<ProductDoc['variants']>[number]
 
-function variantMatches(variant: Variant, query: CatalogQuery) {
-  if (query.size && variant.size !== query.size) return false
+function variantMatches(variant: Variant, query: CatalogQuery, sizeCodes?: Set<string>) {
+  const code = sizeCode(variant.size)
+  if (query.size && code !== query.size) return false
+  if (sizeCodes && sizeCodes.size > 0 && !sizeCodes.has(code)) return false
   if (query.color && variant.color.trim().toLowerCase() !== query.color.trim().toLowerCase()) return false
   if (query.min != null && variant.price < query.min) return false
   if (query.max != null && variant.price > query.max) return false
@@ -83,8 +96,8 @@ function variantMatches(variant: Variant, query: CatalogQuery) {
   return true
 }
 
-export function matchingVariants(product: ProductDoc, query: CatalogQuery) {
-  return (product.variants || []).filter((variant) => variantMatches(variant, query))
+export function matchingVariants(product: ProductDoc, query: CatalogQuery, sizeCodes?: Set<string>) {
+  return (product.variants || []).filter((variant) => variantMatches(variant, query, sizeCodes))
 }
 
 export function catalogDisplayVariant(product: ProductDoc, query: CatalogQuery) {
@@ -119,7 +132,7 @@ function sortProducts(products: ProductDoc[], query: CatalogQuery) {
 
 export async function getCatalogFacets(): Promise<CatalogFacets> {
   const payload = await getPayloadClient()
-  const [categories, products] = await Promise.all([
+  const [categories, products, sizing] = await Promise.all([
     payload.find({
       collection: 'categories',
       limit: 50,
@@ -132,6 +145,10 @@ export async function getCatalogFacets(): Promise<CatalogFacets> {
       limit: CATALOG_FETCH_LIMIT,
       depth: 0,
     }),
+    loadShopSizing().catch(() => ({
+      ageGroups: DEFAULT_AGE_GROUPS,
+      sizes: DEFAULT_SIZES,
+    })),
   ])
 
   const colors = new Map<string, string>()
@@ -145,7 +162,62 @@ export async function getCatalogFacets(): Promise<CatalogFacets> {
   return {
     categories: categories.docs.map((doc) => ({ name: doc.name, slug: doc.slug })),
     colors: [...colors.values()].sort((a, b) => a.localeCompare(b, 'en')),
+    ageGroups: shopAgeOptions(sizing.ageGroups),
+    sizes: shopSizeOptions(sizing.sizes),
   }
+}
+
+export async function loadShopSizing() {
+  try {
+    const payload = await getPayloadClient()
+    const [groups, sizes] = await Promise.all([
+      payload.find({ collection: 'age-groups', limit: 50, sort: 'sortOrder', depth: 0, overrideAccess: true }),
+      payload.find({ collection: 'sizes', limit: 100, sort: 'sortOrder', depth: 1, overrideAccess: true }),
+    ])
+    if (groups.totalDocs === 0 || sizes.totalDocs === 0) {
+      return { ageGroups: DEFAULT_AGE_GROUPS, sizes: DEFAULT_SIZES }
+    }
+    const ageGroups: AgeGroupRecord[] = groups.docs.map((doc) => ({
+      name: doc.name,
+      slug: doc.slug,
+      blurb: doc.blurb || '',
+      sortOrder: Number(doc.sortOrder || 0),
+      storefrontVisible: Boolean(doc.storefrontVisible),
+      heightMinCm: Number(doc.heightMinCm),
+      heightMaxCm: Number(doc.heightMaxCm),
+      ageMinMonths: Number(doc.ageMinMonths || 0),
+      ageMaxMonths: Number(doc.ageMaxMonths || 0),
+    }))
+    const mapped: SizeRecord[] = sizes.docs.map((doc) => ({
+      code: doc.code,
+      label: doc.label,
+      ageLabel: doc.ageLabel || '',
+      sortOrder: Number(doc.sortOrder || 0),
+      storefrontVisible: Boolean(doc.storefrontVisible),
+      heightMinCm: Number(doc.heightMinCm),
+      heightMaxCm: Number(doc.heightMaxCm),
+      chestMinCm: doc.chestMinCm != null ? Number(doc.chestMinCm) : undefined,
+      chestMaxCm: doc.chestMaxCm != null ? Number(doc.chestMaxCm) : undefined,
+      waistMinCm: doc.waistMinCm != null ? Number(doc.waistMinCm) : undefined,
+      waistMaxCm: doc.waistMaxCm != null ? Number(doc.waistMaxCm) : undefined,
+      ageMinMonths: Number(doc.ageMinMonths || 0),
+      ageMaxMonths: Number(doc.ageMaxMonths || 0),
+      eu: doc.eu || undefined,
+      uk: doc.uk || undefined,
+      us: doc.us || undefined,
+      ageGroupSlugs: (doc.ageGroups || []).flatMap((item) =>
+        typeof item === 'object' && item && 'slug' in item ? [String(item.slug)] : [],
+      ),
+    }))
+    return { ageGroups, sizes: mapped }
+  } catch {
+    return { ageGroups: DEFAULT_AGE_GROUPS, sizes: DEFAULT_SIZES }
+  }
+}
+
+export async function getAgeGroupBySlug(slug: string) {
+  const { ageGroups } = await loadShopSizing()
+  return ageGroups.find((group) => group.slug === slug && group.storefrontVisible) || null
 }
 
 export async function getCategoryBySlug(slug: string) {
@@ -161,12 +233,31 @@ export async function getCategoryBySlug(slug: string) {
 
 export async function searchCatalog(query: CatalogQuery) {
   const payload = await getPayloadClient()
+  const sizing = await loadShopSizing()
+  const ageGroup = query.age ? sizing.ageGroups.find((group) => group.slug === query.age) : undefined
+  const heightCodes =
+    query.heightMin != null || query.heightMax != null
+      ? sizeCodesForHeightRange(sizing.sizes, query.heightMin, query.heightMax)
+      : []
+  const ageCodes = ageGroup ? sizeCodesForAgeGroup(sizing.sizes, ageGroup) : []
+  const sizeCodes = new Set([...heightCodes, ...ageCodes])
+  const filterBySizeBand = sizeCodes.size > 0 && !query.size
+
   const and: Where[] = [{ _status: { equals: 'published' } }]
 
   if (query.category) and.push({ 'category.slug': { equals: query.category } })
   if (query.gender) and.push({ gender: { equals: query.gender } })
-  if (query.age) and.push({ ageGroup: { equals: query.age } })
   if (query.size) and.push({ 'variants.size': { equals: query.size } })
+  if (filterBySizeBand) {
+    and.push({
+      or: [
+        { 'variants.size': { in: [...sizeCodes] } },
+        ...(query.age ? [{ 'ageGroup.slug': { equals: query.age } }] : []),
+      ],
+    })
+  } else if (query.age) {
+    and.push({ 'ageGroup.slug': { equals: query.age } })
+  }
   if (query.color) and.push({ 'variants.color': { contains: query.color } })
   if (query.min != null) and.push({ 'variants.price': { greater_than_equal: query.min } })
   if (query.max != null) and.push({ 'variants.price': { less_than_equal: query.max } })
@@ -196,8 +287,8 @@ export async function searchCatalog(query: CatalogQuery) {
   })
 
   const matched = (result.docs as unknown as ProductDoc[]).filter((product) => {
-    if (query.size || query.color || query.min != null || query.max != null || query.inStock) {
-      return matchingVariants(product, query).length > 0
+    if (query.size || query.color || query.min != null || query.max != null || query.inStock || filterBySizeBand) {
+      return matchingVariants(product, query, filterBySizeBand ? sizeCodes : undefined).length > 0
     }
     return true
   })

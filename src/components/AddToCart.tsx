@@ -3,11 +3,12 @@
 import { useMemo, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { useCart } from '@/components/CartProvider'
-import { formatPkr, PRODUCT_SIZES } from '@/lib/pakistan'
+import { formatPkr } from '@/lib/pakistan'
+import { formatProductSize, sizeCode } from '@/lib/sizing'
 
 type Variant = {
   sku: string
-  size: string
+  size: unknown
   color: string
   price: number
   compareAtPrice?: number | null
@@ -37,7 +38,8 @@ export function AddToCart({
 
   if (!selected) return null
 
-  const sizeLabel = PRODUCT_SIZES.find((item) => item.value === selected.size)?.label || selected.size
+  const sizeLabel = formatProductSize(selected.size)
+  const sizeValue = sizeCode(selected.size)
 
   return (
     <div className="space-y-5">
@@ -64,7 +66,7 @@ export function AddToCart({
         <p className="text-sm font-bold">Size</p>
         <div className="mt-2 flex flex-wrap gap-2">
           {sizesForColor.map((item) => {
-            const label = PRODUCT_SIZES.find((size) => size.value === item.size)?.label || item.size
+            const label = formatProductSize(item.size)
             const disabled = item.stock < 1
             return (
               <button
@@ -96,7 +98,7 @@ export function AddToCart({
               slug,
               title,
               sku: selected.sku,
-              size: selected.size,
+              size: sizeValue,
               sizeLabel,
               color: selected.color,
               price: selected.price,
@@ -117,7 +119,7 @@ export function AddToCart({
               slug,
               title,
               sku: selected.sku,
-              size: selected.size,
+              size: sizeValue,
               sizeLabel,
               color: selected.color,
               price: selected.price,
