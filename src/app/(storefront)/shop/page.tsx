@@ -10,7 +10,7 @@ export async function generateMetadata({ searchParams }: Props): Promise<Metadat
     basePath: '/shop',
     heading: 'Shop',
     description:
-      'Boys and girls wear from newborn to 12 years, kids accessories, footwear, and women’s bags, beauty, and skincare. Cash on delivery across Pakistan.',
+      'Kids clothing in Pakistan for newborn to 12 years — boys, girls, accessories, and footwear. Cash on delivery.',
   })
 }
 
@@ -19,7 +19,7 @@ export default async function ShopPage({ searchParams }: Props) {
   return (
     <ShopListing
       title="Shop"
-      description="Boys and girls wear from newborn to 12 years, plus kids accessories, footwear, and women’s bags, beauty, and skincare. Cash on delivery across Pakistan."
+      description="Kids wear from newborn to 12 years, plus accessories and footwear. Women’s handbags and beauty live in their own corner of the shop."
       basePath="/shop"
       query={query}
       breadcrumbs={[

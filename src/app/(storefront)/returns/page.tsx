@@ -6,7 +6,7 @@ import { pageMeta } from '@/lib/seo'
 export const metadata = pageMeta({
   title: 'Returns & exchanges',
   description:
-    'Wrong size or a stitching issue? WhatsApp Rumi & Zuni within 3 days of delivery for an exchange.',
+    'Need a different size? Contact Rumi & Zuni within 3 days of delivery and we will help with an exchange.',
   path: '/returns',
 })
 
@@ -21,8 +21,8 @@ export default async function ReturnsPage() {
         <CmsRichText content={page.content} />
       ) : (
         <>
-          <p>If the size is wrong or an item has a stitching issue, WhatsApp us within 3 days of delivery with photos and your order number.</p>
-          <p>Unworn items with tags can be exchanged. Sale items are exchange-only. COD refunds, when approved, are arranged after we receive the return.</p>
+          <p>If the size is not quite right, or something arrived with a stitching issue, message us within 3 days of delivery with photos and your order number.</p>
+          <p>Unworn items with tags can be exchanged. Sale items are exchange-only. When a cash refund is approved, we arrange it after we receive the return.</p>
         </>
       )}
     </article>

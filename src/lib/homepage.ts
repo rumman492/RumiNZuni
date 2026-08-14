@@ -1,4 +1,5 @@
 import { HandCoins, RotateCcw, Sparkles, Truck, type LucideIcon } from 'lucide-react'
+import { FEATURED, HERO, HOME_BANNER, HOME_COLLECTIONS, HOME_PROMOS, HOME_STORY } from '@/lib/brandCopy'
 import { storefrontHref } from '@/lib/links'
 import { mediaUrl } from '@/lib/media'
 import { getPublishedProducts, productCardData, type ProductDoc } from '@/lib/products'
@@ -49,33 +50,9 @@ export type HomepageSettings = {
   homeStoryCtaLink?: string | null
 }
 
-export const DEFAULT_HOME_COLLECTIONS = [
-  { title: 'Boys', copy: 'Boys clothing for everyday play', href: '/shop/boys' },
-  { title: 'Girls', copy: 'Girls clothing, frocks, and sets', href: '/shop/girls' },
-  { title: 'Accessories', copy: 'Hats, bibs, bags, and extras for boys and girls', href: '/shop/baby-kids-accessories' },
-  { title: 'Footwear', copy: 'Soft shoes and sandals for little feet', href: '/shop/kids-footwear' },
-  { title: 'Bags', copy: 'Handbags for women', href: '/shop/handbags' },
-  { title: 'Beauty', copy: 'Makeup and everyday beauty', href: '/shop/beauty' },
-  { title: 'Skincare', copy: 'Cleansers, creams, and serums', href: '/shop/skincare' },
-]
+export const DEFAULT_HOME_COLLECTIONS = HOME_COLLECTIONS
 
-export const DEFAULT_HOME_PROMOS = [
-  {
-    icon: 'cod',
-    title: 'Cash on delivery',
-    copy: 'Pay the rider in PKR when your parcel arrives. No card needed.',
-  },
-  {
-    icon: 'shipping',
-    title: 'Pakistan-wide',
-    copy: 'We ship to major cities. Free delivery over the store threshold.',
-  },
-  {
-    icon: 'returns',
-    title: 'Easy exchanges',
-    copy: 'Wrong size? Message us on WhatsApp within 3 days of delivery.',
-  },
-]
+export const DEFAULT_HOME_PROMOS = HOME_PROMOS
 
 const PROMO_ICONS: Record<string, LucideIcon> = {
   cod: HandCoins,
@@ -95,28 +72,25 @@ function collectionHref(item: { href?: string | null; category?: CategoryRef }) 
 export function homepageHero(settings: HomepageSettings | null) {
   const image = typeof settings?.heroImage === 'object' ? mediaUrl(settings.heroImage) : null
   return {
-    eyebrow: settings?.heroEyebrow || 'Pakistan · Playtime · COD',
-    title: settings?.heroTitle || 'Little outfits, made for everyday play',
-    subtitle:
-      settings?.heroSubtitle ||
-      'Breathable kids wear for Pakistani weather. Order on cash on delivery — pay when it arrives.',
+    eyebrow: settings?.heroEyebrow || HERO.eyebrow,
+    title: settings?.heroTitle || HERO.title,
+    subtitle: settings?.heroSubtitle || HERO.subtitle,
     image,
-    cta: settings?.heroCta || 'Shop new arrivals',
-    ctaLink: storefrontHref(settings?.heroCtaLink, '/shop'),
-    secondaryCta: settings?.heroSecondaryCta || 'How COD works',
-    secondaryCtaLink: storefrontHref(settings?.heroSecondaryCtaLink, '/shipping'),
-    overlayTitle: settings?.heroOverlayTitle || 'Ages newborn – 12',
-    overlaySubtitle: stripUnisexCopy(settings?.heroOverlaySubtitle || 'Boys · Girls') || 'Boys · Girls',
+    cta: settings?.heroCta || HERO.cta,
+    ctaLink: storefrontHref(settings?.heroCtaLink, HERO.ctaLink),
+    secondaryCta: settings?.heroSecondaryCta || HERO.secondaryCta,
+    secondaryCtaLink: storefrontHref(settings?.heroSecondaryCtaLink, HERO.secondaryCtaLink),
+    overlayTitle: settings?.heroOverlayTitle || HERO.overlayTitle,
+    overlaySubtitle: stripUnisexCopy(settings?.heroOverlaySubtitle || HERO.overlaySubtitle) || HERO.overlaySubtitle,
   }
 }
 
 export function homepageBanner(settings: HomepageSettings | null) {
-  if (!settings?.homeBannerTitle) return null
   return {
-    title: settings.homeBannerTitle,
-    copy: settings.homeBannerCopy || null,
-    cta: settings.homeBannerCta || null,
-    ctaLink: storefrontHref(settings.homeBannerCtaLink, '/shop'),
+    title: settings?.homeBannerTitle || HOME_BANNER.title,
+    copy: settings?.homeBannerCopy || HOME_BANNER.copy,
+    cta: settings?.homeBannerCta || HOME_BANNER.cta,
+    ctaLink: storefrontHref(settings?.homeBannerCtaLink, HOME_BANNER.ctaLink),
   }
 }
 
@@ -148,26 +122,23 @@ export function homepagePromos(settings: HomepageSettings | null) {
 }
 
 export function homepageStory(settings: HomepageSettings | null) {
-  if (!settings?.homeStoryTitle) return null
   return {
-    eyebrow: settings.homeStoryEyebrow || null,
-    title: settings.homeStoryTitle,
-    body: settings.homeStoryBody || null,
-    image: typeof settings.homeStoryImage === 'object' ? mediaUrl(settings.homeStoryImage) : null,
-    cta: settings.homeStoryCta || null,
-    ctaLink: storefrontHref(settings.homeStoryCtaLink, '/contact'),
+    eyebrow: settings?.homeStoryEyebrow || HOME_STORY.eyebrow,
+    title: settings?.homeStoryTitle || HOME_STORY.title,
+    body: settings?.homeStoryBody || HOME_STORY.body,
+    image: typeof settings?.homeStoryImage === 'object' ? mediaUrl(settings.homeStoryImage) : null,
+    cta: settings?.homeStoryCta || HOME_STORY.cta,
+    ctaLink: storefrontHref(settings?.homeStoryCtaLink, HOME_STORY.ctaLink),
   }
 }
 
 export function homepageFeaturedCopy(settings: HomepageSettings | null) {
   return {
-    eyebrow: settings?.featuredEyebrow || 'Play favourites',
-    heading: settings?.featuredHeading || 'Little bestsellers',
-    cta: settings?.featuredCta || 'View all',
-    ctaLink: storefrontHref(settings?.featuredCtaLink, '/shop'),
-    emptyMessage:
-      settings?.featuredEmptyMessage ||
-      'Products will appear here after you seed the catalog or add items in the admin panel.',
+    eyebrow: settings?.featuredEyebrow || FEATURED.eyebrow,
+    heading: settings?.featuredHeading || FEATURED.heading,
+    cta: settings?.featuredCta || FEATURED.cta,
+    ctaLink: storefrontHref(settings?.featuredCtaLink, FEATURED.ctaLink),
+    emptyMessage: settings?.featuredEmptyMessage || FEATURED.emptyMessage,
   }
 }
 

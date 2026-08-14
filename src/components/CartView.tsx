@@ -9,14 +9,14 @@ export function CartView() {
 
   return (
     <div>
-      <h1 className="display text-5xl">Your cart</h1>
+      <h1 className="display text-5xl">Your little shopping bag</h1>
       {items.length === 0 ? (
-        <p className="mt-6 text-ink-soft">
-          Cart is empty.{' '}
-          <Link href="/shop" className="font-bold text-coral">
-            Continue shopping
+        <div className="mt-6 max-w-lg">
+          <p className="text-ink-soft">Looks like you haven’t found their next favourite yet.</p>
+          <Link href="/shop/kids-wear" className="mt-4 inline-flex rounded-full bg-coral px-5 py-2 text-sm font-bold text-white">
+            Start Shopping
           </Link>
-        </p>
+        </div>
       ) : (
         <div className="mt-8 grid gap-8 lg:grid-cols-[1.2fr_0.8fr]">
           <ul className="space-y-4">
@@ -55,9 +55,9 @@ export function CartView() {
               <span>Subtotal</span>
               <span>{formatPkr(subtotal)}</span>
             </p>
-            <p className="mt-2 text-sm text-cream/70">Shipping is calculated at checkout. Payment is cash on delivery.</p>
+            <p className="mt-2 text-sm text-cream/70">Almost ready for their next adventure? Shipping is calculated at checkout. Payment is cash on delivery.</p>
             <Link href="/checkout" className="mt-6 block rounded-full bg-coral py-3 text-center text-sm font-bold">
-              Checkout with COD
+              Continue to Checkout
             </Link>
           </aside>
         </div>

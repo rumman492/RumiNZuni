@@ -4,7 +4,7 @@ import { pageMeta } from '@/lib/seo'
 
 export const metadata = pageMeta({
   title: 'Checkout',
-  description: 'Place a Rumi & Zuni cash-on-delivery order. Pay the rider in PKR when your parcel arrives.',
+  description: 'Place a Rumi & Zuni cash-on-delivery order. Pay in PKR when your order arrives.',
   path: '/checkout',
   index: false,
   follow: false,
@@ -25,10 +25,10 @@ export default async function CheckoutPage() {
 
   return (
     <div>
-      <p className="text-sm font-bold uppercase tracking-wide text-coral">Cash on delivery</p>
-      <h1 className="display mt-2 text-5xl">Checkout</h1>
+      <p className="text-sm font-bold uppercase tracking-wide text-coral">Cash on Delivery</p>
+      <h1 className="display mt-2 text-5xl">Almost There!</h1>
       <p className="mt-3 max-w-2xl text-ink-soft">
-        No payment now. Confirm your address and we will collect cash when the order is delivered.
+        Enter your details and we will get your order ready for delivery. Pay in PKR when it arrives.
       </p>
       <div className="mt-8">
         <CheckoutForm

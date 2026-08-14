@@ -14,7 +14,7 @@ export async function generateMetadata({
   const { orderNumber } = await params
   return pageMeta({
     title: `Order ${orderNumber}`,
-    description: 'Your Rumi & Zuni cash-on-delivery order was placed.',
+    description: 'Your Rumi & Zuni order was received. We are getting it ready for cash-on-delivery.',
     path: `/order/${orderNumber}`,
     index: false,
     follow: false,
@@ -24,7 +24,7 @@ export async function generateMetadata({
 function notFoundCard() {
   return (
     <div>
-      <h1 className="display text-4xl">Order not found</h1>
+      <h1 className="display text-4xl">We could not find that order</h1>
       <Link href="/track" className="mt-4 inline-block font-bold text-coral">
         Track an order
       </Link>
@@ -75,11 +75,14 @@ export default async function OrderConfirmationPage({
 
   return (
     <div className="mx-auto max-w-2xl rounded-[2rem] bg-white p-8 shadow-sm">
-      <p className="text-center text-sm font-bold uppercase tracking-wide text-sage">Order placed</p>
+      <p className="text-center text-sm font-bold uppercase tracking-wide text-sage">Order received</p>
       <h1 className="display mt-3 text-center text-4xl">Thank you, {order.customerName}</h1>
       <p className="mt-4 text-center text-ink-soft">
-        Your cash on delivery order <span className="font-bold text-ink">{order.orderNumber}</span> is pending
-        confirmation. Pay {formatPkr(Number(order.total))} to the rider in {order.city}.
+        Your order is confirmed in our shop. We are getting it ready — a little moment of joy, on its way.
+      </p>
+      <p className="mt-3 text-center text-sm text-ink-soft">
+        Order <span className="font-bold text-ink">{order.orderNumber}</span> · Payment: Cash on Delivery · Total{' '}
+        {formatPkr(Number(order.total))} · {order.city}
       </p>
 
       <ul className="mt-8 space-y-2 rounded-2xl bg-sand/60 p-5 text-sm">
@@ -92,7 +95,7 @@ export default async function OrderConfirmationPage({
           </li>
         ))}
         <li className="flex justify-between border-t border-ink/10 pt-2 font-bold">
-          <span>Total · COD</span>
+          <span>Total · Cash on Delivery</span>
           <span>{formatPkr(Number(order.total))}</span>
         </li>
       </ul>
@@ -108,6 +111,9 @@ export default async function OrderConfirmationPage({
             {whatsapp.label}
           </a>
         ) : null}
+        <Link href="/contact" className="rounded-full border border-ink/10 px-6 py-3 text-center text-sm font-bold">
+          Need to make a change? Contact us
+        </Link>
         <Link href="/track" className="rounded-full border border-ink/10 px-6 py-3 text-center text-sm font-bold">
           Track later
         </Link>
@@ -117,7 +123,7 @@ export default async function OrderConfirmationPage({
           Opens WhatsApp with your order number so we can confirm size, address, and dispatch.
         </p>
       ) : (
-        <p className="mt-4 text-center text-sm text-ink-soft">We will confirm this order by phone before dispatch.</p>
+        <p className="mt-4 text-center text-sm text-ink-soft">We will confirm this order by phone before dispatch. Need to make a change? Contact us.</p>
       )}
     </div>
   )

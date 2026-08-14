@@ -1,5 +1,6 @@
 import type { GlobalConfig } from 'payload'
 import { isAdmin } from '@/access/isAdmin'
+import { BRAND, FEATURED, HERO, HOME_BANNER } from '@/lib/brandCopy'
 import { PAKISTAN_CITIES } from '@/lib/pakistan'
 
 export const SiteSettings: GlobalConfig = {
@@ -20,13 +21,13 @@ export const SiteSettings: GlobalConfig = {
             {
               name: 'tagline',
               type: 'text',
-              defaultValue: 'Soft clothes for little explorers',
+              defaultValue: BRAND.tagline,
             },
             { name: 'logo', type: 'upload', relationTo: 'media' },
             {
               name: 'announcement',
               type: 'text',
-              defaultValue: 'Cash on delivery across Pakistan · Free shipping over Rs 3,000',
+              defaultValue: BRAND.announcement,
             },
           ],
         },
@@ -95,7 +96,7 @@ export const SiteSettings: GlobalConfig = {
         {
           label: 'Navigation',
           admin: {
-            description: 'Empty uses the built-in Shop / Kids Wear (dropdown) / Women’s (dropdown) / Find size / Track links.',
+            description: 'Empty uses the built-in Shop / Kids Wear (dropdown) / Women’s (dropdown) / Size Guide / Track links.',
           },
           fields: [
             {
@@ -138,28 +139,27 @@ export const SiteSettings: GlobalConfig = {
                 {
                   name: 'heroEyebrow',
                   type: 'text',
-                  defaultValue: 'Pakistan · Cash on delivery',
+                  defaultValue: HERO.eyebrow,
                 },
                 {
                   name: 'heroTitle',
                   type: 'text',
-                  defaultValue: 'Little outfits, made for everyday play',
+                  defaultValue: HERO.title,
                 },
                 {
                   name: 'heroSubtitle',
                   type: 'textarea',
-                  defaultValue:
-                    'Breathable kids wear for Pakistani weather. Order on cash on delivery — pay when it arrives.',
+                  defaultValue: HERO.subtitle,
                 },
                 { name: 'heroImage', type: 'upload', relationTo: 'media' },
                 {
                   type: 'row',
                   fields: [
-                    { name: 'heroCta', type: 'text', defaultValue: 'Shop new arrivals' },
+                    { name: 'heroCta', type: 'text', defaultValue: HERO.cta },
                     {
                       name: 'heroCtaLink',
                       type: 'text',
-                      defaultValue: '/shop',
+                      defaultValue: HERO.ctaLink,
                       admin: { description: 'Storefront path, e.g. /shop or /shop/girls' },
                     },
                   ],
@@ -170,12 +170,12 @@ export const SiteSettings: GlobalConfig = {
                     {
                       name: 'heroSecondaryCta',
                       type: 'text',
-                      defaultValue: 'How COD works',
+                      defaultValue: HERO.secondaryCta,
                     },
                     {
                       name: 'heroSecondaryCtaLink',
                       type: 'text',
-                      defaultValue: '/shipping',
+                      defaultValue: HERO.secondaryCtaLink,
                     },
                   ],
                 },
@@ -185,13 +185,13 @@ export const SiteSettings: GlobalConfig = {
                     {
                       name: 'heroOverlayTitle',
                       type: 'text',
-                      defaultValue: 'Ages newborn – 12',
+                      defaultValue: HERO.overlayTitle,
                       admin: { description: 'Shown when there is no hero image' },
                     },
                     {
                       name: 'heroOverlaySubtitle',
                       type: 'text',
-                      defaultValue: 'Boys · Girls',
+                      defaultValue: HERO.overlaySubtitle,
                     },
                   ],
                 },
@@ -205,14 +205,14 @@ export const SiteSettings: GlobalConfig = {
                 {
                   name: 'homeBannerTitle',
                   type: 'text',
-                  admin: { description: 'Leave empty to hide the banner' },
+                  admin: { description: 'Leave empty to use the built-in “Find their next favourite” banner.' },
                 },
                 { name: 'homeBannerCopy', type: 'textarea' },
                 {
                   type: 'row',
                   fields: [
                     { name: 'homeBannerCta', type: 'text' },
-                    { name: 'homeBannerCtaLink', type: 'text', defaultValue: '/shop' },
+                    { name: 'homeBannerCtaLink', type: 'text', defaultValue: HOME_BANNER.ctaLink },
                   ],
                 },
               ],
@@ -256,25 +256,24 @@ export const SiteSettings: GlobalConfig = {
                 {
                   name: 'featuredEyebrow',
                   type: 'text',
-                  defaultValue: 'Featured',
+                  defaultValue: FEATURED.eyebrow,
                 },
                 {
                   name: 'featuredHeading',
                   type: 'text',
-                  defaultValue: 'Little bestsellers',
+                  defaultValue: FEATURED.heading,
                 },
                 {
                   type: 'row',
                   fields: [
-                    { name: 'featuredCta', type: 'text', defaultValue: 'View all' },
-                    { name: 'featuredCtaLink', type: 'text', defaultValue: '/shop' },
+                    { name: 'featuredCta', type: 'text', defaultValue: FEATURED.cta },
+                    { name: 'featuredCtaLink', type: 'text', defaultValue: FEATURED.ctaLink },
                   ],
                 },
                 {
                   name: 'featuredEmptyMessage',
                   type: 'textarea',
-                  defaultValue:
-                    'Products will appear here after you seed the catalog or add items in the admin panel.',
+                  defaultValue: FEATURED.emptyMessage,
                 },
                 {
                   name: 'homeFeaturedProducts',

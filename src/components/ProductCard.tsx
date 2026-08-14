@@ -25,7 +25,7 @@ export function ProductCard({
   isNew,
 }: ProductCardProps) {
   const onSale = Boolean(compareAtPrice && compareAtPrice > price)
-  const badge = soldOut ? 'Sold out' : onSale ? 'Sale' : featured ? 'Featured' : isNew ? 'New' : null
+  const badge = soldOut ? 'Unavailable' : onSale ? 'Sale' : featured ? 'Favourite' : isNew ? 'New' : null
   const badgeClass = soldOut ? 'bg-ink text-white' : onSale || featured ? 'bg-coral text-white' : 'bg-lemon text-ink'
 
   return (
@@ -49,7 +49,7 @@ export function ProductCard({
           </span>
         ) : null}
         <span className="absolute bottom-3 right-3 rounded-full bg-white/95 px-3 py-1 text-xs font-bold text-coral opacity-0 shadow-sm transition group-hover:opacity-100">
-          Shop
+          Shop this look
         </span>
       </div>
       <div className="px-2 pb-2 pt-3">

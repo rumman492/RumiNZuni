@@ -73,7 +73,7 @@ export function catalogMetadata(
   const title = bits.length > 0 ? `${opts.heading}: ${bits.join(' · ')}` : opts.heading
   const description =
     opts.description ||
-    `${opts.heading} at ${STORE_NAME}. Kids wear with cash on delivery across Pakistan.`
+    `${opts.heading} at ${STORE_NAME}. Kids wear from newborn to 12 years, with cash on delivery across Pakistan.`
   const index = !hasFacetParams(query, opts.locked)
   const sharePath = index ? opts.basePath : catalogHref(opts.basePath, { ...query, page: 1 })
 
@@ -488,16 +488,17 @@ export async function getFooterShopLinks() {
     // fallback
   }
   return [
-    { href: '/shop', label: 'All products' },
+    { href: '/shop', label: 'Shop' },
     { href: '/shop/kids-wear', label: 'Kids Wear' },
     { href: '/shop/boys', label: 'Boys' },
     { href: '/shop/girls', label: 'Girls' },
-    { href: '/shop/baby-kids-accessories', label: 'Kids accessories' },
-    { href: '/shop/kids-footwear', label: 'Kids footwear' },
+    { href: '/shop/baby-kids-accessories', label: 'Accessories' },
+    { href: '/shop/kids-footwear', label: 'Footwear' },
     { href: '/shop/womens', label: "Women's" },
-    { href: '/shop/handbags', label: 'Bags' },
-    { href: '/shop/beauty', label: 'Beauty' },
+    { href: '/shop/handbags', label: 'Handbags' },
+    { href: '/shop/beauty', label: 'Makeup' },
     { href: '/shop/skincare', label: 'Skincare' },
+    { href: '/shop/perfumes', label: 'Perfumes' },
   ]
 }
 

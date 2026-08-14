@@ -26,7 +26,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
       description:
         product.seo?.description ||
         product.description ||
-        `Buy ${product.title} from Rumi & Zuni. Cash on delivery across Pakistan.`,
+        `Buy ${product.title} from Rumi & Zuni. Kids wear with cash on delivery across Pakistan.`,
       path: `/product/${product.slug}`,
       image,
     }),
@@ -171,6 +171,15 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
               image={images[0]}
               variants={product.variants || []}
             />
+            {typeof product.department === 'object' && product.department?.audience === 'women' ? null : (
+              <p className="mt-4 text-sm text-ink-soft">
+                Not sure about the size?{' '}
+                <a href="/size-finder" className="font-bold text-coral">
+                  View Size Guide
+                </a>
+                . A quick height check in centimetres makes the fit much easier.
+              </p>
+            )}
           </div>
           {product.careInstructions ? (
             <div className="mt-8">
@@ -217,7 +226,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
 
       {related.length > 0 ? (
         <section>
-          <h2 className="display text-3xl">You may also like</h2>
+          <h2 className="display text-3xl">Made to be loved together</h2>
           <div className="mt-8 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
             {related.map((card) => (
               <ProductCard key={card.slug} {...card} />

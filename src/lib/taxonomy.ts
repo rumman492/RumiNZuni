@@ -105,7 +105,7 @@ export const STOREFRONT_NAV_TREE: StorefrontNavItem[] = [
       },
     ],
   },
-  { href: '/size-finder', label: 'Find size' },
+          { href: '/size-finder', label: 'Size Guide' },
   { href: '/track', label: 'Track order' },
 ]
 
@@ -158,14 +158,14 @@ export const SHOP_DEPARTMENT_OPTIONS = [
 export const SHOP_DEPARTMENT_SLUGS = new Set<string>(SHOP_DEPARTMENT_OPTIONS.map((item) => item.slug))
 
 export const WOMEN_SHOP_LINKS = [
-  { href: '/shop/handbags', slug: 'handbags', label: 'Handbags', copy: 'Shoulder bags, totes, crossbody, and clutches' },
-  { href: '/shop/beauty-care', slug: 'beauty-care', label: 'Beauty & Personal Care', copy: 'Makeup, skincare, and perfumes' },
+  { href: '/shop/handbags', slug: 'handbags', label: 'Handbags', copy: 'Everyday bags, beautifully chosen.' },
+  { href: '/shop/beauty-care', slug: 'beauty-care', label: 'Beauty & Personal Care', copy: 'Makeup, skincare, and perfumes — each in its own place.' },
 ]
 
 export const WOMEN_BEAUTY_LINKS = [
-  { href: '/shop/beauty', slug: 'beauty', label: 'Makeup', copy: 'Lips, eyes, face, and palettes' },
-  { href: '/shop/skincare', slug: 'skincare', label: 'Skincare', copy: 'Cleansers, serums, and creams' },
-  { href: '/shop/perfumes', slug: 'perfumes', label: 'Perfumes', copy: 'Eau de parfum, mists, and oils' },
+  { href: '/shop/beauty', slug: 'beauty', label: 'Makeup', copy: 'Colour for everyday, and for the nights you dress up.' },
+  { href: '/shop/skincare', slug: 'skincare', label: 'Skincare', copy: 'Simple routines for skin that works hard.' },
+  { href: '/shop/perfumes', slug: 'perfumes', label: 'Perfumes', copy: 'A finishing note — light, lasting, or in between.' },
 ]
 
 export const WOMEN_LEAF_SLUGS = [
@@ -290,7 +290,7 @@ export const DEFAULT_DEPARTMENTS = [
   {
     name: 'Kids Wear',
     slug: 'kids-wear',
-    description: 'Boys and girls clothing from newborn to 12 years.',
+    description: 'Boys and girls clothing from newborn to 12 years — comfort for play, style for every little moment.',
     audience: 'kids' as const,
     sizeKind: 'clothing' as const,
     usesGender: true,
@@ -445,7 +445,7 @@ export const DEFAULT_TAXONOMY_CATEGORIES = [
   {
     name: "Women's",
     slug: 'womens',
-    description: 'Handbags, makeup, skincare, and perfumes. Cash on delivery across Pakistan.',
+    description: 'Handbags, makeup, skincare, and perfumes — a quieter corner of the shop.',
     department: 'womens',
     showInNavigation: true,
     sortOrder: 40,
@@ -454,7 +454,7 @@ export const DEFAULT_TAXONOMY_CATEGORIES = [
   {
     name: 'Handbags',
     slug: 'handbags',
-    description: 'Handbags, totes, crossbody bags, and clutches for women.',
+    description: 'Everyday bags, chosen to go with real life.',
     department: 'womens-handbags',
     parent: 'womens',
     showInNavigation: false,
@@ -464,7 +464,7 @@ export const DEFAULT_TAXONOMY_CATEGORIES = [
   {
     name: 'Beauty & Personal Care',
     slug: 'beauty-care',
-    description: 'Makeup, skincare, and perfumes for women.',
+    description: 'Makeup, skincare, and perfumes — kept as separate collections.',
     department: 'womens',
     parent: 'womens',
     showInNavigation: false,
@@ -474,7 +474,7 @@ export const DEFAULT_TAXONOMY_CATEGORIES = [
   {
     name: 'Makeup',
     slug: 'beauty',
-    description: 'Makeup for women. Existing /shop/beauty URLs stay the same.',
+    description: 'Makeup for everyday colour and special evenings.',
     department: 'womens-beauty',
     parent: 'beauty-care',
     showInNavigation: false,
@@ -484,7 +484,7 @@ export const DEFAULT_TAXONOMY_CATEGORIES = [
   {
     name: 'Skincare',
     slug: 'skincare',
-    description: 'Skincare for women.',
+    description: 'Cleansers, serums, and creams for a simple routine.',
     department: 'womens-skincare',
     parent: 'beauty-care',
     showInNavigation: false,
@@ -494,7 +494,7 @@ export const DEFAULT_TAXONOMY_CATEGORIES = [
   {
     name: 'Perfumes',
     slug: 'perfumes',
-    description: 'Perfumes, mists, and fragrance oils for women.',
+    description: 'Perfumes, mists, and oils — a finishing note.',
     department: 'womens-perfumes',
     parent: 'beauty-care',
     showInNavigation: false,
@@ -534,7 +534,7 @@ export const DEFAULT_TAXONOMY_CATEGORIES = [
   {
     name: 'Baby & Kids Accessories',
     slug: 'baby-kids-accessories',
-    description: 'Caps, hats, socks, hair extras, bibs, and little bags. Cash on delivery across Pakistan.',
+    description: 'Caps, socks, bibs, and little extras that finish a look.',
     department: 'baby-kids-accessories',
     showInNavigation: true,
     sortOrder: 20,
@@ -543,7 +543,7 @@ export const DEFAULT_TAXONOMY_CATEGORIES = [
   {
     name: 'Kids Footwear',
     slug: 'kids-footwear',
-    description: 'Soft shoes and sandals for little feet. Cash on delivery across Pakistan.',
+    description: 'Soft steps for tiny feet and growing ones.',
     department: 'kids-footwear',
     showInNavigation: true,
     sortOrder: 30,

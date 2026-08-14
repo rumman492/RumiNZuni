@@ -12,12 +12,13 @@ import {
   homepageStory,
   type HomepageSettings,
 } from '@/lib/homepage'
+import { BRAND } from '@/lib/brandCopy'
 import { collectionTheme } from '@/lib/play'
 import { getSettings } from '@/lib/products'
 import { pageMeta } from '@/lib/seo'
 import { absoluteMediaUrl, STORE_NAME } from '@/lib/site'
 
-const PLAY_TICKER = ['Play all day', 'Soft cotton', 'Cash on delivery', 'Ages newborn – 12', 'Boys · Girls']
+const PLAY_TICKER = BRAND.ticker
 
 export async function generateMetadata(): Promise<Metadata> {
   let storeName = STORE_NAME
@@ -72,11 +73,11 @@ export default async function HomePage() {
     story = homepageStory(settings)
   } catch {
     hero = homepageHero(null)
-    banner = null
+    banner = homepageBanner(null)
     collections = homepageCollections(null)
     featured = homepageFeaturedCopy(null)
     promos = homepagePromos(null)
-    story = null
+    story = homepageStory(null)
   }
 
   const ticker = [...PLAY_TICKER, ...PLAY_TICKER]
@@ -166,7 +167,7 @@ export default async function HomePage() {
             <div className="p-6">
               <h2 className="display text-3xl">{item.title}</h2>
               {item.copy ? <p className="mt-2 text-sm text-ink/80">{item.copy}</p> : null}
-              <p className="mt-4 text-sm font-bold">Shop now →</p>
+              <p className="mt-4 text-sm font-bold">Explore →</p>
             </div>
           </Link>
         ))}

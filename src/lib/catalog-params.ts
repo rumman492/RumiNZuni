@@ -7,9 +7,9 @@ export const GENDER_OPTIONS = CUSTOMER_GENDER_OPTIONS
 export const AGE_OPTIONS = shopAgeOptions()
 
 export const SORT_OPTIONS = [
-  { label: 'Featured', value: 'featured' },
-  { label: 'Newest', value: 'newest' },
-  { label: 'Best selling', value: 'best-selling' },
+  { label: 'Little Favourites', value: 'featured' },
+  { label: 'New Arrivals', value: 'newest' },
+  { label: 'Most loved', value: 'best-selling' },
   { label: 'Price: low to high', value: 'price-asc' },
   { label: 'Price: high to low', value: 'price-desc' },
   { label: 'Name A–Z', value: 'name' },
@@ -22,37 +22,37 @@ export const SHOP_PRESETS: Record<
   { title: string; gender?: string; age?: string; department?: string; audience?: 'kids' | 'women'; description: string }
 > = {
   boys: {
-    title: 'Boys wear',
+    title: 'Made for Little Legends',
     gender: 'boys',
     audience: 'kids',
     department: 'kids-wear',
-    description: 'Boys clothing from newborn to 12 years. Cash on delivery across Pakistan.',
+    description: 'Comfortable boys wear for play, school, and small adventures — from newborn to 12 years.',
   },
   girls: {
-    title: 'Girls wear',
+    title: 'Made for Little Moments',
     gender: 'girls',
     audience: 'kids',
     department: 'kids-wear',
-    description: 'Girls clothing from newborn to 12 years. Cash on delivery across Pakistan.',
+    description: 'Girls styles with personality — easy everyday pieces and looks for the days you will remember.',
   },
   newborn: {
     title: 'Newborn',
     age: 'newborn',
     audience: 'kids',
     department: 'kids-wear',
-    description: 'First outfits and sleepsuits for newborns. Cash on delivery across Pakistan.',
+    description: 'Gentle first outfits for life’s newest little moments. Soft, simple, and easy to put on.',
   },
   womens: {
     title: "Women's",
     audience: 'women',
     department: 'womens',
-    description: 'Handbags, makeup, skincare, and perfumes. Cash on delivery across Pakistan.',
+    description: 'Everyday style, beautifully chosen — handbags, makeup, skincare, and perfumes.',
   },
   'kids-wear': {
     title: 'Kids Wear',
     audience: 'kids',
     department: 'kids-wear',
-    description: 'Boys and girls clothing from newborn to 12 years. Cash on delivery across Pakistan.',
+    description: 'Thoughtfully chosen styles for little ones from newborn to 12 years. Cash on delivery across Pakistan.',
   },
 }
 

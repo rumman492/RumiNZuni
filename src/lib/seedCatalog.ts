@@ -3,6 +3,7 @@ import path from 'path'
 import type { Payload } from 'payload'
 import { seedSizingAndAccessories } from '@/lib/seedSizing'
 import { extraSamplesByCategory, MIN_SAMPLE_PRODUCTS } from '@/lib/seedSamples'
+import { BRAND, FEATURED, HERO, HOME_BANNER, HOME_PROMOS, HOME_STORY } from '@/lib/brandCopy'
 
 const seedMediaDir = (() => {
   const candidates = [
@@ -826,8 +827,8 @@ export async function seedCatalog(payload: Payload) {
 
   const settingsData: Record<string, unknown> = {
     storeName: 'Rumi & Zuni',
-    tagline: 'Soft clothes for little explorers',
-    announcement: 'Cash on delivery across Pakistan · Free shipping over Rs 3,000',
+    tagline: BRAND.tagline,
+    announcement: BRAND.announcement,
     freeShippingThreshold: 3000,
     defaultShippingFee: 250,
     codFee: 0,
@@ -837,50 +838,37 @@ export async function seedCatalog(payload: Payload) {
       { city: 'Islamabad', fee: 200 },
       { city: 'Rawalpindi', fee: 200 },
     ],
-    heroEyebrow: 'Pakistan · Cash on delivery',
-    heroTitle: 'Little outfits, made for everyday play',
-    heroSubtitle:
-      'Breathable kids wear for Pakistani weather. Order on cash on delivery — pay when it arrives.',
-    heroCta: 'Shop new arrivals',
-    heroCtaLink: '/shop',
-    heroSecondaryCta: 'How COD works',
-    heroSecondaryCtaLink: '/shipping',
-    heroOverlayTitle: 'Ages newborn – 12',
-    heroOverlaySubtitle: 'Boys · Girls',
+    heroEyebrow: HERO.eyebrow,
+    heroTitle: HERO.title,
+    heroSubtitle: HERO.subtitle,
+    heroCta: HERO.cta,
+    heroCtaLink: HERO.ctaLink,
+    heroSecondaryCta: HERO.secondaryCta,
+    heroSecondaryCtaLink: HERO.secondaryCtaLink,
+    heroOverlayTitle: HERO.overlayTitle,
+    heroOverlaySubtitle: HERO.overlaySubtitle,
     homeCollections: [
-      { title: 'Boys', copy: 'Polos, sets, and play tees', href: '/shop/boys', category: categories.boys },
-      { title: 'Girls', copy: 'Frocks, two-piece sets, everyday knits', href: '/shop/girls', category: categories.girls },
-      { title: 'Accessories', copy: 'Hats, bibs, bags, and extras', href: '/shop/baby-kids-accessories', category: categories['baby-kids-accessories'] },
-      { title: 'Footwear', copy: 'Soft shoes and sandals', href: '/shop/kids-footwear', category: categories['kids-footwear'] },
+      { title: 'Boys', copy: 'Comfortable everyday style for play, school, and small adventures.', href: '/shop/boys', category: categories.boys },
+      { title: 'Girls', copy: 'Looks with personality — for ordinary days and the ones you will remember.', href: '/shop/girls', category: categories.girls },
+      { title: 'Accessories', copy: 'The finishing touches: tiny essentials for every little look.', href: '/shop/baby-kids-accessories', category: categories['baby-kids-accessories'] },
+      { title: 'Footwear', copy: 'Soft steps for busy days — made for movement, not fuss.', href: '/shop/kids-footwear', category: categories['kids-footwear'] },
     ],
-    featuredEyebrow: 'Featured',
-    featuredHeading: 'Little bestsellers',
-    featuredCta: 'View all',
-    featuredCtaLink: '/shop',
+    featuredEyebrow: FEATURED.eyebrow,
+    featuredHeading: FEATURED.heading,
+    featuredCta: FEATURED.cta,
+    featuredCtaLink: FEATURED.ctaLink,
+    featuredEmptyMessage: FEATURED.emptyMessage,
+    homeBannerTitle: HOME_BANNER.title,
+    homeBannerCopy: HOME_BANNER.copy,
+    homeBannerCta: HOME_BANNER.cta,
+    homeBannerCtaLink: HOME_BANNER.ctaLink,
     homeFeaturedProducts: featuredIds,
-    homePromos: [
-      {
-        icon: 'cod',
-        title: 'Cash on delivery',
-        copy: 'Pay the rider in PKR when your parcel arrives. No card needed.',
-      },
-      {
-        icon: 'shipping',
-        title: 'Pakistan-wide',
-        copy: 'We ship to major cities. Free delivery over the store threshold.',
-      },
-      {
-        icon: 'returns',
-        title: 'Easy exchanges',
-        copy: 'Wrong size? Message us on WhatsApp within 3 days of delivery.',
-      },
-    ],
-    homeStoryEyebrow: 'Our story',
-    homeStoryTitle: 'Clothes for play, not fuss',
-    homeStoryBody:
-      'Rumi & Zuni is a Pakistan kids-wear shop. Soft cotton, easy everyday fits, and cash on delivery — pay the rider when the parcel arrives.',
-    homeStoryCta: 'WhatsApp us',
-    homeStoryCtaLink: '/contact',
+    homePromos: HOME_PROMOS,
+    homeStoryEyebrow: HOME_STORY.eyebrow,
+    homeStoryTitle: HOME_STORY.title,
+    homeStoryBody: HOME_STORY.body,
+    homeStoryCta: HOME_STORY.cta,
+    homeStoryCtaLink: HOME_STORY.ctaLink,
   }
 
   if (process.env.SEED_WHATSAPP) settingsData.whatsapp = process.env.SEED_WHATSAPP

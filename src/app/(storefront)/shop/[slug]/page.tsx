@@ -85,7 +85,7 @@ export async function generateMetadata({ params, searchParams }: Props): Promise
         department?.description ||
         category?.description ||
         ageGroup?.blurb ||
-        `Shop ${heading} at Rumi & Zuni. Cash on delivery across Pakistan.`,
+        `Shop ${heading} at Rumi & Zuni. Kids wear with cash on delivery across Pakistan.`,
       locked,
     },
   )

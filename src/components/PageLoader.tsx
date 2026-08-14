@@ -4,11 +4,10 @@ import { useEffect, useState } from 'react'
 import { BrandMark } from '@/components/BrandMark'
 
 const TIPS = [
-  'Picking something cute…',
+  'Finding something lovely…',
   'Checking sizes and stock…',
-  'Cash on delivery, almost ready…',
-  'Opening handbags and beauty…',
-  'Packing a smile for Pakistan…',
+  'Getting cash on delivery ready…',
+  'Almost there…',
 ]
 
 const BAGS = [
@@ -18,7 +17,7 @@ const BAGS = [
   { id: 'lemon', className: 'bg-lemon', delay: '420ms' },
 ] as const
 
-export function PageLoader({ label = 'Loading the shop' }: { label?: string }) {
+export function PageLoader({ label = 'Finding something lovely' }: { label?: string }) {
   const [tip, setTip] = useState(0)
   const [pops, setPops] = useState<Record<string, number>>({})
 

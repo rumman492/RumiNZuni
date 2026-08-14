@@ -68,14 +68,14 @@ export function CheckoutForm({
   }
 
   if (items.length === 0) {
-    return <p className="text-ink-soft">Your cart is empty. Add a few outfits before checkout.</p>
+    return <p className="text-ink-soft">Your shopping bag is empty. Add a few pieces before checkout.</p>
   }
 
   return (
     <form onSubmit={onSubmit} className="relative grid gap-10 lg:grid-cols-[1.2fr_0.8fr]">
       <div className="space-y-4 rounded-3xl bg-white p-6 shadow-sm">
         <h2 className="display text-2xl">Delivery details</h2>
-        <p className="text-sm text-ink-soft">We will call or WhatsApp to confirm before dispatch.</p>
+        <p className="text-sm text-ink-soft">Enter your details and we will get your order ready for delivery.</p>
         <div className="absolute -left-[9999px] h-0 w-0 overflow-hidden" aria-hidden="true">
           <label>
             Website
@@ -161,7 +161,7 @@ export function CheckoutForm({
         </div>
         <div className="rounded-2xl bg-white/10 p-4 text-sm">
           <p className="font-bold">Cash on delivery</p>
-          <p className="mt-1 text-cream/80">No card needed. Pay the rider when your order arrives.</p>
+          <p className="mt-1 text-cream/80">Pay in PKR when your order arrives.</p>
         </div>
         {error ? <p className="rounded-2xl bg-coral px-4 py-3 text-sm text-white">{error}</p> : null}
         <button
@@ -169,7 +169,7 @@ export function CheckoutForm({
           disabled={pending}
           className="w-full rounded-full bg-coral py-3 text-sm font-bold text-white disabled:opacity-60"
         >
-          {pending ? 'Placing order…' : 'Place COD order'}
+          {pending ? 'Placing order…' : 'Place COD Order'}
         </button>
       </aside>
     </form>

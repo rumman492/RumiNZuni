@@ -146,17 +146,34 @@ export async function ShopListing({
         <div>
           <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <p className="text-sm text-ink-soft">
-              {result.total === 0 ? 'No products match these filters.' : `Showing ${start}–${end} of ${result.total}`}
+              {result.total === 0
+                ? query.q
+                  ? 'Nothing matched your search.'
+                  : 'This collection is getting ready.'
+                : `Showing ${start}–${end} of ${result.total}`}
             </p>
             <ShopSort key={`sort-${catalogQueryString(query)}`} basePath={basePath} query={query} />
           </div>
 
           {result.cards.length === 0 ? (
             <div className="rounded-3xl bg-white p-8 text-ink-soft">
-              <p>Nothing matches yet. Try another size, colour, or clear filters.</p>
-              <Link href={basePath} className="mt-4 inline-block text-sm font-bold text-coral">
-                Reset filters
-              </Link>
+              {query.q ? (
+                <>
+                  <p>Nothing matched your search.</p>
+                  <p className="mt-2 text-sm">Try another search or explore our latest arrivals.</p>
+                  <Link href="/shop?sort=newest" className="mt-4 inline-block text-sm font-bold text-coral">
+                    Explore New Arrivals
+                  </Link>
+                </>
+              ) : (
+                <>
+                  <p>This collection is getting ready.</p>
+                  <p className="mt-2 text-sm">Check back soon or explore another collection.</p>
+                  <Link href="/shop/kids-wear" className="mt-4 inline-block text-sm font-bold text-coral">
+                    Shop Kidswear
+                  </Link>
+                </>
+              )}
             </div>
           ) : (
             <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-3">

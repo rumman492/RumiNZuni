@@ -168,7 +168,7 @@ export function Header({
             <input
               type="search"
               name="q"
-              placeholder="Search the shop"
+              placeholder="What are you looking for?"
               className="w-full rounded-full border border-ink/10 bg-white py-2 pl-9 pr-3 text-sm outline-none focus:border-coral"
               autoComplete="off"
             />
@@ -195,7 +195,7 @@ export function Header({
             id="header-search"
             type="search"
             name="q"
-            placeholder="Search the shop"
+            placeholder="What are you looking for?"
             className="w-full rounded-full border border-ink/10 bg-white px-4 py-2 text-sm outline-none focus:border-coral"
             autoComplete="off"
           />

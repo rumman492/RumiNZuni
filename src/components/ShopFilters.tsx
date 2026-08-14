@@ -136,7 +136,7 @@ export function ShopFilters({ basePath, query, facets, locked }: Props) {
             type="search"
             name="q"
             defaultValue={query.q || ''}
-            placeholder="Romper, polo, frock…"
+            placeholder="What are you looking for?"
             autoComplete="off"
           />
         </label>

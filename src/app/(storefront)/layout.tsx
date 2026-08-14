@@ -7,6 +7,7 @@ import { JsonLd } from '@/components/JsonLd'
 import { mediaUrl } from '@/lib/media'
 import { getFooterShopLinks, getStorefrontNav } from '@/lib/catalog'
 import { getSettings } from '@/lib/products'
+import { BRAND, SEO } from '@/lib/brandCopy'
 import { DEFAULT_DESCRIPTION, DEFAULT_TITLE, organizationJsonLd, websiteJsonLd } from '@/lib/seo'
 import { absoluteMediaUrl, siteOrigin, STORE_NAME } from '@/lib/site'
 import './globals.css'
@@ -32,9 +33,9 @@ export async function generateMetadata(): Promise<Metadata> {
   try {
     const settings = await getSettings()
     const name = settings.storeName || STORE_NAME
-    const tagline = settings.tagline || 'Kids wear, cash on delivery'
+    const tagline = settings.tagline || BRAND.tagline
     title = `${name} — ${tagline}`
-    description = `${name} sells kids wear across Pakistan on cash on delivery. ${tagline}.`
+    description = SEO.description
     if (settings.logo && typeof settings.logo === 'object') {
       image = absoluteMediaUrl(mediaUrl(settings.logo)) || undefined
     }
@@ -87,7 +88,7 @@ export default async function StorefrontLayout({ children }: { children: React.R
     nav = await getStorefrontNav()
     shopLinks = await getFooterShopLinks()
   } catch {
-    announcement = 'Cash on delivery across Pakistan'
+    announcement = BRAND.announcement
   }
 
   return (

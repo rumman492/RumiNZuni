@@ -1,11 +1,11 @@
 import type { Metadata } from 'next'
 import { mediaUrl } from '@/lib/media'
+import { SEO } from '@/lib/brandCopy'
 import { absoluteMediaUrl, absoluteUrl, siteOrigin, socialProfileUrl, STORE_NAME } from '@/lib/site'
 import type { ProductDoc } from '@/lib/products'
 
-export const DEFAULT_TITLE = `${STORE_NAME} — Kids wear, cash on delivery`
-export const DEFAULT_DESCRIPTION =
-  `${STORE_NAME} sells kids wear across Pakistan on cash on delivery. Soft everyday outfits for newborn to 12 years.`
+export const DEFAULT_TITLE = SEO.title
+export const DEFAULT_DESCRIPTION = SEO.description
 
 export const noIndexRobots = {
   index: false,

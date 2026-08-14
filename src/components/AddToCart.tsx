@@ -95,10 +95,20 @@ export function AddToCart({
         </div>
       </div>
       )}
-      <p className="display text-3xl">{formatPkr(selected.price)}</p>
-      <p className="text-sm text-ink-soft">
-        {selected.stock < 1 ? 'Out of stock' : `${selected.stock} in stock · Cash on delivery`}
+      <p className="display text-3xl">
+        {formatPkr(selected.price)}
+        {selected.compareAtPrice && selected.compareAtPrice > selected.price ? (
+          <span className="ml-3 text-xl font-semibold text-ink-soft line-through">{formatPkr(selected.compareAtPrice)}</span>
+        ) : null}
       </p>
+      <p className="text-sm text-ink-soft">
+        {selected.stock < 1
+          ? 'Currently unavailable'
+          : selected.stock <= 2
+            ? `Only ${selected.stock} left · Cash on Delivery`
+            : 'In stock · Cash on Delivery'}
+      </p>
+      <p className="text-xs text-ink-soft">Pay in PKR when your order arrives.</p>
       <div className="flex flex-col gap-3 sm:flex-row">
         <button
           type="button"
@@ -119,7 +129,7 @@ export function AddToCart({
           }
           className="play-pop rounded-full bg-ink px-6 py-3 text-sm font-bold text-cream disabled:opacity-40"
         >
-          Add to cart
+          Add to Cart
         </button>
         <button
           type="button"
@@ -141,7 +151,7 @@ export function AddToCart({
           }}
           className="play-pop rounded-full bg-coral px-6 py-3 text-sm font-bold text-white disabled:opacity-40"
         >
-          Buy with COD
+          Buy Now
         </button>
       </div>
     </div>

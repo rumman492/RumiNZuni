@@ -7,7 +7,7 @@ import { pageMeta } from '@/lib/seo'
 
 export const metadata = pageMeta({
   title: 'Contact',
-  description: 'WhatsApp Rumi & Zuni about size, stock, or a cash-on-delivery order anywhere in Pakistan.',
+  description: 'Talk to Rumi & Zuni about size, stock, or a cash-on-delivery order.',
   path: '/contact',
 })
 
@@ -32,7 +32,7 @@ export default async function ContactPage() {
       {page?.content ? (
         <CmsRichText content={page.content} />
       ) : (
-        <p>Questions about size, stock, or an order? WhatsApp is the fastest way once the shop number is published.</p>
+        <p>Questions about size, stock, or an order? We are here when you need us — WhatsApp is usually the fastest once the shop number is published.</p>
       )}
       {whatsapp ? <p>WhatsApp: {whatsapp}</p> : null}
       {phone ? <p>Phone: {phone}</p> : null}

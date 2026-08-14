@@ -39,7 +39,7 @@ export const DEFAULT_AGE_GROUPS: AgeGroupRecord[] = [
   {
     name: 'Newborn',
     slug: 'newborn',
-    blurb: 'Rompers, bodysuits, sets, and sleepsuits',
+    blurb: 'First outfits for life’s newest little moments.',
     sortOrder: 10,
     storefrontVisible: true,
     heightMinCm: 46,
@@ -50,7 +50,7 @@ export const DEFAULT_AGE_GROUPS: AgeGroupRecord[] = [
   {
     name: 'Baby',
     slug: 'baby',
-    blurb: 'Sets, rompers, and casual wear',
+    blurb: 'Soft, easy pieces for curious little explorers.',
     sortOrder: 20,
     storefrontVisible: true,
     heightMinCm: 62,
@@ -61,7 +61,7 @@ export const DEFAULT_AGE_GROUPS: AgeGroupRecord[] = [
   {
     name: 'Toddler',
     slug: 'toddler',
-    blurb: 'T-shirts, sets, frocks, and trousers',
+    blurb: 'Easy-going looks for busy little adventures.',
     sortOrder: 30,
     storefrontVisible: true,
     heightMinCm: 80,
@@ -72,7 +72,7 @@ export const DEFAULT_AGE_GROUPS: AgeGroupRecord[] = [
   {
     name: 'Little Kids',
     slug: 'little-kids',
-    blurb: 'Casual, party, ethnic, and sets',
+    blurb: 'Play-ready styles for every little personality.',
     sortOrder: 40,
     storefrontVisible: true,
     heightMinCm: 98,
@@ -83,7 +83,7 @@ export const DEFAULT_AGE_GROUPS: AgeGroupRecord[] = [
   {
     name: 'Kids',
     slug: 'kids',
-    blurb: 'T-shirts, shirts, jeans, dresses, and sets',
+    blurb: 'Everyday favourites for growing confidence.',
     sortOrder: 50,
     storefrontVisible: true,
     heightMinCm: 116,
@@ -94,7 +94,7 @@ export const DEFAULT_AGE_GROUPS: AgeGroupRecord[] = [
   {
     name: 'Big Kids',
     slug: 'big-kids',
-    blurb: 'Fashion, casual, and sportswear',
+    blurb: 'Cooler looks for bigger personalities.',
     sortOrder: 60,
     storefrontVisible: true,
     heightMinCm: 134,
@@ -105,7 +105,7 @@ export const DEFAULT_AGE_GROUPS: AgeGroupRecord[] = [
   {
     name: 'Pre-Teen',
     slug: 'pre-teen',
-    blurb: 'More mature kids fashion — add to the shop when you are ready',
+    blurb: 'Older kids styles — hidden until you tick storefront.',
     sortOrder: 70,
     storefrontVisible: false,
     heightMinCm: 152,
@@ -116,7 +116,7 @@ export const DEFAULT_AGE_GROUPS: AgeGroupRecord[] = [
   {
     name: 'Teen',
     slug: 'teen',
-    blurb: 'Older sizes for later',
+    blurb: 'Teen sizes for later — hidden until you tick storefront.',
     sortOrder: 80,
     storefrontVisible: false,
     heightMinCm: 164,
@@ -147,8 +147,8 @@ export const DEFAULT_SIZES: SizeRecord[] = [
 ]
 
 export const ACCESSORY_CATEGORIES = [
-  { name: 'Baby & Kids Accessories', slug: 'baby-kids-accessories', description: 'Caps, hats, socks, hair extras, bibs, and little bags. Cash on delivery across Pakistan.' },
-  { name: 'Kids Footwear', slug: 'kids-footwear', description: 'Soft shoes and sandals for little feet. Cash on delivery across Pakistan.' },
+  { name: 'Baby & Kids Accessories', slug: 'baby-kids-accessories', description: 'Caps, socks, bibs, and little extras that finish a look.' },
+  { name: 'Kids Footwear', slug: 'kids-footwear', description: 'Soft steps for tiny feet and growing ones.' },
 ]
 
 export const DEFAULT_FOOTWEAR_SIZES: SizeRecord[] = [

@@ -6,7 +6,7 @@ import { pageMeta } from '@/lib/seo'
 export const metadata = pageMeta({
   title: 'Shipping & cash on delivery',
   description:
-    'Rumi & Zuni delivers kids wear across Pakistan. Pay cash when the parcel arrives — no card required.',
+    'Rumi & Zuni packs each kids-wear order with care. Pay cash on delivery in PKR when it arrives.',
   path: '/shipping',
 })
 
@@ -16,14 +16,14 @@ export default async function ShippingPage() {
   return (
     <article className="mx-auto max-w-2xl space-y-4">
       <Breadcrumbs items={[{ name: 'Home', href: '/' }, { name: 'Shipping & COD', href: '/shipping' }]} />
-      <h1 className="display text-5xl">{page?.title || 'Shipping & cash on delivery'}</h1>
+      <h1 className="display text-5xl">{page?.title || 'From our door to yours'}</h1>
       {page?.content ? (
         <CmsRichText content={page.content} />
       ) : (
         <>
-          <p>Rumi & Zuni delivers across Pakistan. You pay in cash when the parcel arrives — no card or bank transfer required.</p>
-          <p>We confirm every order on WhatsApp before dispatch. Delivery usually takes 2–5 working days depending on your city.</p>
-          <p>Shipping is calculated at checkout. Orders above the free-delivery threshold ship free.</p>
+          <p>We carefully pack every order and send it on its way to you. You pay in cash when it arrives — no card needed.</p>
+          <p>Delivery time depends on your city. Shipping is calculated at checkout. Orders above the free-delivery amount shown in the shop ship free.</p>
+          <p>We confirm orders before dispatch whenever we can reach you on WhatsApp or phone.</p>
         </>
       )}
     </article>

@@ -86,7 +86,7 @@ export function TrackForm() {
           disabled={pending}
           className="rounded-full bg-ink px-6 py-3 text-sm font-bold text-cream sm:col-span-2"
         >
-          {pending ? 'Searching…' : 'Track order'}
+          {pending ? 'Finding your order…' : 'Track Order'}
         </button>
       </form>
       {error ? <p className="rounded-2xl bg-coral/10 px-4 py-3 text-sm text-coral-dark">{error}</p> : null}

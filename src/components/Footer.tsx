@@ -16,28 +16,24 @@ export function Footer({
   const links = shopLinks?.length
     ? shopLinks
     : [
-        { href: '/shop', label: 'All products' },
+        { href: '/shop', label: 'Shop' },
         { href: '/shop/kids-wear', label: 'Kids Wear' },
         { href: '/shop/boys', label: 'Boys' },
         { href: '/shop/girls', label: 'Girls' },
-        { href: '/shop/baby-kids-accessories', label: 'Kids accessories' },
-        { href: '/shop/kids-footwear', label: 'Kids footwear' },
+        { href: '/shop/baby-kids-accessories', label: 'Accessories' },
+        { href: '/shop/kids-footwear', label: 'Footwear' },
         { href: '/shop/womens', label: "Women's" },
-        { href: '/shop/handbags', label: 'Handbags' },
-        { href: '/shop/beauty', label: 'Makeup' },
-        { href: '/shop/skincare', label: 'Skincare' },
-        { href: '/shop/perfumes', label: 'Perfumes' },
       ]
   return (
     <footer className="mt-20 border-t-8 border-coral bg-sand/70">
       <div className="mx-auto grid max-w-6xl gap-10 px-4 py-12 md:grid-cols-4">
-        <div className="md:col-span-2">
+        <div>
           <p className="display text-2xl">
             <BrandMark />
           </p>
-          <p className="mt-3 max-w-md text-sm leading-6 text-ink-soft">
-            Kids wear made for Pakistani weather — soft cotton, easy everyday fits, and cash on
-            delivery nationwide. Pay when your parcel arrives.
+          <p className="mt-3 max-w-sm text-sm leading-6 text-ink-soft">
+            Beautiful clothes for little moments. Kids wear from newborn to 12 years, with cash on
+            delivery across Pakistan.
           </p>
         </div>
         <div>
@@ -51,13 +47,20 @@ export function Footer({
           </div>
         </div>
         <div>
-          <p className="text-sm font-bold uppercase tracking-wide">Help</p>
+          <p className="text-sm font-bold uppercase tracking-wide">Customer Care</p>
           <div className="mt-3 grid gap-2 text-sm text-ink-soft">
-            <Link href="/size-finder">Find my child’s size</Link>
-            <Link href="/shipping">Shipping & COD</Link>
-            <Link href="/returns">Returns</Link>
-            <Link href="/track">Track order</Link>
+            <Link href="/size-finder">Size Guide</Link>
+            <Link href="/shipping">Shipping &amp; COD</Link>
+            <Link href="/returns">Returns &amp; Exchanges</Link>
+            <Link href="/track">Track Order</Link>
             <Link href="/contact">Contact</Link>
+          </div>
+        </div>
+        <div>
+          <p className="text-sm font-bold uppercase tracking-wide">About Rumi &amp; Zuni</p>
+          <div className="mt-3 grid gap-2 text-sm text-ink-soft">
+            <p>Thoughtful styles for growing up — comfort for play, ease for parents.</p>
+            <p>Cash on Delivery available.</p>
             {whatsapp ? <p>WhatsApp {whatsapp}</p> : null}
             {phone ? <p>Call {phone}</p> : null}
             {email ? <p>{email}</p> : null}
