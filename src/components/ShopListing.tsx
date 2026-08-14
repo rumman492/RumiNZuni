@@ -63,7 +63,8 @@ export async function ShopListing({
 
   try {
     ;[facets, result] = await Promise.all([getCatalogFacets(query), searchCatalog(query)])
-  } catch {
+  } catch (error) {
+    console.error('[ruminzuni] Shop listing failed:', error)
     result = { products: [], cards: [], total: 0, page: 1, pageCount: 1 }
   }
 

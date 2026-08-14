@@ -541,7 +541,16 @@ export async function searchCatalog(query: CatalogQuery) {
   }
 
   if ((query.department === 'womens' || query.audience === 'women') && !query.category) {
-    and.push({ 'department.audience': { equals: 'women' } })
+    and.push({
+      or: [
+        { 'department.slug': { in: ['womens', 'womens-handbags', 'womens-beauty', 'womens-skincare', 'womens-perfumes'] } },
+        {
+          'category.slug': {
+            in: ['handbags', 'beauty', 'skincare', 'perfumes', 'beauty-care', 'womens', 'hair-care', 'body-care', 'beauty-tools'],
+          },
+        },
+      ],
+    })
   } else if (query.department === 'kids-wear') {
     and.push({
       or: [

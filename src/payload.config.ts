@@ -27,7 +27,7 @@ import {
   productionDatabaseUrl,
   productionPayloadSecret,
 } from './lib/env'
-import { seedCatalogIfEmpty } from './lib/seedCatalog'
+import { seedCatalogIfEmpty, seedWomensPicturedSamples } from './lib/seedCatalog'
 import { seedSizingAndAccessories } from './lib/seedSizing'
 
 const filename = fileURLToPath(import.meta.url)
@@ -65,6 +65,17 @@ export default buildConfig({
     },
     components: {
       beforeDashboard: ['/components/admin/DashboardStats'],
+      afterNavLinks: ['/components/admin/StaffNavLink'],
+      views: {
+        staffGuide: {
+          Component: '/components/admin/StaffGuide',
+          path: '/staff-guide',
+          meta: {
+            title: 'Staff guide',
+            description: 'How staff run Rumi & Zuni from this admin without a developer.',
+          },
+        },
+      },
     },
   },
   collections: [Users, Media, Departments, Categories, Products, Tags, CatalogOptions, AgeGroups, Sizes, SizeGuides, Orders, Couriers, Pages],
@@ -90,6 +101,13 @@ export default buildConfig({
     } catch (error) {
       payload.logger.error(
         error instanceof Error ? error.message : 'Could not load size chart / age groups. Add them in Admin → Sizes.',
+      )
+    }
+    try {
+      await seedWomensPicturedSamples(payload)
+    } catch (error) {
+      payload.logger.error(
+        error instanceof Error ? error.message : 'Women’s sample products could not be loaded. Add them in Admin → Products.',
       )
     }
     if (process.env.SEED_CATALOG !== 'true') return

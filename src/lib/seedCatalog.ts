@@ -10,26 +10,43 @@ function numericId(id: string | number) {
   return typeof id === 'number' ? id : Number(id)
 }
 
+async function resolveSeedImage(filename: string) {
+  const preferred = path.join(seedMediaDir, filename)
+  if (fs.existsSync(preferred)) return filename
+  const fallbacks = [
+    'womens-sage-tote.jpg',
+    'womens-coral-crossbody.jpg',
+    'womens-blush-clutch.jpg',
+    'womens-lipstick-compact.jpg',
+    'womens-mascara-brush.jpg',
+    'womens-kohl-gloss.jpg',
+    'womens-face-cream.jpg',
+    'womens-cleanser.jpg',
+    'womens-serum.jpg',
+  ]
+  for (const name of fallbacks) {
+    if (fs.existsSync(path.join(seedMediaDir, name))) return name
+  }
+  throw new Error(`Missing seed image: ${preferred}`)
+}
+
 async function upsertMedia(payload: Payload, filename: string, alt: string) {
+  const file = await resolveSeedImage(filename)
   const found = await payload.find({
     collection: 'media',
-    where: { filename: { equals: filename } },
+    where: { filename: { equals: file } },
     limit: 1,
   })
   if (found.docs[0]) return numericId(found.docs[0].id)
 
-  const filePath = path.join(seedMediaDir, filename)
-  if (!fs.existsSync(filePath)) {
-    throw new Error(`Missing seed image: ${filePath}`)
-  }
-
+  const filePath = path.join(seedMediaDir, file)
   const doc = await payload.create({
     collection: 'media',
     data: { alt },
     filePath,
     overrideAccess: true,
   })
-  payload.logger.info(`Uploaded ${filename}`)
+  payload.logger.info(`Uploaded ${file}`)
   return numericId(doc.id)
 }
 
@@ -78,7 +95,9 @@ async function upsertSeedProducts(payload: Payload, products: SeedProduct[]) {
   const featuredIds: number[] = []
 
   for (const product of products) {
+    try {
     const { imageFile, imageAlt, ...data } = product
+    if (!product.category) continue
     const imageId = await upsertMedia(payload, imageFile, imageAlt)
     const images = [{ image: imageId }]
     const found = await payload.find({
@@ -121,7 +140,12 @@ async function upsertSeedProducts(payload: Payload, products: SeedProduct[]) {
         draft: false,
         overrideAccess: true,
       })
-      payload.logger.info(`Published ${product.title}`)
+      payload.logger.info(`Updated sample ${product.title}`)
+    }
+    } catch (error) {
+      payload.logger.error(
+        error instanceof Error ? `Sample ${product.slug}: ${error.message}` : `Sample ${product.slug} failed.`,
+      )
     }
   }
 
@@ -423,6 +447,31 @@ export async function seedMissingCategorySamples(payload: Payload) {
     payload.logger.info(`Added ${toCreate.length} sample products to ${slug}.`)
   }
   await attachMissingCategoryImages(payload, ctx.categories)
+}
+
+const WOMEN_SAMPLE_CATEGORIES = ['handbags', 'beauty', 'skincare', 'perfumes'] as const
+
+/** Always safe to call. Creates missing Women’s sample SKUs with photos; does not delete or republish staff edits. */
+export async function seedWomensPicturedSamples(payload: Payload) {
+  if (!fs.existsSync(seedMediaDir)) {
+    payload.logger.error(`Seed photos folder is missing: ${seedMediaDir}`)
+    return
+  }
+  const ctx = await loadSeedContext(payload)
+  const pools = extraSamplesByCategory(ctx)
+  for (const slug of WOMEN_SAMPLE_CATEGORIES) {
+    const extras = pools[slug] || []
+    const categoryId = ctx.categories[slug]
+    if (!categoryId || extras.length === 0) {
+      payload.logger.error(`Women’s samples skipped for ${slug}: category missing.`)
+      continue
+    }
+    const toCreate = extras.filter((item) => item.category)
+    await upsertSeedProducts(payload, toCreate as SeedProduct[])
+  }
+  const womenCats = Object.fromEntries(WOMEN_SAMPLE_CATEGORIES.map((slug) => [slug, ctx.categories[slug]]).filter(([, id]) => id))
+  await attachMissingCategoryImages(payload, womenCats)
+  payload.logger.info('Women’s pictured samples are ready.')
 }
 
 const CATEGORY_PLACEHOLDER_IMAGES: Record<string, Array<{ file: string; alt: string }>> = {

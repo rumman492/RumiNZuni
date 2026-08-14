@@ -2,7 +2,7 @@ import 'dotenv/config'
 import { getPayload } from 'payload'
 import config from './payload.config'
 import { assertStrongPassword } from './lib/env'
-import { seedCatalog } from './lib/seedCatalog'
+import { seedCatalog, seedMissingCategorySamples, seedWomensPicturedSamples } from './lib/seedCatalog'
 
 async function seed() {
   const catalogOnly = process.env.SEED_CATALOG === 'true'
@@ -51,6 +51,7 @@ async function seed() {
 
   await seedCatalog(payload)
   await seedMissingCategorySamples(payload)
+  await seedWomensPicturedSamples(payload)
   payload.logger.info('Create or use an admin user at /admin — credentials are never logged.')
   process.exit(0)
 }
