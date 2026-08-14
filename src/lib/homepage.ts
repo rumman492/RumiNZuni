@@ -2,6 +2,7 @@ import { HandCoins, RotateCcw, Sparkles, Truck, type LucideIcon } from 'lucide-r
 import { storefrontHref } from '@/lib/links'
 import { mediaUrl } from '@/lib/media'
 import { getPublishedProducts, productCardData, type ProductDoc } from '@/lib/products'
+import { isUnisexPublicItem, stripUnisexCopy } from '@/lib/taxonomy'
 
 type MediaRef = { url?: string | null; filename?: string | null } | number | null
 
@@ -102,7 +103,7 @@ export function homepageHero(settings: HomepageSettings | null) {
     secondaryCta: settings?.heroSecondaryCta || 'How COD works',
     secondaryCtaLink: storefrontHref(settings?.heroSecondaryCtaLink, '/shipping'),
     overlayTitle: settings?.heroOverlayTitle || 'Ages newborn – 12',
-    overlaySubtitle: settings?.heroOverlaySubtitle || 'Boys · Girls',
+    overlaySubtitle: stripUnisexCopy(settings?.heroOverlaySubtitle || 'Boys · Girls') || 'Boys · Girls',
   }
 }
 
@@ -119,12 +120,14 @@ export function homepageBanner(settings: HomepageSettings | null) {
 export function homepageCollections(settings: HomepageSettings | null) {
   const rows = settings?.homeCollections?.filter((item) => item.title) || []
   const source = rows.length > 0 ? rows : DEFAULT_HOME_COLLECTIONS
-  return source.map((item) => ({
-    title: item.title,
-    copy: item.copy || '',
-    href: collectionHref(item),
-    image: 'image' in item && typeof item.image === 'object' ? mediaUrl(item.image) : null,
-  }))
+  return source
+    .filter((item) => !isUnisexPublicItem({ title: item.title, href: collectionHref(item), slug: typeof item.category === 'object' ? item.category?.slug : undefined }))
+    .map((item) => ({
+      title: item.title,
+      copy: item.copy || '',
+      href: collectionHref(item),
+      image: 'image' in item && typeof item.image === 'object' ? mediaUrl(item.image) : null,
+    }))
 }
 
 export function homepagePromos(settings: HomepageSettings | null) {

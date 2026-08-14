@@ -16,7 +16,7 @@ import {
   type AgeGroupRecord,
   type SizeRecord,
 } from '@/lib/sizing'
-import { flagsFromDepartment, SHOP_GENDER_NAV } from '@/lib/taxonomy'
+import { flagsFromDepartment, isUnisexPublicItem, SHOP_GENDER_NAV } from '@/lib/taxonomy'
 import {
   AGE_OPTIONS,
   GENDER_OPTIONS,
@@ -168,7 +168,9 @@ export async function getCatalogFacets(query?: CatalogQuery): Promise<CatalogFac
   const sizeKind = (department?.sizeKind as SizeRecord['kind'] | undefined) || undefined
 
   const hiddenSlugs = new Set(['unisex', 'boys', 'girls', 'newborn'])
-  const visibleCats = categories.docs.filter((doc) => doc.slug && !hiddenSlugs.has(doc.slug))
+  const visibleCats = categories.docs.filter(
+    (doc) => doc.slug && !hiddenSlugs.has(doc.slug) && !isUnisexPublicItem({ name: doc.name, slug: doc.slug }),
+  )
 
   const colors = new Map<string, string>()
   const brands = new Set<string>()
@@ -319,6 +321,7 @@ export async function getStorefrontNav() {
       { href: '/size-finder', label: 'Find size' },
       { href: '/track', label: 'Track order' },
     ].filter((item) => {
+      if (isUnisexPublicItem(item)) return false
       if (seen.has(item.href)) return false
       seen.add(item.href)
       return true

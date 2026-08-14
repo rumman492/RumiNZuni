@@ -5,7 +5,7 @@ import {
   DEFAULT_ONESIZE,
   DEFAULT_SIZES,
 } from '@/lib/sizing'
-import { DEFAULT_DEPARTMENTS, DEFAULT_TAXONOMY_CATEGORIES } from '@/lib/taxonomy'
+import { DEFAULT_DEPARTMENTS, DEFAULT_TAXONOMY_CATEGORIES, isUnisexPublicItem, stripUnisexCopy } from '@/lib/taxonomy'
 
 function numericId(id: string | number) {
   return typeof id === 'number' ? id : Number(id)
@@ -208,5 +208,50 @@ export async function seedSizingAndAccessories(payload: Payload) {
     })
   }
 
+  await hideUnisexFromStorefront(payload)
   return ageGroupIds
+}
+
+export async function hideUnisexFromStorefront(payload: Payload) {
+  const unisex = await payload.find({
+    collection: 'categories',
+    where: { slug: { equals: 'unisex' } },
+    limit: 1,
+    overrideAccess: true,
+  })
+  if (unisex.docs[0]) {
+    await payload.update({
+      collection: 'categories',
+      id: unisex.docs[0].id,
+      data: { showInNavigation: false, active: false },
+      overrideAccess: true,
+    })
+  }
+
+  const settings = await payload.findGlobal({ slug: 'site-settings', overrideAccess: true, depth: 1 })
+  const collections = (settings.homeCollections || []).filter((item) => {
+    const categorySlug = typeof item.category === 'object' && item.category ? item.category.slug : undefined
+    return !isUnisexPublicItem({ title: item.title, href: item.href, slug: categorySlug })
+  })
+  const overlay = stripUnisexCopy(settings.heroOverlaySubtitle || '') || 'Boys · Girls'
+  const overlayChanged = overlay !== (settings.heroOverlaySubtitle || '')
+  const collectionsChanged = collections.length !== (settings.homeCollections || []).length
+  if (!overlayChanged && !collectionsChanged) return
+
+  await payload.updateGlobal({
+    slug: 'site-settings',
+    data: {
+      heroOverlaySubtitle: overlay,
+      homeCollections: collections.map((item) => ({
+        id: item.id,
+        title: item.title,
+        copy: item.copy,
+        href: item.href,
+        category: typeof item.category === 'object' && item.category ? item.category.id : item.category,
+        image: typeof item.image === 'object' && item.image ? item.image.id : item.image,
+      })),
+    },
+    overrideAccess: true,
+  })
+  payload.logger.info('Removed Unisex from the storefront homepage and category list.')
 }

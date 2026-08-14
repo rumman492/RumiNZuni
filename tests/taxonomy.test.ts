@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { genderMatchesQuery, publicGenderLabel, SHOP_ALIASES, flagsFromDepartment } from '@/lib/taxonomy'
+import { genderMatchesQuery, publicGenderLabel, SHOP_ALIASES, flagsFromDepartment, isUnisexPublicItem, stripUnisexCopy } from '@/lib/taxonomy'
 import { parseCatalogSearchParams } from '@/lib/catalog-params'
 
 describe('catalog taxonomy', () => {
@@ -26,6 +26,12 @@ describe('catalog taxonomy', () => {
     expect(SHOP_ALIASES.unisex).toBe('/shop')
     expect(SHOP_ALIASES.footwear).toBe('/shop/kids-footwear')
     expect(SHOP_ALIASES['baby-accessories']).toBe('/shop/baby-kids-accessories')
+  })
+
+  it('strips Unisex from homepage copy and collection cards', () => {
+    expect(stripUnisexCopy('Boys · Girls · Unisex')).toBe('Boys · Girls')
+    expect(isUnisexPublicItem({ title: 'Unisex', href: '/shop/unisex' })).toBe(true)
+    expect(isUnisexPublicItem({ title: 'Boys', href: '/shop/boys' })).toBe(false)
   })
 
   it('turns off kids age filters for women’s departments', () => {

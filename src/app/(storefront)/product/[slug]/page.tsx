@@ -60,7 +60,7 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
   const sizeGuide = typeof product.sizeGuide === 'object' ? product.sizeGuide : null
   const related = relatedCards(product)
   const category =
-    typeof product.category === 'object' && product.category?.slug && product.category.name
+    typeof product.category === 'object' && product.category?.slug && product.category.name && product.category.slug !== 'unisex'
       ? { name: product.category.name, slug: product.category.slug }
       : null
 

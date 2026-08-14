@@ -236,6 +236,33 @@ export const DEFAULT_TAXONOMY_CATEGORIES = [
   },
 ]
 
+export function mentionsUnisex(value?: string | null) {
+  return Boolean(value && /unisex/i.test(value))
+}
+
+export function stripUnisexCopy(value?: string | null) {
+  if (!value) return value || ''
+  return value
+    .replace(/\s*[·•|,/\-]\s*Unisex\b/gi, '')
+    .replace(/\bUnisex\s*[·•|,/\-]\s*/gi, '')
+    .replace(/\bUnisex\b/gi, '')
+    .replace(/\s{2,}/g, ' ')
+    .replace(/\s+·\s+·/g, ' · ')
+    .trim()
+}
+
+export function isUnisexPublicItem(item: { title?: string | null; name?: string | null; href?: string | null; slug?: string | null; label?: string | null }) {
+  const slug = item.slug || ''
+  const href = item.href || ''
+  return (
+    slug === 'unisex' ||
+    href.includes('/unisex') ||
+    mentionsUnisex(item.title) ||
+    mentionsUnisex(item.name) ||
+    mentionsUnisex(item.label)
+  )
+}
+
 export function publicGenderLabel(value?: string | null) {
   if (value === 'boys') return 'Boys'
   if (value === 'girls') return 'Girls'

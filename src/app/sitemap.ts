@@ -71,7 +71,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     }
 
     for (const category of categories.docs) {
-      if (SHOP_PRESETS[category.slug]) continue
+      if (SHOP_PRESETS[category.slug] || category.slug === 'unisex') continue
       entries.push({
         url: absoluteUrl(`/shop/${category.slug}`),
         lastModified: new Date(category.updatedAt),
