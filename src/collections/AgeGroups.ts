@@ -26,7 +26,8 @@ export const AgeGroups: CollectionConfig = {
       name: 'storefrontVisible',
       type: 'checkbox',
       defaultValue: true,
-      admin: { description: 'Active in shop filters. Uncheck Pre-Teen / Teen until you stock them.' },
+      label: 'Active',
+      admin: { description: 'Show in shop age filters. Leave Pre-Teen and Teen off until you stock them.' },
     },
     {
       name: 'showInNavigation',

@@ -52,6 +52,7 @@ export type ProductDoc = {
     stock: number
   }> | null
   category?: { slug?: string; name?: string } | string | number | null
+  department?: { slug?: string; audience?: string | null } | string | number | null
 }
 
 export function productCardData(
@@ -71,6 +72,8 @@ export function productCardData(
     compareAtPrice: chosen?.compareAtPrice || null,
     gender: product.gender === 'boys' || product.gender === 'girls' ? product.gender : null,
     soldOut,
+    featured: Boolean(product.featured),
+    isNew: Boolean(product.createdAt && Date.now() - Date.parse(String(product.createdAt)) < 1000 * 60 * 60 * 24 * 30),
   }
 }
 

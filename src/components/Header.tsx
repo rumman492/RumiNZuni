@@ -7,6 +7,7 @@ import { useCart } from '@/components/CartProvider'
 
 const navFallback = [
   { href: '/shop', label: 'Shop' },
+  { href: '/shop/kids-wear', label: 'Kids Wear' },
   { href: '/shop/boys', label: 'Boys' },
   { href: '/shop/girls', label: 'Girls' },
   { href: '/shop/baby-kids-accessories', label: 'Accessories' },
@@ -49,7 +50,7 @@ export function Header({
             <input
               type="search"
               name="q"
-              placeholder="Search kids wear"
+              placeholder="Search the shop"
               className="w-full rounded-full border border-ink/10 bg-white py-2 pl-9 pr-3 text-sm outline-none focus:border-coral"
               autoComplete="off"
             />
@@ -76,13 +77,13 @@ export function Header({
         </nav>
         <form action="/shop" method="get" className="px-4 pb-3 lg:hidden">
           <label className="sr-only" htmlFor="header-search">
-            Search kids wear
+            Search the shop
           </label>
           <input
             id="header-search"
             type="search"
             name="q"
-            placeholder="Search kids wear"
+              placeholder="Search the shop"
             className="w-full rounded-full border border-ink/10 bg-white px-4 py-2 text-sm outline-none focus:border-coral"
             autoComplete="off"
           />

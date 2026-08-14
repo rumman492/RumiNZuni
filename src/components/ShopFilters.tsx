@@ -7,6 +7,7 @@ import {
   SORT_OPTIONS,
   catalogFilterChips,
   catalogHref,
+  parseCatalogSearchParams,
   type CatalogFacets,
   type CatalogLock,
   type CatalogQuery,
@@ -59,39 +60,43 @@ export function ShopFilters({ basePath, query, facets, locked }: Props) {
     if (chip.key === 'gender' && locked?.gender) return false
     if (chip.key === 'age' && locked?.age) return false
     if (chip.key === 'category' && locked?.category) return false
+    if (chip.key === 'department' && locked?.department) return false
     return true
   })
 
   function apply(form: HTMLFormElement) {
     const data = new FormData(form)
-    const next: CatalogQuery = {
+    const parsed = parseCatalogSearchParams({
+      q: String(data.get('q') || ''),
+      category: locked?.department || String(data.get('category') || ''),
+      subcategory: locked?.category || String(data.get('subcategory') || ''),
+      gender: locked?.gender || String(data.get('gender') || ''),
+      age: locked?.age || String(data.get('age') || ''),
+      size: String(data.get('size') || ''),
+      color: String(data.get('color') || ''),
+      brand: String(data.get('brand') || ''),
+      bagType: String(data.get('bagType') || ''),
+      productKind: String(data.get('productKind') || ''),
+      skinType: String(data.get('skinType') || ''),
+      material: String(data.get('material') || ''),
+      min: String(data.get('min') || ''),
+      max: String(data.get('max') || ''),
+      heightMin: String(data.get('heightMin') || ''),
+      heightMax: String(data.get('heightMax') || ''),
+      inStock: data.get('inStock') === '1' ? '1' : '',
       sort: query.sort,
-      q: String(data.get('q') || '').trim() || undefined,
-      category: locked?.category || String(data.get('category') || '').trim() || undefined,
-      department: locked?.department || query.department,
-      audience: locked?.audience || query.audience,
-      gender: locked?.gender || String(data.get('gender') || '').trim() || undefined,
-      age: locked?.age || String(data.get('age') || '').trim() || undefined,
-      size: String(data.get('size') || '').trim() || undefined,
-      color: String(data.get('color') || '').trim() || undefined,
-      brand: String(data.get('brand') || '').trim() || undefined,
-      bagType: String(data.get('bagType') || '').trim() || undefined,
-      productKind: String(data.get('productKind') || '').trim() || undefined,
-      skinType: String(data.get('skinType') || '').trim() || undefined,
-      min: Number.isFinite(Number(data.get('min'))) && String(data.get('min')).trim() ? Number(data.get('min')) : undefined,
-      max: Number.isFinite(Number(data.get('max'))) && String(data.get('max')).trim() ? Number(data.get('max')) : undefined,
-      heightMin:
-        Number.isFinite(Number(data.get('heightMin'))) && String(data.get('heightMin')).trim()
-          ? Number(data.get('heightMin'))
-          : undefined,
-      heightMax:
-        Number.isFinite(Number(data.get('heightMax'))) && String(data.get('heightMax')).trim()
-          ? Number(data.get('heightMax'))
-          : undefined,
-      inStock: data.get('inStock') === '1',
-      page: 1,
-    }
-    router.push(catalogHref(basePath, next))
+    })
+    router.push(
+      catalogHref(basePath, {
+        ...parsed,
+        department: locked?.department || parsed.department,
+        category: locked?.category || parsed.category,
+        audience: locked?.audience || parsed.audience,
+        gender: locked?.gender || parsed.gender,
+        age: locked?.age || parsed.age,
+        page: 1,
+      }),
+    )
   }
 
   return (
@@ -128,11 +133,25 @@ export function ShopFilters({ basePath, query, facets, locked }: Props) {
           />
         </label>
 
-        {!locked?.category && !locked?.gender && facets.categories.length > 1 ? (
+        {!locked?.department && facets.departments.length > 0 ? (
           <label className="text-sm font-semibold">
             Category
-            <select className={selectClass} name="category" defaultValue={query.category || ''}>
-              <option value="">All categories</option>
+            <select className={selectClass} name="category" defaultValue={query.department || ''}>
+              <option value="">All departments</option>
+              {facets.departments.map((item) => (
+                <option key={item.slug} value={item.slug}>
+                  {item.name}
+                </option>
+              ))}
+            </select>
+          </label>
+        ) : null}
+
+        {!locked?.category && facets.categories.length > 0 ? (
+          <label className="text-sm font-semibold">
+            {query.department === 'womens' || locked?.audience === 'women' ? 'Women’s section' : 'Category'}
+            <select className={selectClass} name="subcategory" defaultValue={query.category || ''}>
+              <option value="">All</option>
               {facets.categories.map((item) => (
                 <option key={item.slug} value={item.slug}>
                   {item.name}
@@ -256,6 +275,14 @@ export function ShopFilters({ basePath, query, facets, locked }: Props) {
             name="skinType"
             value={query.skinType}
             options={facets.skinTypes.map((item) => ({ label: item, value: item }))}
+          />
+        ) : null}
+        {filters.material ? (
+          <FacetSelect
+            label="Material"
+            name="material"
+            value={query.material}
+            options={facets.materials.map((item) => ({ label: item, value: item }))}
           />
         ) : null}
 

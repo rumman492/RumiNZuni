@@ -27,6 +27,7 @@ export function Footer({
           <p className="text-sm font-bold uppercase tracking-wide">Shop</p>
           <div className="mt-3 grid gap-2 text-sm text-ink-soft">
             <Link href="/shop">All products</Link>
+            <Link href="/shop/kids-wear">Kids Wear</Link>
             <Link href="/shop/boys">Boys</Link>
             <Link href="/shop/girls">Girls</Link>
             <Link href="/shop/baby-kids-accessories">Kids accessories</Link>

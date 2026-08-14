@@ -16,7 +16,16 @@ import {
   type AgeGroupRecord,
   type SizeRecord,
 } from '@/lib/sizing'
-import { flagsFromDepartment, isUnisexPublicItem, SHOP_GENDER_NAV, WOMEN_SHOP_LINKS } from '@/lib/taxonomy'
+import {
+  catalogSectionIndex,
+  flagsForShopQuery,
+  isUnisexPublicItem,
+  shopFacetLabel,
+  shopFacetSlugsForQuery,
+  SHOP_DEPARTMENT_OPTIONS,
+  STOREFRONT_NAV,
+  WOMEN_SHOP_LINKS,
+} from '@/lib/taxonomy'
 import {
   AGE_OPTIONS,
   GENDER_OPTIONS,
@@ -86,6 +95,44 @@ export function catalogMetadata(
 
 type Variant = NonNullable<ProductDoc['variants']>[number]
 
+function relationSlug(value: unknown) {
+  if (value && typeof value === 'object' && 'slug' in value && typeof (value as { slug?: unknown }).slug === 'string') {
+    return (value as { slug: string }).slug
+  }
+  return ''
+}
+
+function productInFacetScope(product: ProductDoc, query?: CatalogQuery) {
+  const category = relationSlug(product.category)
+  const department = relationSlug(product.department)
+  if (query?.category) {
+    if (query.category === 'womens') return ['handbags', 'beauty', 'skincare', 'womens'].includes(category)
+    return category === query.category
+  }
+  if (query?.department === 'womens' || query?.audience === 'women') {
+    return (
+      department === 'womens' ||
+      department.startsWith('womens-') ||
+      ['handbags', 'beauty', 'skincare', 'womens'].includes(category)
+    )
+  }
+  if (query?.department === 'kids-wear') {
+    const clothing = department === 'kids-wear' || ['boys', 'girls', 'newborn', 'unisex'].includes(category)
+    if (!clothing) return false
+    if (query.gender === 'boys' || query.gender === 'girls') {
+      return product.gender === query.gender || product.gender === 'unisex'
+    }
+    return true
+  }
+  if (query?.department === 'baby-kids-accessories') {
+    return department === 'baby-kids-accessories' || category === 'baby-kids-accessories'
+  }
+  if (query?.department === 'kids-footwear') {
+    return department === 'kids-footwear' || category === 'kids-footwear'
+  }
+  return true
+}
+
 function variantMatches(variant: Variant, query: CatalogQuery, sizeCodes?: Set<string>) {
   const code = sizeCode(variant.size)
   if (query.size && code !== query.size) return false
@@ -114,7 +161,14 @@ function createdAt(product: ProductDoc) {
   return Date.parse(String(product.createdAt || '')) || 0
 }
 
-function sortProducts(products: ProductDoc[], query: CatalogQuery) {
+const NEW_ARRIVAL_MS = 1000 * 60 * 60 * 24 * 30
+
+function isNewArrival(product: ProductDoc) {
+  const created = createdAt(product)
+  return created > 0 && Date.now() - created < NEW_ARRIVAL_MS
+}
+
+function sortProducts(products: ProductDoc[], query: CatalogQuery, soldCounts: Map<string, number>) {
   const sorted = products.slice()
   const sort = query.sort || 'featured'
   sorted.sort((a, b) => {
@@ -124,6 +178,17 @@ function sortProducts(products: ProductDoc[], query: CatalogQuery) {
     const priceB = catalogDisplayVariant(b, query)?.price || 0
     if (sort === 'price-asc') return priceA - priceB
     if (sort === 'price-desc') return priceB - priceA
+    const soldA = soldCounts.get(String(a.id)) || 0
+    const soldB = soldCounts.get(String(b.id)) || 0
+    if (sort === 'best-selling') {
+      if (soldB !== soldA) return soldB - soldA
+      return createdAt(b) - createdAt(a)
+    }
+    const featured = Number(Boolean(b.featured)) - Number(Boolean(a.featured))
+    if (featured !== 0) return featured
+    const newRank = Number(isNewArrival(b)) - Number(isNewArrival(a))
+    if (newRank !== 0) return newRank
+    if (soldB !== soldA) return soldB - soldA
     const priority = (b.sortPriority || 0) - (a.sortPriority || 0)
     if (priority !== 0) return priority
     return createdAt(b) - createdAt(a)
@@ -164,37 +229,37 @@ export async function getCatalogFacets(query?: CatalogQuery): Promise<CatalogFac
     departments.docs.find((doc) => doc.slug === departmentSlug) ||
     (query?.audience === 'women' ? departments.docs.find((doc) => doc.slug === 'womens') : undefined) ||
     null
-  const flags = flagsFromDepartment(department || null)
-  const sizeKind = (department?.sizeKind as SizeRecord['kind'] | undefined) || undefined
+  const flags = flagsForShopQuery(query)
+  const sizeKind: SizeRecord['kind'] | undefined =
+    query?.department === 'kids-footwear' || query?.category === 'kids-footwear'
+      ? 'footwear'
+      : query?.department === 'kids-wear' || query?.gender === 'boys' || query?.gender === 'girls'
+        ? 'clothing'
+        : flags.size
+          ? ((department?.sizeKind as SizeRecord['kind'] | undefined) || undefined)
+          : 'none'
 
-  const hiddenSlugs = new Set(['unisex', 'boys', 'girls', 'newborn', 'womens'])
-  const visibleCats = categories.docs.filter((doc) => {
-    if (!doc.slug || hiddenSlugs.has(doc.slug) || isUnisexPublicItem({ name: doc.name, slug: doc.slug })) return false
-    const dep = typeof doc.department === 'object' && doc.department ? doc.department.slug : ''
-    if (query?.department === 'kids-wear' || (query?.gender && query?.audience === 'kids')) {
-      return dep === 'kids-wear'
-    }
-    if (query?.department === 'baby-kids-accessories') return dep === 'baby-kids-accessories'
-    if (query?.department === 'kids-footwear') return dep === 'kids-footwear'
-    if (query?.department === 'womens' || query?.audience === 'women') {
-      return ['handbags', 'beauty', 'skincare'].includes(doc.slug)
-    }
-    if (query?.audience === 'kids' && !query.department) {
-      return dep === 'kids-wear' || dep === 'baby-kids-accessories' || dep === 'kids-footwear'
-    }
-    return ['baby-kids-accessories', 'kids-footwear', 'handbags', 'beauty', 'skincare'].includes(doc.slug)
-  })
+  const allowed = shopFacetSlugsForQuery(query)
+  const allowedSet = new Set(allowed)
+  const masterShop = allowed.includes('kids-wear') && allowed.includes('womens')
+  const departmentOptions = SHOP_DEPARTMENT_OPTIONS.map((item) => ({ name: item.label, slug: item.slug }))
+  const visibleCats = categories.docs
+    .filter((doc) => doc.slug && allowedSet.has(doc.slug) && !isUnisexPublicItem({ name: doc.name, slug: doc.slug }))
+    .sort((a, b) => catalogSectionIndex(a.slug) - catalogSectionIndex(b.slug))
 
+  const scopedProducts = (products.docs as unknown as ProductDoc[]).filter((doc) => productInFacetScope(doc, query))
   const colors = new Map<string, string>()
   const brands = new Set<string>()
   const bagTypes = new Set<string>()
   const productKinds = new Set<string>()
   const skinTypes = new Set<string>()
-  for (const doc of products.docs as unknown as ProductDoc[]) {
+  const materials = new Set<string>()
+  for (const doc of scopedProducts) {
     if (doc.brand) brands.add(doc.brand)
     if (doc.bagType) bagTypes.add(doc.bagType)
     if (doc.productKind) productKinds.add(doc.productKind)
     if (doc.skinType) skinTypes.add(doc.skinType)
+    if (doc.material) materials.add(doc.material)
     for (const variant of doc.variants || []) {
       const key = variant.color.trim().toLowerCase()
       if (key && !colors.has(key)) colors.set(key, variant.color.trim())
@@ -202,12 +267,19 @@ export async function getCatalogFacets(query?: CatalogQuery): Promise<CatalogFac
   }
 
   return {
-    categories: visibleCats.map((doc) => ({ name: doc.name, slug: doc.slug })),
+    departments: departmentOptions,
+    categories: masterShop
+      ? []
+      : visibleCats.map((doc) => ({
+          name: shopFacetLabel(doc.slug, doc.name),
+          slug: doc.slug,
+        })),
     colors: [...colors.values()].sort((a, b) => a.localeCompare(b, 'en')),
     brands: [...brands].sort((a, b) => a.localeCompare(b, 'en')),
     bagTypes: [...bagTypes].sort((a, b) => a.localeCompare(b, 'en')),
     productKinds: [...productKinds].sort((a, b) => a.localeCompare(b, 'en')),
     skinTypes: [...skinTypes].sort((a, b) => a.localeCompare(b, 'en')),
+    materials: [...materials].sort((a, b) => a.localeCompare(b, 'en')),
     ageGroups: shopAgeOptions(sizing.ageGroups),
     sizes: shopSizeOptions(sizing.sizes, sizeKind === 'none' ? undefined : sizeKind),
     filters: flags,
@@ -265,6 +337,26 @@ export async function loadShopSizing() {
   }
 }
 
+async function loadSoldCounts(payload: Awaited<ReturnType<typeof getPayloadClient>>) {
+  const counts = new Map<string, number>()
+  const orders = await payload.find({
+    collection: 'orders',
+    limit: 200,
+    depth: 0,
+    overrideAccess: true,
+    where: { status: { not_in: ['cancelled', 'refused', 'failed_delivery', 'returned'] } },
+  })
+  for (const order of orders.docs) {
+    for (const item of order.items || []) {
+      const product = item.product
+      const id = product && typeof product === 'object' && 'id' in product ? product.id : product
+      if (id == null) continue
+      counts.set(String(id), (counts.get(String(id)) || 0) + Number(item.qty || 0))
+    }
+  }
+  return counts
+}
+
 export async function getAgeGroupBySlug(slug: string) {
   const { ageGroups } = await loadShopSizing()
   return ageGroups.find((group) => group.slug === slug && group.storefrontVisible) || null
@@ -317,56 +409,7 @@ export async function getDepartmentBySlug(slug: string) {
 }
 
 export async function getStorefrontNav() {
-  const fallback = [
-    { href: '/shop', label: 'Shop' },
-    ...SHOP_GENDER_NAV,
-    { href: '/shop/baby-kids-accessories', label: 'Accessories' },
-    { href: '/shop/kids-footwear', label: 'Footwear' },
-    { href: '/shop/womens', label: "Women's" },
-    { href: '/size-finder', label: 'Find size' },
-    { href: '/track', label: 'Track order' },
-  ]
-  try {
-    const payload = await getPayloadClient()
-    const [departments, categories] = await Promise.all([
-      payload.find({
-        collection: 'departments',
-        where: { showInNavigation: { equals: true }, storefrontVisible: { not_equals: false } },
-        sort: 'sortOrder',
-        limit: 20,
-        depth: 0,
-      }),
-      payload.find({
-        collection: 'categories',
-        where: { showInNavigation: { equals: true }, active: { not_equals: false } },
-        sort: 'sortOrder',
-        limit: 20,
-        depth: 0,
-      }),
-    ])
-    const extra = [
-      ...departments.docs.map((doc) => ({ href: `/shop/${doc.slug}`, label: doc.name })),
-      ...categories.docs
-        .filter((doc) => !departments.docs.some((department) => department.slug === doc.slug))
-        .map((doc) => ({ href: `/shop/${doc.slug}`, label: doc.name })),
-    ]
-    const seen = new Set<string>()
-    const nav = [
-      { href: '/shop', label: 'Shop' },
-      ...SHOP_GENDER_NAV,
-      ...extra,
-      { href: '/size-finder', label: 'Find size' },
-      { href: '/track', label: 'Track order' },
-    ].filter((item) => {
-      if (isUnisexPublicItem(item)) return false
-      if (seen.has(item.href)) return false
-      seen.add(item.href)
-      return true
-    })
-    return nav.length > 4 ? nav : fallback
-  } catch {
-    return fallback
-  }
+  return STOREFRONT_NAV.filter((item) => !isUnisexPublicItem(item))
 }
 
 export async function searchCatalog(query: CatalogQuery) {
@@ -411,7 +454,7 @@ export async function searchCatalog(query: CatalogQuery) {
     }
   }
 
-  if (query.department === 'womens' || query.audience === 'women') {
+  if ((query.department === 'womens' || query.audience === 'women') && !query.category) {
     and.push({ 'department.audience': { equals: 'women' } })
   } else if (query.department === 'kids-wear') {
     and.push({
@@ -454,6 +497,7 @@ export async function searchCatalog(query: CatalogQuery) {
   if (query.bagType) and.push({ bagType: { contains: query.bagType } })
   if (query.productKind) and.push({ productKind: { contains: query.productKind } })
   if (query.skinType) and.push({ skinType: { contains: query.skinType } })
+  if (query.material) and.push({ material: { contains: query.material } })
   if (query.min != null) and.push({ 'variants.price': { greater_than_equal: query.min } })
   if (query.max != null) and.push({ 'variants.price': { less_than_equal: query.max } })
   if (query.inStock) and.push({ 'variants.stock': { greater_than: 0 } })
@@ -468,6 +512,7 @@ export async function searchCatalog(query: CatalogQuery) {
         { material: { contains: q } },
         { 'variants.sku': { contains: q } },
         { 'variants.color': { contains: q } },
+        { 'category.name': { contains: q } },
         { 'tags.name': { contains: q } },
       ],
     })
@@ -488,7 +533,8 @@ export async function searchCatalog(query: CatalogQuery) {
     return true
   })
 
-  const sorted = sortProducts(matched, query)
+  const soldCounts = await loadSoldCounts(payload).catch(() => new Map<string, number>())
+  const sorted = sortProducts(matched, query, soldCounts)
   const total = sorted.length
   const pageCount = Math.max(1, Math.ceil(total / CATALOG_PAGE_SIZE))
   const page = Math.min(query.page || 1, pageCount)

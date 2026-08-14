@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { genderMatchesQuery, publicGenderLabel, SHOP_ALIASES, flagsFromDepartment, isUnisexPublicItem, stripUnisexCopy } from '@/lib/taxonomy'
+import { flagsForShopQuery, genderMatchesQuery, publicGenderLabel, SHOP_ALIASES, flagsFromDepartment, isUnisexPublicItem, shopFacetSlugsForQuery, stripUnisexCopy, catalogSectionIndex } from '@/lib/taxonomy'
 import { SHOP_PRESETS, parseCatalogSearchParams } from '@/lib/catalog-params'
 
 describe('catalog taxonomy', () => {
@@ -55,5 +55,82 @@ describe('catalog taxonomy', () => {
     expect(SHOP_PRESETS.boys.department).toBe('kids-wear')
     expect(SHOP_PRESETS.girls.department).toBe('kids-wear')
     expect(SHOP_PRESETS.womens.department).toBe('womens')
+  })
+
+  it('lists departments on the main shop page', () => {
+    expect(shopFacetSlugsForQuery({})).toEqual([
+      'kids-wear',
+      'baby-kids-accessories',
+      'kids-footwear',
+      'womens',
+    ])
+    expect(shopFacetSlugsForQuery({ department: 'kids-wear', gender: 'boys' })).toEqual([])
+    expect(shopFacetSlugsForQuery({ department: 'womens', audience: 'women' })).toEqual([
+      'handbags',
+      'beauty',
+      'skincare',
+    ])
+    expect(shopFacetSlugsForQuery({ department: 'baby-kids-accessories' })).toEqual([])
+    expect(shopFacetSlugsForQuery({ department: 'kids-footwear' })).toEqual([])
+  })
+
+  it('keeps the unfiltered shop on global filters only', () => {
+    const all = flagsForShopQuery({})
+    expect(all.age).toBe(false)
+    expect(all.size).toBe(false)
+    expect(all.gender).toBe(false)
+    expect(all.bagType).toBe(false)
+  })
+
+  it('uses clothing filters for boys wear and women’s filters for bags', () => {
+    const boys = flagsForShopQuery({ department: 'kids-wear', gender: 'boys' })
+    expect(boys.age).toBe(true)
+    expect(boys.size).toBe(true)
+    expect(boys.height).toBe(true)
+    expect(boys.bagType).toBe(false)
+    expect(boys.gender).toBe(false)
+
+    const accessories = flagsForShopQuery({ department: 'baby-kids-accessories' })
+    expect(accessories.gender).toBe(true)
+    expect(accessories.age).toBe(true)
+    expect(accessories.height).toBe(false)
+    expect(accessories.size).toBe(false)
+
+    const footwear = flagsForShopQuery({ department: 'kids-footwear' })
+    expect(footwear.size).toBe(true)
+    expect(footwear.height).toBe(false)
+    expect(footwear.bagType).toBe(false)
+
+    const bags = flagsForShopQuery({ category: 'handbags', audience: 'women' })
+    expect(bags.age).toBe(false)
+    expect(bags.size).toBe(false)
+    expect(bags.bagType).toBe(true)
+    expect(bags.material).toBe(true)
+    expect(bags.skinType).toBe(false)
+
+    const skin = flagsForShopQuery({ category: 'skincare' })
+    expect(skin.skinType).toBe(true)
+    expect(skin.productKind).toBe(true)
+    expect(skin.age).toBe(false)
+  })
+
+  it('orders catalog sections clothing first, then extras, then women’s', () => {
+    expect(catalogSectionIndex('boys')).toBeLessThan(catalogSectionIndex('girls'))
+    expect(catalogSectionIndex('girls')).toBeLessThan(catalogSectionIndex('baby-kids-accessories'))
+    expect(catalogSectionIndex('kids-footwear')).toBeLessThan(catalogSectionIndex('handbags'))
+    expect(catalogSectionIndex('handbags')).toBeLessThan(catalogSectionIndex('skincare'))
+  })
+
+  it('maps shareable shop URLs onto departments and search', () => {
+    expect(parseCatalogSearchParams({ category: 'kids-wear', gender: 'boys' })).toMatchObject({
+      department: 'kids-wear',
+      gender: 'boys',
+    })
+    expect(parseCatalogSearchParams({ category: 'womens', subcategory: 'skincare' })).toMatchObject({
+      department: 'womens',
+      category: 'skincare',
+      audience: 'women',
+    })
+    expect(parseCatalogSearchParams({ search: 'blue shirt' }).q).toBe('blue shirt')
   })
 })

@@ -8,9 +8,9 @@ export async function generateMetadata({ searchParams }: Props): Promise<Metadat
   const query = parseCatalogSearchParams(await searchParams)
   return catalogMetadata(query, {
     basePath: '/shop',
-    heading: 'Shop kids wear',
+    heading: 'Shop',
     description:
-      'Shop kids wear at Rumi & Zuni. Filter by height, size, age group, and colour. Cash on delivery across Pakistan.',
+      'Boys and girls wear from newborn to 12 years, kids accessories, footwear, and women’s bags, beauty, and skincare. Cash on delivery across Pakistan.',
   })
 }
 
@@ -18,8 +18,8 @@ export default async function ShopPage({ searchParams }: Props) {
   const query = parseCatalogSearchParams(await searchParams)
   return (
     <ShopListing
-      title="Shop kids wear"
-      description="Everyday outfits with cash on delivery. Filter by height, size, or age group — you can confirm on WhatsApp after ordering."
+      title="Shop"
+      description="Boys and girls wear from newborn to 12 years, plus kids accessories, footwear, and women’s bags, beauty, and skincare. Cash on delivery across Pakistan."
       basePath="/shop"
       query={query}
       breadcrumbs={[

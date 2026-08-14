@@ -9,10 +9,24 @@ type ProductCardProps = {
   compareAtPrice?: number | null
   gender?: string | null
   soldOut?: boolean
+  featured?: boolean
+  isNew?: boolean
 }
 
-export function ProductCard({ title, slug, image, price, compareAtPrice, gender, soldOut }: ProductCardProps) {
+export function ProductCard({
+  title,
+  slug,
+  image,
+  price,
+  compareAtPrice,
+  gender,
+  soldOut,
+  featured,
+  isNew,
+}: ProductCardProps) {
   const onSale = Boolean(compareAtPrice && compareAtPrice > price)
+  const badge = soldOut ? 'Sold out' : onSale ? 'Sale' : featured ? 'Featured' : isNew ? 'New' : null
+  const badgeClass = soldOut ? 'bg-ink text-white' : onSale || featured ? 'bg-coral text-white' : 'bg-lemon text-ink'
 
   return (
     <Link href={`/product/${slug}`} className="play-pop group block rounded-[1.75rem] bg-white p-2 shadow-sm">
@@ -29,13 +43,9 @@ export function ProductCard({ title, slug, image, price, compareAtPrice, gender,
             Photo coming soon
           </div>
         )}
-        {soldOut ? (
-          <span className="absolute left-3 top-3 rounded-full bg-ink px-3 py-1 text-xs font-bold text-white">
-            Sold out
-          </span>
-        ) : onSale ? (
-          <span className="absolute left-3 top-3 rounded-full bg-coral px-3 py-1 text-xs font-bold text-white shadow-sm">
-            Sale
+        {badge ? (
+          <span className={`absolute left-3 top-3 rounded-full px-3 py-1 text-xs font-bold shadow-sm ${badgeClass}`}>
+            {badge}
           </span>
         ) : null}
         <span className="absolute bottom-3 right-3 rounded-full bg-white/95 px-3 py-1 text-xs font-bold text-coral opacity-0 shadow-sm transition group-hover:opacity-100">

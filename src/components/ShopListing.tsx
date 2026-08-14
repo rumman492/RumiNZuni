@@ -13,6 +13,7 @@ import {
   type CatalogQuery,
 } from '@/lib/catalog'
 import { shopAgeOptions, shopSizeOptions } from '@/lib/sizing'
+import { shopFacetLabel } from '@/lib/taxonomy'
 
 export async function ShopListing({
   title,
@@ -32,12 +33,14 @@ export async function ShopListing({
   hubs?: Array<{ href: string; title: string; copy: string; image: string | null }>
 }) {
   let facets: Awaited<ReturnType<typeof getCatalogFacets>> = {
+    departments: [],
     categories: [],
     colors: [],
     brands: [],
     bagTypes: [],
     productKinds: [],
     skinTypes: [],
+    materials: [],
     ageGroups: shopAgeOptions(),
     sizes: shopSizeOptions(),
     filters: {
@@ -50,6 +53,7 @@ export async function ShopListing({
       bagType: false,
       productKind: false,
       skinType: false,
+      material: false,
     },
   }
   let result: Awaited<ReturnType<typeof searchCatalog>> = {
@@ -66,24 +70,19 @@ export async function ShopListing({
     result = { products: [], cards: [], total: 0, page: 1, pageCount: 1 }
   }
 
-  const eyebrow =
-    locked?.department === 'kids-wear' && locked.gender === 'boys'
-      ? 'Boys wear'
-      : locked?.department === 'kids-wear' && locked.gender === 'girls'
-        ? 'Girls wear'
-        : locked?.department === 'baby-kids-accessories'
-          ? 'Kids accessories'
-          : locked?.department === 'kids-footwear'
-            ? 'Kids footwear'
-            : locked?.category === 'handbags'
-              ? 'Bags'
-              : locked?.category === 'beauty'
-                ? 'Beauty'
-                : locked?.category === 'skincare'
-                  ? 'Skincare'
-                  : locked?.audience === 'women' || locked?.department === 'womens'
-                    ? "Women's"
-                    : 'Shop'
+  const eyebrow = shopFacetLabel(
+    locked?.category ||
+      (locked?.department === 'kids-wear' && locked.gender === 'boys'
+        ? 'boys'
+        : locked?.department === 'kids-wear' && locked.gender === 'girls'
+          ? 'girls'
+          : locked?.department === 'baby-kids-accessories'
+            ? 'baby-kids-accessories'
+            : locked?.department === 'kids-footwear'
+              ? 'kids-footwear'
+              : query.category || ''),
+    locked?.audience === 'women' || locked?.department === 'womens' ? "Women's" : 'Shop',
+  )
   const start = result.total === 0 ? 0 : (result.page - 1) * CATALOG_PAGE_SIZE + 1
   const end = Math.min(result.page * CATALOG_PAGE_SIZE, result.total)
 
@@ -123,11 +122,20 @@ export async function ShopListing({
 
       <div className="mt-10 grid gap-10 lg:grid-cols-[17rem_1fr]">
         <aside>
-          <details className="rounded-3xl bg-white p-5 shadow-sm" open>
-            <summary className="cursor-pointer font-bold lg:hidden">Filters</summary>
-            <div className="mt-4 lg:mt-0">
+          <div className="hidden lg:block rounded-3xl bg-white p-5 shadow-sm">
+            <ShopFilters
+              key={catalogQueryString(query)}
+              basePath={basePath}
+              query={query}
+              facets={facets}
+              locked={locked}
+            />
+          </div>
+          <details className="rounded-3xl bg-white p-5 shadow-sm lg:hidden">
+            <summary className="cursor-pointer font-bold">Filters</summary>
+            <div className="mt-4">
               <ShopFilters
-                key={catalogQueryString(query)}
+                key={`m-${catalogQueryString(query)}`}
                 basePath={basePath}
                 query={query}
                 facets={facets}
@@ -140,7 +148,7 @@ export async function ShopListing({
         <div>
           <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <p className="text-sm text-ink-soft">
-              {result.total === 0 ? 'No outfits match these filters.' : `Showing ${start}–${end} of ${result.total}`}
+              {result.total === 0 ? 'No products match these filters.' : `Showing ${start}–${end} of ${result.total}`}
             </p>
             <ShopSort key={`sort-${catalogQueryString(query)}`} basePath={basePath} query={query} />
           </div>

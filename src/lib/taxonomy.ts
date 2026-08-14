@@ -8,6 +8,20 @@ export type FilterFlags = {
   bagType: boolean
   productKind: boolean
   skinType: boolean
+  material: boolean
+}
+
+export const GLOBAL_SHOP_FILTERS: FilterFlags = {
+  gender: false,
+  age: false,
+  size: false,
+  height: false,
+  color: false,
+  brand: false,
+  bagType: false,
+  productKind: false,
+  skinType: false,
+  material: false,
 }
 
 export const DEFAULT_KIDS_FILTERS: FilterFlags = {
@@ -20,6 +34,7 @@ export const DEFAULT_KIDS_FILTERS: FilterFlags = {
   bagType: false,
   productKind: false,
   skinType: false,
+  material: false,
 }
 
 export const CUSTOMER_GENDER_OPTIONS = [
@@ -32,11 +47,102 @@ export const SHOP_GENDER_NAV = [
   { href: '/shop/girls', label: 'Girls' },
 ]
 
+export const STOREFRONT_NAV = [
+  { href: '/shop', label: 'Shop' },
+  { href: '/shop/kids-wear', label: 'Kids Wear' },
+  ...SHOP_GENDER_NAV,
+  { href: '/shop/baby-kids-accessories', label: 'Accessories' },
+  { href: '/shop/kids-footwear', label: 'Footwear' },
+  { href: '/shop/womens', label: "Women's" },
+  { href: '/size-finder', label: 'Find size' },
+  { href: '/track', label: 'Track order' },
+]
+
+export const SHOP_DEPARTMENT_OPTIONS = [
+  { slug: 'kids-wear', label: 'Kids Wear' },
+  { slug: 'baby-kids-accessories', label: 'Baby & Kids Accessories' },
+  { slug: 'kids-footwear', label: 'Kids Footwear' },
+  { slug: 'womens', label: "Women's" },
+] as const
+
+export const SHOP_DEPARTMENT_SLUGS = new Set<string>(SHOP_DEPARTMENT_OPTIONS.map((item) => item.slug))
+
 export const WOMEN_SHOP_LINKS = [
   { href: '/shop/handbags', slug: 'handbags', label: 'Bags', copy: 'Handbags and everyday carry-alls' },
   { href: '/shop/beauty', slug: 'beauty', label: 'Beauty', copy: 'Makeup and everyday beauty' },
   { href: '/shop/skincare', slug: 'skincare', label: 'Skincare', copy: 'Cleansers, creams, and serums' },
 ]
+
+/** Saleable shop sections, in merchandising order. Used on /shop and for featured sort. */
+export const SHOP_FACET_CATEGORIES = [
+  { slug: 'boys', label: 'Boys wear', department: 'kids-wear' },
+  { slug: 'girls', label: 'Girls wear', department: 'kids-wear' },
+  { slug: 'newborn', label: 'Newborn', department: 'kids-wear' },
+  { slug: 'baby-kids-accessories', label: 'Kids accessories', department: 'baby-kids-accessories' },
+  { slug: 'kids-footwear', label: 'Kids footwear', department: 'kids-footwear' },
+  { slug: 'handbags', label: 'Bags', department: 'womens-handbags' },
+  { slug: 'beauty', label: 'Beauty', department: 'womens-beauty' },
+  { slug: 'skincare', label: 'Skincare', department: 'womens-skincare' },
+] as const
+
+export function shopFacetLabel(slug: string, fallback?: string) {
+  return SHOP_FACET_CATEGORIES.find((item) => item.slug === slug)?.label || fallback || slug
+}
+
+export function catalogSectionIndex(categorySlug?: string | null) {
+  const index = SHOP_FACET_CATEGORIES.findIndex((item) => item.slug === categorySlug)
+  return index === -1 ? SHOP_FACET_CATEGORIES.length : index
+}
+
+export function shopFacetSlugsForQuery(query?: {
+  department?: string
+  category?: string
+  audience?: 'kids' | 'women'
+  gender?: string
+}) {
+  if (query?.department === 'womens' || query?.audience === 'women') {
+    return ['handbags', 'beauty', 'skincare']
+  }
+  if (
+    query?.department === 'kids-wear' ||
+    query?.department === 'baby-kids-accessories' ||
+    query?.department === 'kids-footwear'
+  ) {
+    return [] as string[]
+  }
+  return SHOP_DEPARTMENT_OPTIONS.map((item) => item.slug)
+}
+
+export function flagsForShopQuery(query?: {
+  department?: string
+  category?: string
+  audience?: 'kids' | 'women'
+  gender?: string
+}): FilterFlags {
+  const fromCategory = SHOP_FACET_CATEGORIES.find((item) => item.slug === query?.category)
+  const departmentSlug = fromCategory?.department || query?.department
+  if (!departmentSlug && !query?.audience && !query?.gender) {
+    return { ...GLOBAL_SHOP_FILTERS }
+  }
+  const department = DEFAULT_DEPARTMENTS.find((item) => item.slug === departmentSlug)
+  if (department) {
+    const flags = flagsFromDepartment(department)
+    flags.material = query?.category === 'handbags' || department.slug === 'womens-handbags'
+    if (
+      query?.category === 'boys' ||
+      query?.category === 'girls' ||
+      query?.gender === 'boys' ||
+      query?.gender === 'girls'
+    ) {
+      flags.gender = false
+    }
+    return flags
+  }
+  if (query?.audience === 'women') {
+    return flagsFromDepartment(DEFAULT_DEPARTMENTS.find((item) => item.slug === 'womens') || null)
+  }
+  return { ...DEFAULT_KIDS_FILTERS }
+}
 
 export const SHOP_ALIASES: Record<string, string> = {
   unisex: '/shop',
@@ -62,7 +168,7 @@ export const DEFAULT_DEPARTMENTS = [
     usesBagType: false,
     usesProductKind: false,
     usesSkinType: false,
-    showInNavigation: false,
+    showInNavigation: true,
     storefrontVisible: true,
     sortOrder: 10,
   },
@@ -74,7 +180,7 @@ export const DEFAULT_DEPARTMENTS = [
     sizeKind: 'clothing' as const,
     usesGender: true,
     usesAge: true,
-    usesSize: true,
+    usesSize: false,
     usesHeight: false,
     usesColor: true,
     usesBrand: false,
@@ -304,5 +410,6 @@ export function flagsFromDepartment(doc: {
     bagType: Boolean(doc.usesBagType),
     productKind: Boolean(doc.usesProductKind),
     skinType: Boolean(doc.usesSkinType),
+    material: Boolean(doc.usesBagType),
   }
 }

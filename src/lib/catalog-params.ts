@@ -1,5 +1,5 @@
 import { shopAgeOptions, shopSizeOptions, formatProductSize } from '@/lib/sizing'
-import { CUSTOMER_GENDER_OPTIONS, type FilterFlags } from '@/lib/taxonomy'
+import { CUSTOMER_GENDER_OPTIONS, SHOP_DEPARTMENT_SLUGS, type FilterFlags } from '@/lib/taxonomy'
 
 export const GENDER_OPTIONS = CUSTOMER_GENDER_OPTIONS
 
@@ -9,6 +9,7 @@ export const AGE_OPTIONS = shopAgeOptions()
 export const SORT_OPTIONS = [
   { label: 'Featured', value: 'featured' },
   { label: 'Newest', value: 'newest' },
+  { label: 'Best selling', value: 'best-selling' },
   { label: 'Price: low to high', value: 'price-asc' },
   { label: 'Price: high to low', value: 'price-desc' },
   { label: 'Name A–Z', value: 'name' },
@@ -21,18 +22,18 @@ export const SHOP_PRESETS: Record<
   { title: string; gender?: string; age?: string; department?: string; audience?: 'kids' | 'women'; description: string }
 > = {
   boys: {
-    title: 'Boys',
+    title: 'Boys wear',
     gender: 'boys',
     audience: 'kids',
     department: 'kids-wear',
-    description: 'Boys clothing with cash on delivery across Pakistan.',
+    description: 'Boys clothing from newborn to 12 years. Cash on delivery across Pakistan.',
   },
   girls: {
-    title: 'Girls',
+    title: 'Girls wear',
     gender: 'girls',
     audience: 'kids',
     department: 'kids-wear',
-    description: 'Girls clothing with cash on delivery across Pakistan.',
+    description: 'Girls clothing from newborn to 12 years. Cash on delivery across Pakistan.',
   },
   newborn: {
     title: 'Newborn',
@@ -46,6 +47,12 @@ export const SHOP_PRESETS: Record<
     audience: 'women',
     department: 'womens',
     description: 'Handbags, beauty, and skincare. Cash on delivery across Pakistan.',
+  },
+  'kids-wear': {
+    title: 'Kids Wear',
+    audience: 'kids',
+    department: 'kids-wear',
+    description: 'Boys and girls clothing from newborn to 12 years. Cash on delivery across Pakistan.',
   },
 }
 
@@ -62,6 +69,7 @@ export type CatalogQuery = {
   bagType?: string
   productKind?: string
   skinType?: string
+  material?: string
   min?: number
   max?: number
   heightMin?: number
@@ -74,12 +82,14 @@ export type CatalogQuery = {
 export type CatalogSearchParams = Record<string, string | string[] | undefined>
 
 export type CatalogFacets = {
+  departments: Array<{ name: string; slug: string }>
   categories: Array<{ name: string; slug: string }>
   colors: string[]
   brands: string[]
   bagTypes: string[]
   productKinds: string[]
   skinTypes: string[]
+  materials: string[]
   ageGroups: Array<{ label: string; value: string }>
   sizes: Array<{ label: string; value: string; height: string }>
   filters: FilterFlags
@@ -123,15 +133,17 @@ function cleanInt(value: string | undefined) {
 }
 
 export function parseCatalogSearchParams(params: CatalogSearchParams): CatalogQuery {
-  const q = cleanText(firstParam(params.q), 80)
-  const category = cleanSlug(firstParam(params.category))
-  const department = cleanSlug(firstParam(params.department))
+  const q = cleanText(firstParam(params.q) || firstParam(params.search), 80)
+  const categoryParam = cleanSlug(firstParam(params.category))
+  const subcategory = cleanSlug(firstParam(params.subcategory))
+  const departmentParam = cleanSlug(firstParam(params.department))
   const audienceRaw = firstParam(params.audience)?.trim().toLowerCase()
   const genderRaw = firstParam(params.gender)?.trim().toLowerCase()
   const brand = cleanText(firstParam(params.brand), 40)
   const bagType = cleanText(firstParam(params.bagType), 40)
   const productKind = cleanText(firstParam(params.productKind), 40)
   const skinType = cleanText(firstParam(params.skinType), 40)
+  const material = cleanText(firstParam(params.material), 40)
   const ageRaw = LEGACY_AGE[firstParam(params.age)?.trim().toLowerCase() || ''] || firstParam(params.age)?.trim().toLowerCase()
   const sizeRaw = cleanSizeCode(firstParam(params.size))
   const color = cleanText(firstParam(params.color), 40)
@@ -145,11 +157,22 @@ export function parseCatalogSearchParams(params: CatalogSearchParams): CatalogQu
   const sortRaw = firstParam(params.sort)?.trim().toLowerCase()
   const page = Math.max(1, cleanInt(firstParam(params.page)) || 1)
 
+  const department =
+    departmentParam || (categoryParam && SHOP_DEPARTMENT_SLUGS.has(categoryParam) ? categoryParam : undefined)
+  const category =
+    subcategory ||
+    (categoryParam && !SHOP_DEPARTMENT_SLUGS.has(categoryParam) ? categoryParam : undefined)
+
   return {
     q,
     category,
     department,
-    audience: audienceRaw === 'women' || audienceRaw === 'kids' ? audienceRaw : undefined,
+    audience:
+      audienceRaw === 'women' || audienceRaw === 'kids'
+        ? audienceRaw
+        : department === 'womens' || category === 'handbags' || category === 'beauty' || category === 'skincare'
+          ? 'women'
+          : undefined,
     gender: genderRaw && GENDER_VALUES.has(genderRaw as never) ? genderRaw : undefined,
     age: cleanSlug(ageRaw),
     size: sizeRaw,
@@ -158,6 +181,7 @@ export function parseCatalogSearchParams(params: CatalogSearchParams): CatalogQu
     bagType,
     productKind,
     skinType,
+    material,
     min,
     max,
     heightMin,
@@ -171,9 +195,12 @@ export function parseCatalogSearchParams(params: CatalogSearchParams): CatalogQu
 export function catalogQueryString(query: CatalogQuery) {
   const params = new URLSearchParams()
   if (query.q) params.set('q', query.q)
-  if (query.category) params.set('category', query.category)
-  if (query.department) params.set('department', query.department)
-  if (query.audience) params.set('audience', query.audience)
+  if (query.department && SHOP_DEPARTMENT_SLUGS.has(query.department)) {
+    params.set('category', query.department)
+    if (query.category) params.set('subcategory', query.category)
+  } else if (query.category) {
+    params.set('category', query.category)
+  }
   if (query.gender) params.set('gender', query.gender)
   if (query.age) params.set('age', query.age)
   if (query.size) params.set('size', query.size)
@@ -182,6 +209,7 @@ export function catalogQueryString(query: CatalogQuery) {
   if (query.bagType) params.set('bagType', query.bagType)
   if (query.productKind) params.set('productKind', query.productKind)
   if (query.skinType) params.set('skinType', query.skinType)
+  if (query.material) params.set('material', query.material)
   if (query.min != null && Number.isFinite(query.min)) params.set('min', String(query.min))
   if (query.max != null && Number.isFinite(query.max)) params.set('max', String(query.max))
   if (query.heightMin != null && Number.isFinite(query.heightMin)) params.set('heightMin', String(query.heightMin))
@@ -229,13 +257,19 @@ export function hasFacetParams(query: CatalogQuery, locked?: CatalogLock) {
       extra.brand ||
       extra.bagType ||
       extra.productKind ||
-      extra.skinType,
+      extra.skinType ||
+      extra.material,
   )
 }
 
 export function catalogFilterChips(query: CatalogQuery, facets: CatalogFacets) {
   const chips: Array<{ key: keyof CatalogQuery; label: string }> = []
   if (query.q) chips.push({ key: 'q', label: `Search: ${query.q}` })
+  if (query.department) {
+    const name =
+      facets.categories.find((item) => item.slug === query.department)?.name || query.department
+    chips.push({ key: 'department', label: name })
+  }
   if (query.category) {
     const name = facets.categories.find((item) => item.slug === query.category)?.name || query.category
     chips.push({ key: 'category', label: name })
@@ -263,6 +297,7 @@ export function catalogFilterChips(query: CatalogQuery, facets: CatalogFacets) {
   if (query.bagType) chips.push({ key: 'bagType', label: query.bagType })
   if (query.productKind) chips.push({ key: 'productKind', label: query.productKind })
   if (query.skinType) chips.push({ key: 'skinType', label: query.skinType })
+  if (query.material) chips.push({ key: 'material', label: query.material })
   if (query.min != null) chips.push({ key: 'min', label: `From Rs ${query.min}` })
   if (query.max != null) chips.push({ key: 'max', label: `Up to Rs ${query.max}` })
   if (query.heightMin != null) chips.push({ key: 'heightMin', label: `From ${query.heightMin} cm` })
