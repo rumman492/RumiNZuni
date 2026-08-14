@@ -850,6 +850,7 @@ export async function seedCatalog(payload: Payload) {
     homeCollections: [
       { title: 'Boys', copy: 'Comfortable everyday style for play, school, and small adventures.', href: '/shop/boys', category: categories.boys },
       { title: 'Girls', copy: 'Looks with personality — for ordinary days and the ones you will remember.', href: '/shop/girls', category: categories.girls },
+      { title: 'Newborn', copy: 'First outfits for life’s newest little moments.', href: '/shop/newborn', category: categories.newborn },
       { title: 'Accessories', copy: 'The finishing touches: tiny essentials for every little look.', href: '/shop/baby-kids-accessories', category: categories['baby-kids-accessories'] },
       { title: 'Footwear', copy: 'Soft steps for busy days — made for movement, not fuss.', href: '/shop/kids-footwear', category: categories['kids-footwear'] },
       { title: 'Handbags', copy: 'Everyday bags, chosen to go with real life.', href: '/shop/handbags', category: categories.handbags },

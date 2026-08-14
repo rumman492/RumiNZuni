@@ -170,6 +170,7 @@ describe('catalog taxonomy', () => {
     expect(kids.map((item) => item.href)).toEqual([
       '/shop/boys',
       '/shop/girls',
+      '/shop/newborn',
       '/shop/baby-kids-accessories',
       '/shop/kids-footwear',
     ])
@@ -178,6 +179,22 @@ describe('catalog taxonomy', () => {
       '/shop/beauty',
       '/shop/skincare',
       '/shop/perfumes',
+    ])
+    const fromLegacy = splitHomeCollections(
+      homepageCollections({
+        homeCollections: [
+          { title: 'Boys', href: '/shop/boys' },
+          { title: 'Girls', href: '/shop/girls' },
+          { title: 'Newborn', href: '/shop/newborn' },
+          { title: 'Unisex', href: '/shop/unisex' },
+        ],
+      }),
+    )
+    expect(fromLegacy.kids.map((item) => item.href)).toEqual([
+      '/shop/boys',
+      '/shop/girls',
+      '/shop/newborn',
+      '/shop/baby-kids-accessories',
     ])
   })
 })

@@ -38,6 +38,7 @@ export const FEATURED = {
 export const HOME_COLLECTIONS = [
   { title: 'Boys', copy: 'Comfortable everyday style for play, school, and small adventures.', href: '/shop/boys' },
   { title: 'Girls', copy: 'Looks with personality — for ordinary days and the ones you will remember.', href: '/shop/girls' },
+  { title: 'Newborn', copy: 'First outfits for life’s newest little moments.', href: '/shop/newborn' },
   { title: 'Accessories', copy: 'The finishing touches: tiny essentials for every little look.', href: '/shop/baby-kids-accessories' },
   { title: 'Footwear', copy: 'Soft steps for busy days — made for movement, not fuss.', href: '/shop/kids-footwear' },
 ]

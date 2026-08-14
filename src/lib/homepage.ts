@@ -98,6 +98,34 @@ function isWomenCollectionHref(href: string) {
   return /\/shop\/(womens|handbags|beauty-care|beauty|skincare|perfumes)(\?|$)/.test(href)
 }
 
+function isNewbornHref(href: string) {
+  return /\/shop\/newborn(\?|$)/.test(href)
+}
+
+function isAccessoriesHref(href: string) {
+  return /\/shop\/baby-kids-accessories(\?|$)/.test(href)
+}
+
+function cardFromDefault(href: string) {
+  const item = HOME_COLLECTIONS.find((row) => row.href === href)
+  return item ? { title: item.title, copy: item.copy, href: item.href, image: null as string | null } : null
+}
+
+/** Keep Unisex off the homepage and sit Kids Accessories beside Newborn. */
+function arrangeKidsBanners(items: Array<{ title: string; copy: string; href: string; image: string | null }>) {
+  const kids = items.filter((item) => !isWomenCollectionHref(item.href) && !isUnisexPublicItem(item))
+  const women = items.filter((item) => isWomenCollectionHref(item.href))
+
+  const newborn = kids.find((item) => isNewbornHref(item.href)) || cardFromDefault('/shop/newborn')
+  const accessories = kids.find((item) => isAccessoriesHref(item.href)) || cardFromDefault('/shop/baby-kids-accessories')
+  const rest = kids.filter((item) => !isNewbornHref(item.href) && !isAccessoriesHref(item.href))
+
+  const boysGirls = rest.filter((item) => /\/shop\/(boys|girls)(\?|$)/.test(item.href))
+  const otherKids = rest.filter((item) => !/\/shop\/(boys|girls)(\?|$)/.test(item.href))
+
+  return [...boysGirls, ...(newborn ? [newborn] : []), ...(accessories ? [accessories] : []), ...otherKids, ...women]
+}
+
 export function homepageCollections(settings: HomepageSettings | null) {
   const rows = settings?.homeCollections?.filter((item) => item.title) || []
   const source = rows.length > 0 ? [...rows] : [...DEFAULT_HOME_COLLECTIONS]
@@ -114,9 +142,10 @@ export function homepageCollections(settings: HomepageSettings | null) {
       image: 'image' in item && typeof item.image === 'object' ? mediaUrl(item.image) : null,
     }))
 
-  const hasWomen = mapped.some((item) => isWomenCollectionHref(item.href))
+  const arranged = arrangeKidsBanners(mapped)
+  const hasWomen = arranged.some((item) => isWomenCollectionHref(item.href))
   if (!hasWomen) {
-    mapped.push(
+    arranged.push(
       ...HOME_WOMEN_COLLECTIONS.map((item) => ({
         title: item.title,
         copy: item.copy,
@@ -125,7 +154,7 @@ export function homepageCollections(settings: HomepageSettings | null) {
       })),
     )
   }
-  return mapped
+  return arranged
 }
 
 export function splitHomeCollections(items: ReturnType<typeof homepageCollections>) {
