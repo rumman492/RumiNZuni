@@ -5,6 +5,7 @@ import { Breadcrumbs } from '@/components/Breadcrumbs'
 import { JsonLd } from '@/components/JsonLd'
 import { ProductCard } from '@/components/ProductCard'
 import { mediaUrl } from '@/lib/media'
+import { samplePhotoForSlug } from '@/lib/samplePhotos'
 import { formatProductSize } from '@/lib/sizing'
 import { publicGenderLabel } from '@/lib/taxonomy'
 import { getProductBySlug, productCardData, type ProductDoc } from '@/lib/products'
@@ -96,10 +97,12 @@ export default async function ProductPage({ params }: { params: Promise<{ slug: 
   const product = await getProductBySlug(slug).catch(() => null)
   if (!product) notFound()
 
-  const images =
+  const images: string[] =
     product.images
       ?.map((entry) => (typeof entry.image === 'object' ? mediaUrl(entry.image) : null))
-      .filter(Boolean) || []
+      .filter((src): src is string => Boolean(src)) || []
+  const fallback = samplePhotoForSlug(product.slug)
+  if (fallback && !images.includes(fallback)) images.push(fallback)
 
   const tags = (product.tags || []).flatMap((tag) =>
     typeof tag === 'object' && tag?.name ? [tag.name] : [],

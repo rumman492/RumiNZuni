@@ -8,7 +8,9 @@ const seedMediaDir = (() => {
   const candidates = [
     process.env.SEED_MEDIA_DIR,
     path.resolve(process.cwd(), 'seed/media'),
+    path.resolve(process.cwd(), 'public/samples'),
     '/app/seed/media',
+    '/app/public/samples',
   ].filter((value): value is string => Boolean(value))
   return candidates.find((dir) => fs.existsSync(dir)) || path.resolve(process.cwd(), 'seed/media')
 })()
@@ -105,8 +107,15 @@ async function upsertSeedProducts(payload: Payload, products: SeedProduct[]) {
     try {
     const { imageFile, imageAlt, ...data } = product
     if (!product.category) continue
-    const imageId = await upsertMedia(payload, imageFile, imageAlt)
-    const images = [{ image: imageId }]
+    let images: Array<{ image: number }> | undefined
+    try {
+      const imageId = await upsertMedia(payload, imageFile, imageAlt)
+      images = [{ image: imageId }]
+    } catch (error) {
+      payload.logger.error(
+        error instanceof Error ? `Photo ${imageFile}: ${error.message}` : `Photo ${imageFile} failed.`,
+      )
+    }
     const found = await payload.find({
       collection: 'products',
       where: { slug: { equals: product.slug } },
@@ -120,7 +129,7 @@ async function upsertSeedProducts(payload: Payload, products: SeedProduct[]) {
         collection: 'products',
         data: {
           ...data,
-          images,
+          ...(images ? { images } : {}),
           _status: 'published',
         } as never,
         draft: false,
@@ -136,12 +145,12 @@ async function upsertSeedProducts(payload: Payload, products: SeedProduct[]) {
     productIds.push(numericId(existing.id))
     if (product.featured) featuredIds.push(numericId(existing.id))
 
-    if (!hasImages(existing) || existing._status !== 'published') {
+    if ((!hasImages(existing) && images) || existing._status !== 'published') {
       await payload.update({
         collection: 'products',
         id: existing.id,
         data: {
-          ...(hasImages(existing) ? {} : { images }),
+          ...(hasImages(existing) || !images ? {} : { images }),
           _status: 'published',
         },
         draft: false,

@@ -22,6 +22,8 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
+      seed:
+        condition: service_completed_successfully
     env_file:
       - .env
     environment:
@@ -34,7 +36,6 @@ services:
       - ./media:/app/media
 
   seed:
-    profiles: ['seed']
     build:
       context: .
       dockerfile: Dockerfile.seed
@@ -51,6 +52,7 @@ services:
     depends_on:
       postgres:
         condition: service_healthy
+    restart: 'no'
 
   caddy:
     image: caddy:2-alpine

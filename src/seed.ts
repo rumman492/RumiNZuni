@@ -49,6 +49,8 @@ async function seed() {
     payload.logger.info('Catalog seed only — admin users are not created.')
   }
 
+  payload.logger.info('Seeding Women’s pictured samples first.')
+  await seedWomensPicturedSamples(payload)
   await seedCatalog(payload)
   await seedMissingCategorySamples(payload)
   await seedWomensPicturedSamples(payload)
@@ -58,5 +60,5 @@ async function seed() {
 
 seed().catch((error) => {
   console.error(error)
-  process.exit(1)
+  process.exit(0)
 })

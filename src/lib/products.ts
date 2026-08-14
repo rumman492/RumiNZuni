@@ -1,5 +1,6 @@
 import type { Where } from 'payload'
 import { mediaUrl } from '@/lib/media'
+import { samplePhotoForSlug } from '@/lib/samplePhotos'
 import { getPayloadClient } from '@/lib/payload'
 
 type MediaRef = { url?: string | null; filename?: string | null } | number | null
@@ -83,7 +84,7 @@ export function productCardData(
   variant?: NonNullable<ProductDoc['variants']>[number],
 ) {
   const firstImage = product.images?.[0]?.image
-  const image = typeof firstImage === 'object' ? mediaUrl(firstImage) : null
+  const image = (typeof firstImage === 'object' ? mediaUrl(firstImage) : null) || samplePhotoForSlug(product.slug)
   const chosen = variant || product.variants?.[0]
   const soldOut = (product.variants || []).every((item) => item.stock < 1)
   return {

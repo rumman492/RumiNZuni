@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import type { Where } from 'payload'
 import { getPayloadClient } from '@/lib/payload'
 import { productCardData, type ProductDoc } from '@/lib/products'
+import { samplePhotoForSlug, WOMEN_HUB_PHOTOS } from '@/lib/samplePhotos'
 import { pageMeta } from '@/lib/seo'
 import { absoluteUrl, STORE_NAME } from '@/lib/site'
 import {
@@ -430,7 +431,7 @@ async function hubsFromLinks(links: Array<{ href: string; slug: string; label: s
       href: item.href,
       title: item.label,
       copy: item.copy,
-      image: product ? productCardData(product).image || null : null,
+      image: (product ? productCardData(product).image : null) || WOMEN_HUB_PHOTOS[item.slug] || samplePhotoForSlug(item.slug) || null,
     })
   }
   return hubs
