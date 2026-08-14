@@ -36,7 +36,7 @@ npm test
 - Store: http://localhost:3000
 - Admin: http://localhost:3000/admin — create the first user there with a unique 12+ character password. Do not document or commit admin passwords.
 
-Copy `.env.example` to `.env` and set `PAYLOAD_SECRET` (`openssl rand -hex 32`). Never commit `.env`. `npm run seed` loads sample products (two per category) with photos from `seed/media/` and will not create an admin unless `SEED_ADMIN_EMAIL` and `SEED_ADMIN_PASSWORD` are set. Production loads that sample catalog on boot when `SEED_CATALOG=true` and the shop has no products (never creates admin).
+Copy `.env.example` to `.env` and set `PAYLOAD_SECRET` (`openssl rand -hex 32`). Never commit `.env`. `npm run seed` loads sample products (two per category, including accessories, footwear, bags, and beauty) with photos from `seed/media/` and will not create an admin unless `SEED_ADMIN_EMAIL` and `SEED_ADMIN_PASSWORD` are set. Production loads that sample catalog on boot when `SEED_CATALOG=true` (never creates admin). If clothing already exists, it only adds missing accessory samples. Replace samples from Admin → Products.
 
 Live site uses **PostgreSQL** + Docker on a VPS (`ruminzuni.com`). Follow `DEPLOY.md`. Do not use Vercel for this app.
 

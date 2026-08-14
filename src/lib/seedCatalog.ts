@@ -36,6 +36,311 @@ function hasImages(product: { images?: Array<{ image?: unknown }> | null }) {
   return Boolean(product.images?.some((row) => row.image))
 }
 
+type SeedProduct = {
+  title: string
+  slug: string
+  description: string
+  category: number
+  gender: 'boys' | 'girls' | 'unisex'
+  ageGroup: number
+  featured?: boolean
+  material?: string
+  careInstructions?: string
+  sortPriority?: number
+  tags?: number[]
+  sizeGuide?: number
+  seo?: { title?: string; description?: string }
+  imageFile: string
+  imageAlt: string
+  variants: Array<{
+    sku: string
+    size: string
+    color: string
+    price: number
+    compareAtPrice?: number
+    stock: number
+  }>
+}
+
+async function upsertSeedProducts(payload: Payload, products: SeedProduct[]) {
+  const productIds: number[] = []
+  const featuredIds: number[] = []
+
+  for (const product of products) {
+    const { imageFile, imageAlt, ...data } = product
+    const imageId = await upsertMedia(payload, imageFile, imageAlt)
+    const images = [{ image: imageId }]
+    const found = await payload.find({
+      collection: 'products',
+      where: { slug: { equals: product.slug } },
+      limit: 1,
+      overrideAccess: true,
+      draft: true,
+    })
+
+    if (found.totalDocs === 0) {
+      const created = await payload.create({
+        collection: 'products',
+        data: {
+          ...data,
+          images,
+          _status: 'published',
+        } as never,
+        draft: false,
+        overrideAccess: true,
+      })
+      productIds.push(numericId(created.id))
+      if (product.featured) featuredIds.push(numericId(created.id))
+      payload.logger.info(`Created product ${product.title}`)
+      continue
+    }
+
+    const existing = found.docs[0]
+    productIds.push(numericId(existing.id))
+    if (product.featured) featuredIds.push(numericId(existing.id))
+
+    if (!hasImages(existing) || existing._status !== 'published') {
+      await payload.update({
+        collection: 'products',
+        id: existing.id,
+        data: {
+          ...(hasImages(existing) ? {} : { images }),
+          _status: 'published',
+        },
+        draft: false,
+        overrideAccess: true,
+      })
+      payload.logger.info(`Published ${product.title}`)
+    }
+  }
+
+  return { productIds, featuredIds }
+}
+
+const PLACEHOLDER =
+  'Sample placeholder — replace this with your own product, photos, and price in Admin → Products.'
+
+function accessorySampleProducts(
+  categories: Record<string, number>,
+  ageGroupIds: Record<string, number>,
+  tags: Record<string, number>,
+): SeedProduct[] {
+  const extras = [tags.everyday].filter(Boolean)
+  return [
+    {
+      title: 'Cotton bib & hat set',
+      slug: 'cotton-bib-hat-set',
+      description: `Soft cotton bib with a matching knotted hat for milky days and sunny walks. ${PLACEHOLDER}`,
+      category: categories['baby-accessories'],
+      gender: 'unisex',
+      ageGroup: ageGroupIds.baby,
+      material: 'Cotton jersey',
+      careInstructions: 'Machine wash cold. Do not bleach. Dry in shade.',
+      sortPriority: 10,
+      tags: extras,
+      imageFile: 'cotton-baby-bib-set.jpg',
+      imageAlt: 'Cream and sage cotton baby bib with knotted hat',
+      seo: {
+        title: 'Cotton bib and hat set for babies',
+        description: 'Sample baby accessory set. Cash on delivery across Pakistan. Replace in admin when your stock is ready.',
+      },
+      variants: [
+        { sku: 'RNZ-BIB-03-CRM', size: '0-3m', color: 'Cream', price: 890, stock: 12 },
+        { sku: 'RNZ-BIB-36-SGE', size: '3-6m', color: 'Sage', price: 890, stock: 10 },
+        { sku: 'RNZ-BIB-69-CRM', size: '6-9m', color: 'Cream', price: 990, stock: 8 },
+      ],
+    },
+    {
+      title: 'Mitts & burp cloth',
+      slug: 'mitts-burp-cloth',
+      description: `Scratch mitts plus a muslin burp cloth for newborn days. ${PLACEHOLDER}`,
+      category: categories['baby-accessories'],
+      gender: 'unisex' as const,
+      ageGroup: ageGroupIds.newborn,
+      material: 'Cotton muslin',
+      sortPriority: 8,
+      tags: extras,
+      imageFile: 'baby-mitts-burp-cloth.jpg',
+      imageAlt: 'Ivory baby mitts and blush muslin burp cloth',
+      variants: [
+        { sku: 'RNZ-MTS-NB-IVR', size: 'newborn', color: 'Ivory', price: 690, stock: 14 },
+        { sku: 'RNZ-MTS-03-BSH', size: '0-3m', color: 'Blush', price: 690, stock: 12 },
+      ],
+    },
+    {
+      title: 'Hair bow set',
+      slug: 'kids-hair-bow-set',
+      description: `Soft fabric bows and a scrunchie for school and Eid. ${PLACEHOLDER}`,
+      category: categories['kids-accessories'],
+      gender: 'girls',
+      ageGroup: ageGroupIds['little-kids'],
+      sortPriority: 10,
+      tags: extras,
+      imageFile: 'kids-hair-bow-set.jpg',
+      imageAlt: 'Coral hair bow and sage scrunchie for kids',
+      variants: [
+        { sku: 'RNZ-BOW-3Y-CRL', size: '3y', color: 'Coral', price: 590, stock: 16 },
+        { sku: 'RNZ-BOW-5Y-SGE', size: '5y', color: 'Sage', price: 590, stock: 14 },
+      ],
+    },
+    {
+      title: 'Kids sun hat',
+      slug: 'kids-sun-hat',
+      description: `Light brim hat for park days and school pickup. ${PLACEHOLDER}`,
+      category: categories['kids-accessories'],
+      gender: 'unisex',
+      ageGroup: ageGroupIds.kids,
+      sortPriority: 8,
+      tags: extras,
+      imageFile: 'kids-sun-hat.jpg',
+      imageAlt: 'Navy and cream kids sun hat',
+      variants: [
+        { sku: 'RNZ-HAT-4Y-NVY', size: '4y', color: 'Navy', price: 1290, stock: 9 },
+        { sku: 'RNZ-HAT-6Y-CRM', size: '6y', color: 'Cream', price: 1290, stock: 8 },
+        { sku: 'RNZ-HAT-78-NVY', size: '7-8y', color: 'Navy', price: 1390, stock: 6 },
+      ],
+    },
+    {
+      title: 'Canvas sneakers',
+      slug: 'kids-canvas-sneakers',
+      description: `Everyday canvas shoes with an easy strap. ${PLACEHOLDER}`,
+      category: categories.footwear,
+      gender: 'unisex',
+      ageGroup: ageGroupIds['little-kids'],
+      sortPriority: 10,
+      tags: extras,
+      imageFile: 'kids-canvas-sneakers.jpg',
+      imageAlt: 'Coral and cream kids canvas sneakers',
+      variants: [
+        { sku: 'RNZ-SNK-4Y-CRL', size: '4y', color: 'Coral', price: 2190, stock: 8 },
+        { sku: 'RNZ-SNK-5Y-CRM', size: '5y', color: 'Cream', price: 2190, stock: 8 },
+        { sku: 'RNZ-SNK-6Y-CRL', size: '6y', color: 'Coral', price: 2290, stock: 6 },
+      ],
+    },
+    {
+      title: 'Soft sandals',
+      slug: 'kids-soft-sandals',
+      description: `Breathable sandals for warm Pakistani weather. ${PLACEHOLDER}`,
+      category: categories.footwear,
+      gender: 'unisex' as const,
+      ageGroup: ageGroupIds.toddler,
+      sortPriority: 8,
+      tags: extras,
+      imageFile: 'kids-soft-sandals.jpg',
+      imageAlt: 'Sage kids sandals on a cream background',
+      variants: [
+        { sku: 'RNZ-SND-2Y-SGE', size: '2y', color: 'Sage', price: 1890, stock: 10 },
+        { sku: 'RNZ-SND-3Y-SGE', size: '3y', color: 'Sage', price: 1890, stock: 9 },
+        { sku: 'RNZ-SND-4Y-CRM', size: '4y', color: 'Cream', price: 1990, stock: 7 },
+      ],
+    },
+    {
+      title: 'School backpack',
+      slug: 'kids-school-backpack',
+      description: `Small backpack for books, water, and snacks. ${PLACEHOLDER}`,
+      category: categories.bags,
+      gender: 'unisex',
+      ageGroup: ageGroupIds.kids,
+      sortPriority: 10,
+      tags: extras,
+      imageFile: 'kids-school-backpack.jpg',
+      imageAlt: 'Navy kids school backpack with coral zipper',
+      variants: [
+        { sku: 'RNZ-BAG-5Y-NVY', size: '5y', color: 'Navy', price: 2490, stock: 7 },
+        { sku: 'RNZ-BAG-78-NVY', size: '7-8y', color: 'Navy', price: 2690, stock: 6 },
+      ],
+    },
+    {
+      title: 'Canvas tote',
+      slug: 'kids-canvas-tote',
+      description: `Little tote for daycare extras and weekend outings. ${PLACEHOLDER}`,
+      category: categories.bags,
+      gender: 'girls',
+      ageGroup: ageGroupIds['little-kids'],
+      sortPriority: 8,
+      tags: extras,
+      imageFile: 'kids-canvas-tote.jpg',
+      imageAlt: 'Blush canvas kids tote with sage straps',
+      variants: [
+        { sku: 'RNZ-TOT-3Y-BSH', size: '3y', color: 'Blush', price: 1590, stock: 8 },
+        { sku: 'RNZ-TOT-5Y-BSH', size: '5y', color: 'Blush', price: 1590, stock: 7 },
+      ],
+    },
+    {
+      title: 'Gentle baby lotion set',
+      slug: 'gentle-baby-lotion-set',
+      description: `Mild lotion and soap for after-bath care. ${PLACEHOLDER}`,
+      category: categories.beauty,
+      gender: 'unisex',
+      ageGroup: ageGroupIds.baby,
+      material: 'Fragrance-light care (sample)',
+      careInstructions: 'For external use. Patch-test first. Keep out of eyes.',
+      sortPriority: 10,
+      tags: extras,
+      imageFile: 'gentle-baby-lotion-set.jpg',
+      imageAlt: 'Gentle baby lotion bottle and soap bar sample',
+      variants: [
+        { sku: 'RNZ-LOT-BB-CRM', size: '3-6m', color: 'Cream', price: 990, stock: 12 },
+        { sku: 'RNZ-LOT-BB-SGE', size: '9-12m', color: 'Sage', price: 990, stock: 10 },
+      ],
+    },
+    {
+      title: 'Kids lip balm & brush',
+      slug: 'kids-lip-balm-brush',
+      description: `A small lip balm tin and a soft hairbrush. ${PLACEHOLDER}`,
+      category: categories.beauty,
+      gender: 'unisex',
+      ageGroup: ageGroupIds['little-kids'],
+      sortPriority: 8,
+      tags: extras,
+      imageFile: 'kids-lip-balm-brush.jpg',
+      imageAlt: 'Kids lip balm tin and wooden hairbrush',
+      variants: [
+        { sku: 'RNZ-BLM-3Y-PNK', size: '3y', color: 'Blush', price: 790, stock: 14 },
+        { sku: 'RNZ-BLM-6Y-CRM', size: '6y', color: 'Cream', price: 790, stock: 12 },
+      ],
+    },
+  ].filter((product) => Boolean(product.category && product.ageGroup)) as SeedProduct[]
+}
+
+export async function seedMissingAccessoryProducts(payload: Payload) {
+  if (!fs.existsSync(seedMediaDir)) {
+    throw new Error(`Seed photos folder is missing: ${seedMediaDir}`)
+  }
+
+  const ageGroupIds = await seedSizingAndAccessories(payload)
+  const accessorySlugs = [
+    'baby-accessories',
+    'kids-accessories',
+    'footwear',
+    'bags',
+    'beauty',
+  ]
+  const categories: Record<string, number> = {}
+  for (const slug of accessorySlugs) {
+    const found = await payload.find({
+      collection: 'categories',
+      where: { slug: { equals: slug } },
+      limit: 1,
+      overrideAccess: true,
+    })
+    if (found.docs[0]) categories[slug] = numericId(found.docs[0].id)
+  }
+
+  const tags: Record<string, number> = {}
+  const foundTag = await payload.find({
+    collection: 'tags',
+    where: { slug: { equals: 'everyday' } },
+    limit: 1,
+    overrideAccess: true,
+  })
+  if (foundTag.docs[0]) tags.everyday = numericId(foundTag.docs[0].id)
+
+  const products = accessorySampleProducts(categories, ageGroupIds, tags)
+  const { productIds } = await upsertSeedProducts(payload, products)
+  payload.logger.info(`Accessory samples ready. ${productIds.length} products in extras, footwear, bags, and beauty.`)
+}
+
 export async function seedCatalogIfEmpty(payload: Payload) {
   await seedSizingAndAccessories(payload)
   const existing = await payload.find({
@@ -44,7 +349,8 @@ export async function seedCatalogIfEmpty(payload: Payload) {
     overrideAccess: true,
   })
   if (existing.totalDocs > 0) {
-    payload.logger.info('Catalog already has products — skipping sample seed.')
+    payload.logger.info('Catalog already has products — adding missing accessory samples only.')
+    await seedMissingAccessoryProducts(payload)
     return
   }
   await seedCatalog(payload)
@@ -62,6 +368,11 @@ export async function seedCatalog(payload: Payload) {
     { name: 'Girls', slug: 'girls', description: 'Frocks, sets, and play outfits' },
     { name: 'Newborn', slug: 'newborn', description: 'First outfits and sleepsuits' },
     { name: 'Unisex', slug: 'unisex', description: 'Soft basics for everyone' },
+    { name: 'Baby accessories', slug: 'baby-accessories', description: 'Bibs, hats, and everyday baby extras. Cash on delivery across Pakistan.' },
+    { name: 'Kids accessories', slug: 'kids-accessories', description: 'Hair, hats, and play extras for kids. Cash on delivery across Pakistan.' },
+    { name: 'Footwear', slug: 'footwear', description: 'Soft shoes and sandals for little feet. Cash on delivery across Pakistan.' },
+    { name: 'Bags', slug: 'bags', description: 'School bags and little carry-alls. Cash on delivery across Pakistan.' },
+    { name: 'Beauty', slug: 'beauty', description: 'Gentle kids and baby care. Cash on delivery across Pakistan.' },
   ]
 
   const categories: Record<string, number> = {}
@@ -158,7 +469,7 @@ export async function seedCatalog(payload: Payload) {
     }))
   if (foundGuide.totalDocs === 0) payload.logger.info('Created size guide Newborn & infant')
 
-  const products = [
+  const products: SeedProduct[] = [
     {
       title: 'Cotton romper set',
       slug: 'cotton-romper-set',
@@ -225,6 +536,7 @@ export async function seedCatalog(payload: Payload) {
       category: categories.unisex,
       gender: 'unisex' as const,
       ageGroup: ageGroupIds.kids,
+      imageFile: 'knit-hoodie.jpg',
       imageAlt: 'Heather grey kids knit hoodie',
       variants: [
         { sku: 'RNZ-HOD-3Y-GRY', size: '3y', color: 'Heather grey', price: 2290, stock: 8 },
@@ -239,6 +551,7 @@ export async function seedCatalog(payload: Payload) {
       category: categories.boys,
       gender: 'boys' as const,
       ageGroup: ageGroupIds.toddler,
+      imageFile: 'two-piece-linen-suit.jpg',
       imageAlt: 'Beige two-piece linen-look suit for boys',
       variants: [
         { sku: 'RNZ-SUT-2Y-BGE', size: '2y', color: 'Beige', price: 3290, stock: 6 },
@@ -298,58 +611,10 @@ export async function seedCatalog(payload: Payload) {
         { sku: 'RNZ-TEE-78-CRM', size: '7-8y', color: 'Cream', price: 1390, stock: 8 },
       ],
     },
+    ...accessorySampleProducts(categories, ageGroupIds, tags),
   ]
 
-  const productIds: number[] = []
-  const featuredIds: number[] = []
-
-  for (const product of products) {
-    const { imageFile, imageAlt, ...data } = product
-    const imageId = await upsertMedia(payload, imageFile as string, imageAlt)
-    const images = [{ image: imageId }]
-    const found = await payload.find({
-      collection: 'products',
-      where: { slug: { equals: product.slug } },
-      limit: 1,
-      overrideAccess: true,
-      draft: true,
-    })
-
-    if (found.totalDocs === 0) {
-      const created = await payload.create({
-        collection: 'products',
-        data: {
-          ...data,
-          images,
-          _status: 'published',
-        } as never,
-        draft: false,
-        overrideAccess: true,
-      })
-      productIds.push(numericId(created.id))
-      if (product.featured) featuredIds.push(numericId(created.id))
-      payload.logger.info(`Created product ${product.title}`)
-      continue
-    }
-
-    const existing = found.docs[0]
-    productIds.push(numericId(existing.id))
-    if (product.featured) featuredIds.push(numericId(existing.id))
-
-    if (!hasImages(existing) || existing._status !== 'published') {
-      await payload.update({
-        collection: 'products',
-        id: existing.id,
-        data: {
-          ...(hasImages(existing) ? {} : { images }),
-          _status: 'published',
-        },
-        draft: false,
-        overrideAccess: true,
-      })
-      payload.logger.info(`Published ${product.title}`)
-    }
-  }
+  const { productIds, featuredIds } = await upsertSeedProducts(payload, products)
 
   const settingsData: Record<string, unknown> = {
     storeName: 'Rumi & Zuni',
@@ -379,6 +644,8 @@ export async function seedCatalog(payload: Payload) {
       { title: 'Girls', copy: 'Frocks, two-piece sets, everyday knits', href: '/shop/girls', category: categories.girls },
       { title: 'Newborn', copy: 'Rompers, sleepsuits, first outfits', href: '/shop/newborn', category: categories.newborn },
       { title: 'Unisex', copy: 'Soft basics for everyone', href: '/shop/unisex', category: categories.unisex },
+      { title: 'Footwear', copy: 'Soft shoes and sandals', href: '/shop/footwear', category: categories.footwear },
+      { title: 'Bags', copy: 'School bags and little totes', href: '/shop/bags', category: categories.bags },
     ],
     featuredEyebrow: 'Featured',
     featuredHeading: 'Little bestsellers',
