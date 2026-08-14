@@ -7,6 +7,7 @@ import * as migration_20260814_193000_storefront_nav from './20260814_193000_sto
 import * as migration_20260814_200000_womens_catalog from './20260814_200000_womens_catalog';
 import * as migration_20260814_220000_womens_sample_products from './20260814_220000_womens_sample_products';
 import * as migration_20260814_231500_makeup_category_copy from './20260814_231500_makeup_category_copy';
+import * as migration_20260815_004800_locked_documents_rels from './20260815_004800_locked_documents_rels';
 
 export const migrations = [
   {
@@ -53,5 +54,10 @@ export const migrations = [
     up: migration_20260814_231500_makeup_category_copy.up,
     down: migration_20260814_231500_makeup_category_copy.down,
     name: '20260814_231500_makeup_category_copy'
+  },
+  {
+    up: migration_20260815_004800_locked_documents_rels.up,
+    down: migration_20260815_004800_locked_documents_rels.down,
+    name: '20260815_004800_locked_documents_rels'
   },
 ];
