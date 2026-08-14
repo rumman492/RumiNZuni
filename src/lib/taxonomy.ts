@@ -385,7 +385,7 @@ export const DEFAULT_DEPARTMENTS = [
   {
     name: "Women's Beauty",
     slug: 'womens-beauty',
-    description: 'Makeup for women. Cash on delivery across Pakistan.',
+    description: 'Makeup for everyday colour and special evenings.',
     audience: 'women' as const,
     sizeKind: 'none' as const,
     usesGender: false,
